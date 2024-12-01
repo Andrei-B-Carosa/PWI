@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Http\Controllers\AdminController\Employee;
+
+use App\Http\Controllers\Controller;
+use App\Models\Employee;
+use App\Services\Reusable\DTServerSide;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+
+class EmployeeMasterlist extends Controller
+{
+    public function dt(Request $rq)
+    {
+        // $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
+
+        $data = Employee::with(['emp_details'])->where([['is_active',1],['is_deleted',null]])->get();
+
+        $data->transform(function ($item, $key) {
+
+            $last_updated_by = null;
+            $last_updated_date = null;
+            if($item->updated_by != null){
+                $last_updated_by = optional($item->updated_by_emp)->fullname();
+                $last_updated_date = Carbon::parse($item->updated_at)->format('m-d-Y');
+            }elseif($item->created_by !=null){
+                $last_updated_by = optional($item->created_by_emp)->fullname();
+                $last_updated_date = Carbon::parse($item->created_at)->format('m-d-Y');
+            }
+
+            $item->count = $key + 1;
+            $item->last_updated_by = $last_updated_by;
+            $item->last_updated_date = $last_updated_date;
+
+            $emp_details = $item->emp_details;
+
+            $item->employee_name = $item->fullname();
+            $item->emp_no = $item->emp_no;
+            $item->department_name = $emp_details->department->code;
+            $item->section_name = $emp_details->section->name;
+            $item->date_employed = $emp_details->date_employed?Carbon::parse($emp_details->date_employed)->format('F j, Y'):'No Date Hired';
+
+            $item->encrypted_id = Crypt::encrypt($item->id);
+            return $item;
+        });
+
+        $table = new DTServerSide($rq, $data);
+        $table->renderTable();
+
+        return response()->json([
+            'draw' => $table->getDraw(),
+            'recordsTotal' => $table->getRecordsTotal(),
+            'recordsFiltered' =>  $table->getRecordsFiltered(),
+            'data' => $table->getRows()
+        ]);
+    }
+
+    public function delete(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+            $id =  Crypt::decrypt($rq->id);
+
+            $query = Employee::find($id);
+            $query->is_active = 0;
+            $query->is_deleted = 1;
+            $query->deleted_by = $user_id;
+            $query->deleted_at = Carbon::now();
+            $query->save();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'info',
+                'message'=>'Record is removed',
+                'payload' => Employee::where('is_active',1)->count()
+            ]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+}
