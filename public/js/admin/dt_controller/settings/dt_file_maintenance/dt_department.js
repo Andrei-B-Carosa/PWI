@@ -6,7 +6,6 @@ import {RequestHandler} from "../../../../global/request.js"
 import {modal_state,createBlockUI,data_bs_components} from "../../../../global.js"
 import {trigger_select} from "../../../../global/select.js"
 
-
 export var dtDepartment = function (param) {
 
     const _page = $('.page-file-maintenance-settings');
@@ -142,6 +141,8 @@ export var dtDepartment = function (param) {
         );
 
         $(`#${_table}_table`).ready(function() {
+
+            _tab.off();
 
             _tab.on('change','select.filter_table',function(e){
                 e.preventDefault()

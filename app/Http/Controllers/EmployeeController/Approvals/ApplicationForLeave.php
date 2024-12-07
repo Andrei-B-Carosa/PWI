@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HrisApprovalHistory;
 use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeeLeaveRequest;
+use App\Models\HrisGroupApprover;
 use App\Services\Reusable\DTServerSide;
 use Carbon\Carbon;
 use Exception;
@@ -23,10 +24,10 @@ class ApplicationForLeave extends Controller
         $filter_year = $rq->filter_year ?? false;
         $filter_department = isset($rq->filter_year) ? Crypt::decrypt($rq->filter_year) : false;
         $departmentIds = [];
-        $user = Auth::user();
+        $emp_id = Auth::user()->emp_id;
 
         if(!$filter_department){
-            $checkApprover = HrisApprovingOfficer::where([['emp_id',$user->emp_id],['is_active',1],['is_deleted',null]])->get();
+            $checkApprover = HrisApprovingOfficer::where([['emp_id',$emp_id],['is_active',1],['is_deleted',null]])->get();
             if($checkApprover){
                 $departmentIds = $checkApprover->pluck('department_id')->toArray();
             }
@@ -34,7 +35,7 @@ class ApplicationForLeave extends Controller
 
         $ApproverIds = HrisApprovingOfficer::where([['is_active',1],['is_deleted',null]])->pluck('emp_id');
         $data = HrisEmployeeLeaveRequest::with(['latest_approval_histories','employee','employee_position'])
-        ->where([['emp_id','!=',$user->emp_id],['is_deleted',null]])
+        ->where([['emp_id','!=',$emp_id],['is_deleted',null]])
         ->when($filter_department, fn($q) =>
             $q->whereHas('employee_position',fn($q) =>
                 $q->where('department_id',$filter_department)
@@ -63,7 +64,7 @@ class ApplicationForLeave extends Controller
         ->orderBy('id', 'ASC')
         ->get();
 
-        $data->transform(function ($item, $key) use($user) {
+        $data->transform(function ($item, $key) use($emp_id) {
 
             $approver = $item->latest_approval_histories;
             $approved_by = null;
@@ -71,6 +72,7 @@ class ApplicationForLeave extends Controller
             $approver_remarks = null;
             $approver_status = null;
             $approver_type = null;
+
             if($item->latest_approval_histories){
                 $approved_by = $approver->employee->fullname();
                 $approver_level = 'Level '.$approver->approver_level;
@@ -85,16 +87,18 @@ class ApplicationForLeave extends Controller
             $item->leave_filing_date = Carbon::parse($item->leave_filing_date)->format('m/d/Y');
             $item->leave_date_from = Carbon::parse($item->leave_date_from)->format('m/d/Y');
             $item->leave_date_to = Carbon::parse($item->leave_date_to)->format('m/d/Y');
+            $item->leave_name = $item->leave_type->name;
 
             $item->requestor = $item->employee->fullname();
             $item->position_name = $item->employee_position->position->name;
-            $item->is_current_approver = self::isApprovingOpen($user->emp_id,$item->id,$department_id);
+            $item->is_current_approver = self::isApprovingOpen($emp_id,$item->id,$item->group_member->group_id);
             $item->approver_status = $approver_status;
             $item->approver_type = $approver_type;
 
             $item->reason_short = str_word_count($item->reason, 0) > 6
-            ? implode(' ', array_slice(explode(' ', $item->reason), 0, 7)) . '...'
+            ? implode(' ', array_slice(explode(' ', $item->reason), 0, 6)) . '...'
             : null;
+
             $item->approved_by = $approved_by;
             $item->approver_level = $approver_level;
             $item->approver_remarks = $approver_remarks;
@@ -128,12 +132,12 @@ class ApplicationForLeave extends Controller
             $leaveRequest = HrisEmployeeLeaveRequest::with('employee_position')->find($id);
             if(!$leaveRequest)
             {
-                return response()->json(['status' => 'error','message'=>'Leave Request Not Found']);
+                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
             }
 
-            $approvingOfficer = HrisApprovingOfficer::where([
+            $approvingOfficer = HrisGroupApprover::where([
                 ['emp_id',$user_id],
-                ['department_id',$leaveRequest->employee_position->department_id],
+                ['group_id',$leaveRequest->group_member->group_id],
                 ['is_active',1]
             ])->first();
             if(!$approvingOfficer)
@@ -141,7 +145,7 @@ class ApplicationForLeave extends Controller
                 return response()->json(['status' => 'error','message'=>'You are not eligible for approving request']);
             }
 
-            $query = HrisApprovalHistory::create([
+            HrisApprovalHistory::create([
                 'entity_id'=>$id,
                 'entity_table'=>2,
                 'emp_id'=>$user_id,
@@ -151,18 +155,19 @@ class ApplicationForLeave extends Controller
                 'approver_remarks'=>$rq->approver_remarks,
                 'created_by'=>$user_id,
             ]);
+
             DB::commit();
-            return response()->json(['status' => 'info','message'=>'Leave Request is updated']);
-        }catch(Exception $e){
+            return response()->json(['status' => 'info','message'=>'OB Request is updated']);
+        }catch(\Throwable $e){
             DB::rollback();
             return response()->json([
-                'status' => 400,
-                'message' => $e->getMessage(),
+                'status' => 'error',
+                'message' => $e->errorInfo[2],
             ]);
         }
     }
 
-    public function isApprovingOpen($user_id,$leave_id,$dept_id)
+    public function isApprovingOpen($user_id,$leave_id,$group_id)
     {
         try{
             //check if there is already approving history of the employee and if approve return false
@@ -178,20 +183,16 @@ class ApplicationForLeave extends Controller
             }
 
             // Check if we found a valid approver
-            $currentApprover = self::checkCurrentApprover($leave_id,$dept_id);
+            $currentApprover = self::checkCurrentApprover($leave_id,$group_id);
             if (!$currentApprover) {
                 return false;
             }
 
-            // if($leave_id ==5)
-            //     dd($currentApprover);
-
             // Check if there are any required lower levels pending approval
-            $requiredLowerLevels = self::checkRequiredLowerLevels($leave_id,$dept_id,$currentApprover);
+            $requiredLowerLevels = self::checkRequiredLowerLevels($leave_id,$group_id,$currentApprover);
             if ($requiredLowerLevels) {
                 return false;
             }
-
             // Allow approval if the current approver is the logged-in user or optional
             return $currentApprover->emp_id == $user_id || $currentApprover->is_required == null;
 
@@ -222,33 +223,39 @@ class ApplicationForLeave extends Controller
         ])->exists();
     }
 
-    public function checkCurrentApprover($leave_id,$dept_id)
+    public function checkCurrentApprover($leave_id,$group_id)
     {
-        return HrisApprovingOfficer::with('approving_history')->where([
-            ['is_active', 1], // Ensure the approver is active
-            ['department_id', $dept_id], // Match department
-        ])
+        return HrisGroupApprover::where([['is_active', 1],['group_id',$group_id]])
         ->whereDoesntHave('approving_history', function ($query) use ($leave_id) {
             $query->where([
                 ['entity_id', $leave_id],
                 ['entity_table', 2],
-                ['is_approved',1],
+                ['is_approved', 1], // Exclude approvers who have already approved
             ]);
         })
-        ->orderBy('approver_level', 'DESC') // Process highest levels first
         ->orderBy('is_final_approver', 'ASC') // Non-final approvers first
+        ->orderBy('approver_level', 'DESC') // Process highest levels first
         ->first();
 
     }
 
-    public function checkRequiredLowerLevels($leave_id,$dept_id,$currentApprover)
+    public function checkRequiredLowerLevels($leave_id,$group_id,$currentApprover)
     {
-        return HrisApprovingOfficer::where([
+        $lowestApprover = HrisGroupApprover::where([['group_id',$group_id],['is_active',1]])
+        ->orderBy('is_final_approver', 'ASC')->orderBy('approver_level', 'DESC')->first();
+
+        $userApproverLevel = HrisGroupApprover::where([['group_id',$group_id],['emp_id',Auth::user()->emp_id],['is_active',1]])->first();
+        if($userApproverLevel->approver_level == $lowestApprover->approver_level)
+        {
+            return false;
+        }
+
+        $pendingApprover = HrisGroupApprover::where([
             ['is_active', 1],
-            ['department_id', $dept_id],
-            ['is_required', 1], // Required levels only
+            ['group_id', $group_id],
+            ['id','!=', $currentApprover->id],
+            ['is_required', 1],
         ])
-        ->where('approver_level', '>', $currentApprover->approver_level) // Levels below the current one
         ->whereDoesntHave('approving_history', function ($query) use ($leave_id) {
             $query->where([
                 ['entity_id', $leave_id],
@@ -256,6 +263,20 @@ class ApplicationForLeave extends Controller
                 ['is_approved', 1], // Check for approvals
             ]);
         })
-        ->exists();
+        ->orderBy('is_final_approver', 'ASC')
+        ->orderBy('approver_level', 'DESC')
+        ->first();
+
+        // If there's no pending required lower approver, return false
+        if (!$pendingApprover) {
+            return false;
+        }
+
+        // If the pending approver is the current user, they can approve
+        if($pendingApprover->emp_id == Auth::user()->emp_id){
+            return false;
+        }
+
+        return true;
     }
 }

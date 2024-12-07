@@ -61,4 +61,9 @@ class HrisEmployeeLeaveRequest extends Model
     {
         return $this->belongsTo(Employee::class,'deleted_by');
     }
+
+    public function group_member()
+    {
+        return $this->hasOne(HrisGroupMember::class,'emp_id','emp_id')->where('is_active',1);
+    }
 }

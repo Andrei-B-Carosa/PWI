@@ -39,4 +39,9 @@ class HrisEmployeeOvertimeRequest extends Model
     {
         return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 1)->latestOfMany();
     }
+
+    public function group_member()
+    {
+        return $this->hasOne(HrisGroupMember::class,'emp_id','emp_id')->where('is_active',1);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\EmployeeController;
 
 use App\Http\Controllers\Controller;
 use App\Models\HrisApprovingOfficer;
+use App\Models\HrisGroupApprover;
 use App\Models\HrisRoleAccess;
 use App\Models\HrisSystemFile;
 use App\Models\HrisUserRole;
@@ -30,7 +31,7 @@ class PageController extends Controller
         }
 
         $result = [];
-        $is_approver = HrisApprovingOfficer::where([['emp_id',Auth::user()->emp_id],['is_active',1]])->exists();
+        $is_approver = HrisGroupApprover::where([['emp_id',Auth::user()->emp_id],['is_active',1]])->exists();
         foreach($query as $data)
         {
             if($data->file_id == 7 && !$is_approver){

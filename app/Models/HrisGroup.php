@@ -38,11 +38,11 @@ class HrisGroup extends Model
 
     public function group_members()
     {
-        return $this->hasMany(HrisGroupMember::class,'group_id');
+        return $this->hasMany(HrisGroupMember::class,'group_id')->where('is_active',1);
     }
 
     public function group_approvers()
     {
-        return $this->hasMany(HrisGroupApprover::class,'group_id');
+        return $this->hasMany(HrisGroupApprover::class,'group_id')->where('is_active',1);
     }
 }

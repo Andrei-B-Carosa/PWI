@@ -132,7 +132,7 @@ export var dtManualCredit = function (param) {
                 formData.append('emp_id',_this.attr('data-id'));
                 formData.append('leave_balance',_this.val());
 
-                _request.post('/hris/admin/settings/manual_credit/'+_this.attr('data-action'),formData)
+                _request.post('/hris/admin/settings/leave_settings/manual_credit/'+_this.attr('data-action'),formData)
                 .then((res) => {
                     Alert.toast(res.status,res.message);
                     if(res.payload ==0){

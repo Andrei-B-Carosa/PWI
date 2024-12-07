@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\AccessController\EmployeeLogin as Login;
-use App\Http\Controllers\EmployeeController\Approvals\ApplicationForLeave;
-use App\Http\Controllers\EmployeeController\Approvals\OvertimeRequisition;
+use App\Http\Controllers\EmployeeController\Approvals\ApplicationForLeave as ApproveLeave;
+use App\Http\Controllers\EmployeeController\Approvals\OfficialBusiness as ApproveOB;
+use App\Http\Controllers\EmployeeController\Approvals\OvertimeRequisition as  ApproveOt;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController\PageController as Page;
 use App\Http\Controllers\EmployeeController\Request\Leave;
@@ -60,7 +61,6 @@ Route::group(['prefix'=>'hris/employee'], function() {
         Route::controller(OfficialBusiness::class)->prefix('official_business')->group(function() {
             Route::post('/dt', 'dt');
             Route::post('/update', 'update');
-            Route::post('/delete', 'delete');
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
@@ -68,7 +68,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
     });
 
     Route::group(['prefix'=>'approvals'], function() {
-        Route::controller(OvertimeRequisition::class)->prefix('overtime_requisition')->group(function() {
+        Route::controller(ApproveOt::class)->prefix('overtime_requisition')->group(function() {
             Route::post('/dt', 'dt');
             Route::post('/update', 'update');
 
@@ -76,7 +76,15 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/validate_request', 'validate_request');
         });
 
-        Route::controller(ApplicationForLeave::class)->prefix('application_for_leave')->group(function() {
+        Route::controller(ApproveLeave::class)->prefix('application_for_leave')->group(function() {
+            Route::post('/dt', 'dt');
+            Route::post('/update', 'update');
+
+            Route::post('/info', 'info');
+            Route::post('/validate_request', 'validate_request');
+        });
+
+        Route::controller(ApproveOB::class)->prefix('official_business')->group(function() {
             Route::post('/dt', 'dt');
             Route::post('/update', 'update');
 

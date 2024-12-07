@@ -4,7 +4,6 @@ namespace App\Http\Controllers\AdminController\Settings\GroupSettings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Models\HrisGroupApprover;
 use App\Models\HrisGroupMember;
 use App\Services\Reusable\DTServerSide;
 use Carbon\Carbon;
@@ -14,9 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
-class GroupDetails extends Controller
+class GroupMember extends Controller
 {
-    public function member_list(Request $rq)
+    public function dt(Request $rq)
     {
         $emp_id = Auth::user()->emp_id;
         $group_id = Crypt::decrypt($rq->group_id);
@@ -48,7 +47,7 @@ class GroupDetails extends Controller
             $item->date_joined = Carbon::parse($item->created_at)->format('F j, Y');
 
             $item->position = $employee_details->position->name;
-            $item->encrypted_id = Crypt::encrypt($item->emp_id);
+            $item->encrypted_id = Crypt::encrypt($item->id);
             return $item;
         });
 
@@ -63,7 +62,7 @@ class GroupDetails extends Controller
         ]);
     }
 
-    public function update_member(Request $rq)
+    public function update(Request $rq)
     {
         try{
             DB::beginTransaction();
@@ -96,7 +95,7 @@ class GroupDetails extends Controller
         }
     }
 
-    public function delete_member(Request $rq)
+    public function delete(Request $rq)
     {
         try{
             DB::beginTransaction();
@@ -127,9 +126,15 @@ class GroupDetails extends Controller
 
     public function employee_list(Request $rq)
     {
+
+        $group_id = Crypt::decrypt($rq->group_id);
         $data = Employee::where([['is_deleted',null],['is_active',1]])
-        ->whereDoesntHave('group_member', function ($query) {
-            $query->where('is_active', 1);
+        ->whereDoesntHave('group_member', function ($q) {
+            $q->where('is_active', 1);
+        })
+        ->whereDoesntHave('group_approver', function ($q) use ($group_id) {
+            $q->where('group_id', $group_id)
+              ->where('is_active', 1);
         })
         ->orderBy('id', 'ASC')
         ->get();
@@ -167,5 +172,4 @@ class GroupDetails extends Controller
             'data' => $table->getRows()
         ]);
     }
-
 }

@@ -134,6 +134,8 @@ export var dtClassification = function (param) {
 
         $(`#${_table}_table`).ready(function() {
 
+            _tab.off();
+
             _tab.on('change','select.filter_table',function(e){
                 e.preventDefault()
                 e.stopImmediatePropagation()

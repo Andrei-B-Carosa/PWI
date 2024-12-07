@@ -11,7 +11,7 @@ export var dtLeaveType = function (param) {
 
     const _page = $('.page-leave-settings');
     const _table = 'leave_type';
-    const _tab = $(`.${_table}`);
+    const _tab = $(`.leave-type`);
     const _request = new RequestHandler;
     const dataTableHelper = new DataTableHelper(`${_table}_table`,`${_table}_wrapper`);
 
@@ -166,6 +166,7 @@ export var dtLeaveType = function (param) {
 
         $(`#${_table}_table`).ready(function() {
 
+            _tab.off();
             _tab.on('change','select.filter_table',function(e){
                 e.preventDefault()
                 e.stopImmediatePropagation()

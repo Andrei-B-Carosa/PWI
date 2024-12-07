@@ -17,6 +17,11 @@ export class DataTableHelper {
         $.fn.dataTable.ext.errMode = 'throw';
         let container = $(`#${this.wrapper}`);
         draw_table(this.tableId,container);
+
+        if ($.fn.DataTable.isDataTable(`#${this.tableId}`)) {
+            $(`#${this.tableId}`).DataTable().clear().destroy();
+        }
+
         this.table = $(`#${this.tableId}`).DataTable({
             responsive: true,
             responsiveMode: 'collapsed',

@@ -2,8 +2,6 @@
 import {Alert} from "../../../global/alert.js"
 import {RequestHandler} from "../../../global/request.js"
 import {modal_state,fv_validator} from "../../../global.js"
-import { dtLeaveType } from "../../dt_controller/settings/dt_leave_settings/dt_leave.type.js";
-import { dtLeaveManagement } from "../../dt_controller/settings/dt_leave_settings/dt_leave_management.js";
 
 export function fvFileMaintenance(_table=false,form_id){
 
@@ -105,6 +103,7 @@ export function fvFileMaintenance(_table=false,form_id){
                                         }else{
                                             dtDepartment().init()
                                         }
+
                                     }
                                 })
                                 .catch((error) => {

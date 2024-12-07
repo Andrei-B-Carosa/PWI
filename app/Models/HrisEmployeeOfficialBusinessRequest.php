@@ -38,7 +38,7 @@ class HrisEmployeeOfficialBusinessRequest extends Model
 
     public function latest_approval_histories()
     {
-        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 1)->latestOfMany();
+        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 3)->latestOfMany();
     }
 
     public function emp_contact_person()
@@ -59,5 +59,10 @@ class HrisEmployeeOfficialBusinessRequest extends Model
     public function deleted_by_emp()
     {
         return $this->belongsTo(Employee::class,'deleted_by');
+    }
+
+    public function group_member()
+    {
+        return $this->hasOne(HrisGroupMember::class,'emp_id','emp_id')->where('is_active',1);
     }
 }

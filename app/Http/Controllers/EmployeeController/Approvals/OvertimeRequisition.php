@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HrisApprovalHistory;
 use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeeOvertimeRequest;
+use App\Models\HrisGroupApprover;
 use App\Services\Reusable\DTServerSide;
 use Carbon\Carbon;
 use Exception;
@@ -21,30 +22,13 @@ class OvertimeRequisition extends Controller
         $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
         $filter_month = $rq->filter_month ?? false;
         $filter_year = $rq->filter_year ?? false;
-        $filter_department = isset($rq->filter_department) ? Crypt::decrypt($rq->filter_department) : false;
-        $departmentIds = [];
-        $user = Auth::user();
 
-        if(!$filter_department){
-            $checkApprover = HrisApprovingOfficer::where([['emp_id',$user->emp_id],['is_active',1],['is_deleted',null]])->get();
-            if($checkApprover){
-                $departmentIds = $checkApprover->pluck('department_id')->toArray();
-            }
-        }
+        $filter_group = $rq->filter_group ?? false;
 
-        $ApproverIds = HrisApprovingOfficer::where([['is_active',1],['is_deleted',null]])->pluck('emp_id');
-        $data = HrisEmployeeOvertimeRequest::with(['latest_approval_histories','employee','employee_position'])
-        ->where([['emp_id','!=',$user->emp_id],['is_deleted',null]])
-        ->when($filter_department, fn($q) =>
-            $q->whereHas('employee_position',fn($q) =>
-                $q->where('department_id',$filter_department)
-            )
-        )
-        ->when(!$filter_department && $departmentIds, fn($q) =>
-        $q->whereHas('employee_position',fn($q) =>
-                $q->whereIn('department_id',$departmentIds)
-            )
-        )
+        $emp_id = Auth::user()->emp_id;
+        $group_id = HrisGroupApprover::where([['emp_id',$emp_id],['is_active',1]])->pluck('group_id');
+
+        $data = HrisEmployeeOvertimeRequest::with(['group_member','latest_approval_histories','employee','employee_position'])
         ->when($filter_status, function ($q) use ($filter_status) {
             $status = [
                 'pending'=>null,
@@ -59,11 +43,14 @@ class OvertimeRequisition extends Controller
         ->when($filter_year, fn($q) =>
             $q->whereRaw('YEAR(overtime_date) = ?', [$filter_year])
         )
-        ->whereNotIn('emp_id',$ApproverIds)
+        ->whereHas('group_member',function($q) use($group_id){
+            $q->whereIn('group_id',$group_id);
+        })
+        ->where([['emp_id','!=',$emp_id],['is_deleted',null]])
         ->orderBy('id', 'ASC')
         ->get();
 
-        $data->transform(function ($item, $key) use($user) {
+        $data->transform(function ($item, $key) use($emp_id) {
 
             $approver = $item->latest_approval_histories;
             $approved_by = null;
@@ -79,15 +66,14 @@ class OvertimeRequisition extends Controller
                 $approver_type = $approver->approver_type == 1?'Department-Level':'Section-Level';
             }
 
-            $department_id = $item->employee_position->department_id;
-
             $item->count = $key + 1;
+            $item->requestor = $item->employee->fullname();
+
             $item->overtime_date = Carbon::parse($item->overtime_date)->format('m/d/Y');
             $item->overtime_from = Carbon::parse($item->overtime_from)->format('h:i A');
             $item->overtime_to = Carbon::parse($item->overtime_to)->format('h:i A');
-            $item->requestor = $item->employee->fullname();
-            $item->position_name = $item->employee_position->position->name;
-            $item->is_current_approver = self::isApprovingOpen($user->emp_id,$item->id,$department_id);
+
+            $item->is_current_approver = self::isApprovingOpen($emp_id,$item->id,$item->group_member->group_id);
             $item->approver_status = $approver_status;
             $item->approver_type = $approver_type;
 
@@ -131,9 +117,9 @@ class OvertimeRequisition extends Controller
                 return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
             }
 
-            $approvingOfficer = HrisApprovingOfficer::where([
+            $approvingOfficer = HrisGroupApprover::where([
                 ['emp_id',$user_id],
-                ['department_id',$overtimeRequest->employee_position->department_id],
+                ['group_id',$overtimeRequest->group_member->group_id],
                 ['is_active',1]
             ])->first();
             if(!$approvingOfficer)
@@ -163,7 +149,7 @@ class OvertimeRequisition extends Controller
         }
     }
 
-    public function isApprovingOpen($user_id,$overtime_id,$dept_id)
+    public function isApprovingOpen($user_id,$overtime_id,$group_id)
     {
         try{
             //check if there is already approving history of the employee and if approve return false
@@ -171,7 +157,6 @@ class OvertimeRequisition extends Controller
             if ($approvingHistory) {
                 return false;
             }
-
             //check if final approver already approve
             $checkFinalApprover = self::checkFinalApprover($overtime_id);
             if ($checkFinalApprover) {
@@ -179,21 +164,18 @@ class OvertimeRequisition extends Controller
             }
 
             // Check if we found a valid approver
-            $currentApprover = self::checkCurrentApprover($overtime_id,$dept_id);
+            $currentApprover = self::checkCurrentApprover($overtime_id,$group_id);
             if (!$currentApprover) {
                 return false;
             }
 
-
             // Check if there are any required lower levels pending approval
-            $requiredLowerLevels = self::checkRequiredLowerLevels($overtime_id,$dept_id,$currentApprover);
-            // if($overtime_id ==3)
-            //     dd($requiredLowerLevels);
+            $requiredLowerLevels = self::checkRequiredLowerLevels($overtime_id,$group_id,$currentApprover);
             if ($requiredLowerLevels) {
                 return false;
             }
 
-            // Allow approval if the current approver is the logged-in user or optional
+            // Allow approval if the current approver is the logged-in user
             return $currentApprover->emp_id == $user_id || $currentApprover->is_required == null;
 
         }catch(Exception $e)
@@ -223,12 +205,9 @@ class OvertimeRequisition extends Controller
         ])->exists();
     }
 
-    public function checkCurrentApprover($overtime_id,$dept_id)
+    public function checkCurrentApprover($overtime_id,$group_id)
     {
-        return HrisApprovingOfficer::where([
-            ['is_active', 1], // Ensure the approver is active
-            ['department_id', $dept_id], // Match department
-        ])
+        return HrisGroupApprover::where([['is_active', 1],['group_id',$group_id]])
         ->whereDoesntHave('approving_history', function ($query) use ($overtime_id) {
             $query->where([
                 ['entity_id', $overtime_id],
@@ -236,20 +215,30 @@ class OvertimeRequisition extends Controller
                 ['is_approved', 1], // Exclude approvers who have already approved
             ]);
         })
+        ->orderBy('is_final_approver', 'ASC')
         ->orderBy('approver_level', 'DESC') // Process highest levels first
-        ->orderBy('is_final_approver', 'ASC') // Non-final approvers first
+         // Non-final approvers first
         ->first();
 
     }
 
-    public function checkRequiredLowerLevels($overtime_id,$dept_id,$currentApprover)
+    public function checkRequiredLowerLevels($overtime_id,$group_id,$currentApprover)
     {
-        return HrisApprovingOfficer::where([
+        $lowestApprover = HrisGroupApprover::where([['group_id',$group_id],['is_active',1]])
+        ->orderBy('is_final_approver', 'ASC')->orderBy('approver_level', 'DESC')->first();
+
+        $userApproverLevel = HrisGroupApprover::where([['group_id',$group_id],['emp_id',Auth::user()->emp_id],['is_active',1]])->first();
+        if($userApproverLevel->approver_level == $lowestApprover->approver_level)
+        {
+            return false;
+        }
+
+        $pendingApprover = HrisGroupApprover::where([
             ['is_active', 1],
-            ['department_id', $dept_id],
-            ['is_required', 1], // Required levels only
+            ['group_id', $group_id],
+            ['id','!=', $currentApprover->id],
+            ['is_required', 1],
         ])
-        ->where('approver_level', '>', $currentApprover->approver_level) // Levels below the current one
         ->whereDoesntHave('approving_history', function ($query) use ($overtime_id) {
             $query->where([
                 ['entity_id', $overtime_id],
@@ -257,7 +246,21 @@ class OvertimeRequisition extends Controller
                 ['is_approved', 1], // Check for approvals
             ]);
         })
-        ->exists();
+        ->orderBy('is_final_approver', 'ASC')
+        ->orderBy('approver_level', 'DESC')
+        ->first();
+
+        // If there's no pending required lower approver, return false
+        if (!$pendingApprover) {
+            return false;
+        }
+
+        // If the pending approver is the current user, they can approve
+        if($pendingApprover->emp_id == Auth::user()->emp_id){
+            return false;
+        }
+
+        return true;
     }
 
 }

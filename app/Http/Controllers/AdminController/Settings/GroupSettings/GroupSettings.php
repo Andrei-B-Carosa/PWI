@@ -112,7 +112,7 @@ class GroupSettings extends Controller
             })
             ->where('is_active','!=',0)
             ->exists();
-            return response()->json(['valid' => !$exists, 'message' => 'This classification is already in use']);
+            return response()->json(['valid' => !$exists, 'message' => 'This name is already in use']);
         }catch(Exception $e)
         {
             return response()->json(['status'=>400,'message' =>$e->getMessage()]);

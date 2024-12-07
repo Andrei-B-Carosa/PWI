@@ -5,6 +5,7 @@ import {modal_state,fv_validator} from "../../../global.js"
 import { dtLeaveType } from "../../dt_controller/settings/dt_leave_settings/dt_leave.type.js";
 import { dtGroupSettings } from "../../dt_controller/settings/dt_group_settings/dt_group_settings.js";
 import { GroupDetailsController } from "../../fn_controller/settings/group_settings/group_details.js";
+import { dtApproverList } from "../../dt_controller/settings/dt_group_settings/dt_group_details.js";
 
 export function fvGroupDetails(_table=false,form_id,param=''){
 
@@ -34,7 +35,7 @@ export function fvGroupDetails(_table=false,form_id,param=''){
 
                     if (field.hasAttribute('remote-validation')) {
                         validationRules[fieldName].validators.remote = {
-                            url: '/hris/admin/settings/group_details/'+field.getAttribute('data-validate'),
+                            url: '/hris/admin/settings/group_details/approver/'+field.getAttribute('data-validate'),
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -77,6 +78,11 @@ export function fvGroupDetails(_table=false,form_id,param=''){
                         fvApproverDetails.resetForm();
                         form.reset();
                         $(modal_id).find('.submit').attr('data-id','');
+                        $(modal_id).find("select[name='approver_id']").attr('disabled',false).val(null).trigger('change');;
+                        $(modal_id).find("select[name='approver_level']").val(null).trigger('change');
+                        $(modal_id).find("select[name='is_active']").val(null).trigger('change');
+                        $(modal_id).find('input[name="is_final_approver"]').attr('checked',false);
+                        $(modal_id).find('input[name="is_required"]').attr('checked',false);
                     }
                 })
             })
@@ -99,9 +105,11 @@ export function fvGroupDetails(_table=false,form_id,param=''){
                                 formData.append('group_id',param);
                                 (new RequestHandler).post(url,formData).then((res) => {
                                     Alert.toast(res.status,res.message);
-                                    if(res.status == 'success'){
-                                        fvApproverDetails.resetForm();
-                                        GroupDetailsController(false,param).initApprover(false,param)
+                                    fvApproverDetails.resetForm();
+                                    if($(_table).length && _table){
+                                         $(_table).DataTable().ajax.reload(null,false);
+                                    }else{
+                                        dtApproverList(param).init();
                                     }
                                 })
                                 .catch((error) => {

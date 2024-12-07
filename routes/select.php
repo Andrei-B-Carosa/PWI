@@ -3,6 +3,7 @@
 use App\Services\Reusable\Select\CompanyLocationOptions;
 use App\Services\Reusable\Select\DepartmentOptions;
 use App\Services\Reusable\Select\EmployeeOptions;
+use App\Services\Reusable\Select\GroupOptions;
 use App\Services\Reusable\Select\LeaveCreditTypeOptions;
 use App\Services\Reusable\Select\LeaveFiscalYearOptions;
 use Illuminate\Support\Facades\Route;
@@ -19,5 +20,8 @@ Route::group(['prefix'=>'hris/select'], function() {
     Route::post('/department', [DepartmentOptions::class, 'list']);
     Route::post('/section', [SectionOptions::class, 'list']);
     Route::post('/employee', [EmployeeOptions::class, 'list']);
+
+    Route::post('/group', [GroupOptions::class, 'list']);
+
 
 });

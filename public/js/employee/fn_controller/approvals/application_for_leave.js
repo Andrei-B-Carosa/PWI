@@ -7,7 +7,7 @@ export var ApplicationForLeaveController = function (page,param) {
 
     dtApplicationForLeave().init();
 
-    get_filter_year('select[name="filter_year"]',1,false);
+    get_filter_year('select[name="filter_year"]',2,false);
     get_filter_month('select[name="filter_month"]');
 
     return {

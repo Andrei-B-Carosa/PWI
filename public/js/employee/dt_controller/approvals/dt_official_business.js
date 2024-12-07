@@ -7,10 +7,10 @@ import {modal_state,createBlockUI,data_bs_components} from "../../../global.js"
 import {trigger_select} from "../../../global/select.js"
 
 
-export var dtApplicationForLeave = function (param=false) {
+export var dtOfficialBusiness = function (param=false) {
 
-    const _page = $('.page-application-for-leave');
-    const _table = 'application_for_leave';
+    const _page = $('.page-official-business');
+    const _table = 'official_business';
     // const _tab = $(`.${_table}`);
     const _request = new RequestHandler;
     const dataTableHelper = new DataTableHelper(`${_table}_table`,`${_table}_wrapper`);
@@ -18,7 +18,7 @@ export var dtApplicationForLeave = function (param=false) {
     function initTable(){
 
         dataTableHelper.initTable(
-            'hris/employee/approvals/application_for_leave/dt',
+            'hris/employee/approvals/official_business/dt',
             {
                 filter_year:$('select[name="filter_year"]').val(),
                 filter_month:$('select[name="filter_month"]').val(),
@@ -35,7 +35,6 @@ export var dtApplicationForLeave = function (param=false) {
                 {
                     data: "requestor", name: "requestor", title: "Employee",
                     sortable:false,
-                    searchable:false,
                     className:'',
                     render(data,type,row)
                     {
@@ -47,7 +46,7 @@ export var dtApplicationForLeave = function (param=false) {
                                     <span class="text-muted fs-7">${row.position_name}</span>
                                 </div>
                             </div>
-                        `
+                        `;
                     }
                 },
                 {
@@ -57,33 +56,17 @@ export var dtApplicationForLeave = function (param=false) {
                     visible:false,
                 },
                 {
-                    data: "leave_filing_date", name: "leave_filing_date", title: "Filing Date",
-                    sortable:false,
-                    searchable:false,
-                    render:function(data,type,row){
-                        return `<div class="d-flex align-items-center">
-                                <div class="d-flex flex-column">
-                                    <span class="text-gray-800 text-hover-primary mb-1">
-                                        ${data}
-                                    </span>
-                                    <span class="text-muted fs-7">${row.leave_name}</span>
-                                </div>
-                            </div>`;
-                    }
-                },
-                {
-                    data: "leave_name", name: "leave_name", title: "Leave Type",
-                    sortable:false,
-                    searchable:false,
-                    visible:false,
-                },
-                {
-                    data: "leave_date_from", name: "leave_date_from", title: "From",
+                    data: "ob_filing_date", name: "ob_filing_date", title: "Filing Date",
                     sortable:false,
                     searchable:false,
                 },
                 {
-                    data: "leave_date_to", name: "leave_date_to", title: "To",
+                    data: "ob_time_out", name: "ob_time_out", title: "Time Out",
+                    sortable:false,
+                    searchable:false,
+                },
+                {
+                    data: "ob_time_in", name: "ob_time_in", title: "Time In",
                     sortable:false,
                     searchable:false,
                 },
@@ -94,8 +77,16 @@ export var dtApplicationForLeave = function (param=false) {
                     render:function(data,type,row){
                         return `<span class="cursor-pointer" data-bs-toggle="tooltip" title="${row.reason}">
                                     ${row.reason_short ?? data}
-                             </span>`;
+                             </span>
+                            <div class="fs-7 text-muted">Destination : ${row.destination ?? '--'}</div>
+                             `;
                     }
+                },
+                {
+                    data: "destination", name: "destination", title: "Destination",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
                 },
                 {
                     data: "reason_short", name: "reason_short", title: "Reason Short",
@@ -107,16 +98,7 @@ export var dtApplicationForLeave = function (param=false) {
                     data: "is_approved", name: "is_approved", title: "Status",
                     sortable:false,
                     searchable:false,
-                    className:'text-center',
                     visible:false,
-                    // render: function (data, type, row) {
-                    //     let status = {
-                    //         1: ["success", "Approved"],
-                    //         2: ["info", "Disapproved"],
-                    //         null:["warning","Pending"]
-                    //     };
-                    //     return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
-                    // },
                 },
                 {
                     data: "approver_level", name: "approver_level", title: "Approver Level",
@@ -140,7 +122,7 @@ export var dtApplicationForLeave = function (param=false) {
                     data: "approved_by", name: "approved_by", title: "Approver",
                     sortable:false,
                     searchable:false,
-                    className:'',
+                    className:'text-start',
                     render(data,type,row)
                     {
                         if(!data){
@@ -206,7 +188,7 @@ export var dtApplicationForLeave = function (param=false) {
                             `;
                         }
                         return `
-                            <a href="javascript:;" class="btn btn-icon btn-icon btn-success btn-sm me-1 hover-elevate-up approve" data-id="${data}"
+                            <a href="javascript:;" class="btn btn-icon btn-icon btn-success btn-sm hover-elevate-up approve" data-id="${data}"
                              data-bs-toggle="tooltip" title="Approve Request">
                                 <i class="ki-duotone ki-check fs-2">
                                     <span class="path1"></span>
@@ -264,36 +246,36 @@ export var dtApplicationForLeave = function (param=false) {
                 }
             })
 
-            $(`#${_table}_table`).on('click','.view-details',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
+            // $(`#${_table}_table`).on('click','.view-details',function(e){
+            //     e.preventDefault()
+            //     e.stopImmediatePropagation()
 
-                let _this = $(this);
-                let id    =_this.attr('data-id');
+            //     let _this = $(this);
+            //     let id    =_this.attr('data-id');
 
-                let modal_id = '#modal_request_overtime';
-                let form = $('#form_request_overtime');
+            //     let modal_id = '#modal_request_overtime';
+            //     let form = $('#form_request_overtime');
 
-                let formData = new FormData;
-                formData.append('id',id);
-                _request.post('/hris/employee/request/overtime/info',formData)
-                .then((res) => {
-                    let payload = JSON.parse(window.atob(res.payload));
-                    $('input[name="overtime_date"]').val(payload.overtime_date);
-                    $('input[name="overtime_from"]')[0]._flatpickr.setDate(payload.overtime_from, true);
-                    $('input[name="overtime_to"]')[0]._flatpickr.setDate(payload.overtime_to, true);
-                    $('textarea[name="reason"]').val(payload.reason);
-                    $(modal_id).find('button.submit').attr('data-id',id);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    Alert.alert('error', "Something went wrong. Try again later", false);
-                })
-                .finally((error) => {
-                    modal_state(modal_id,'show');
-                });
+            //     let formData = new FormData;
+            //     formData.append('id',id);
+            //     _request.post('/hris/employee/request/official_business/info',formData)
+            //     .then((res) => {
+            //         let payload = JSON.parse(window.atob(res.payload));
+            //         $('input[name="ob_filing_date"]').val(payload.ob_filing_date);
+            //         $('input[name="ob_time_out"]')[0]._flatpickr.setDate(payload.ob_time_out, true);
+            //         $('input[name="ob_time_in"]')[0]._flatpickr.setDate(payload.ob_time_in, true);
+            //         $('textarea[name="purpose"]').val(payload.purpose);
+            //         $(modal_id).find('button.submit').attr('data-id',id);
+            //     })
+            //     .catch((error) => {
+            //         console.log(error);
+            //         Alert.alert('error', "Something went wrong. Try again later", false);
+            //     })
+            //     .finally((error) => {
+            //         modal_state(modal_id,'show');
+            //     });
 
-            })
+            // })
 
             $(`#${_table}_table`).on('click','.approve',function(e){
                 e.preventDefault()
@@ -310,7 +292,7 @@ export var dtApplicationForLeave = function (param=false) {
                         formData.append('id',id);
                         formData.append('approver_remarks',approver_remarks);
                         formData.append('is_approved',1);
-                        _request.post('/hris/employee/approvals/application_for_leave/update',formData)
+                        _request.post('/hris/employee/approvals/official_business/update',formData)
                         .then((res) => {
                             Alert.toast(res.status,res.message);
                             initTable();
@@ -341,7 +323,7 @@ export var dtApplicationForLeave = function (param=false) {
                         formData.append('id',id);
                         formData.append('approver_remarks',approver_remarks);
                         formData.append('is_approved',2);
-                        _request.post('/hris/employee/approvals/application_for_leave/update',formData)
+                        _request.post('/hris/employee/approvals/official_business/update',formData)
                         .then((res) => {
                             Alert.toast(res.status,res.message);
                             initTable();

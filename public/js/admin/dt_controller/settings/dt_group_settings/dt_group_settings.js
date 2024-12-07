@@ -340,13 +340,14 @@ export var dtGroupSettings = function (param) {
 
         $(`#${_table}_table`).ready(function() {
 
-            _tab.on('change','select.filter_table',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
-                initTable();
-            })
 
-            _tab.on('keyup','.search',function(e){
+            // _tab.on('change','select.filter_table',function(e){
+            //     e.preventDefault()
+            //     e.stopImmediatePropagation()
+            //     initTable();
+            // })
+
+            _page.off('keyup','.search').on('keyup','.search',function(e){
                 e.preventDefault()
                 e.stopImmediatePropagation()
                 let searchTerm = $(this).val();

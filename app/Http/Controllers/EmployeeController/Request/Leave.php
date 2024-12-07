@@ -236,7 +236,7 @@ class Leave extends Controller
         $effectiveBalance = $leave_balance - $pendingDays;
 
         if ($daysCount > $effectiveBalance) {
-            return ['valid' => false, 'message' => 'Insufficient leave balance (including pending requests)'];
+            return ['valid' => false, 'message' => 'Insufficient leave balance '.($pendingDays>0?'(including pending requests if any)':'').''];
         }
 
         return ['valid' => true, 'message' => 'Eligible for filing leave'];

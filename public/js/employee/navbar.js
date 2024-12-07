@@ -7,6 +7,7 @@ import { LeaveRequestController } from './fn_controller/request/leave.js';
 import { OBRequestController } from './fn_controller/request/ob.js';
 import { OverTimeRequisitionController } from './fn_controller/approvals/overtime_requisition.js';
 import { ApplicationForLeaveController } from './fn_controller/approvals/application_for_leave.js';
+import { OfficialBusinessController } from './fn_controller/approvals/official_business.js';
 
 async function init_page() {
     let pathname = window.location.pathname;
@@ -54,7 +55,7 @@ const _handlers = {
     official_business_request: (page, param) => OBRequestController(page, param).init(),
     overtime_requisition: (page, param) => OverTimeRequisitionController(page, param).init(),
     application_for_leave:(page,param) =>ApplicationForLeaveController(page,param).init(),
-    // official_business: (page, param) => OfficialBusinessController(page, param).init(),
+    official_business: (page, param) => OfficialBusinessController(page, param).init(),
 };
 
 jQuery(document).ready(function() {

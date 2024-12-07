@@ -13,7 +13,9 @@ use App\Http\Controllers\AdminController\Settings\FileMaintenance\Position;
 use App\Http\Controllers\AdminController\Settings\FileMaintenance\Section;
 use App\Http\Controllers\AdminController\PageController as Page;
 use App\Http\Controllers\AdminController\Settings\ApproverSettings;
+use App\Http\Controllers\AdminController\Settings\GroupSettings\GroupApprover;
 use App\Http\Controllers\AdminController\Settings\GroupSettings\GroupDetails;
+use App\Http\Controllers\AdminController\Settings\GroupSettings\GroupMember;
 use App\Http\Controllers\AdminController\Settings\GroupSettings\GroupSettings;
 use App\Http\Controllers\AdminController\Settings\LeaveSettings\AutomaticCredit;
 use App\Http\Controllers\AdminController\Settings\LeaveSettings\LeaveManagement;
@@ -171,35 +173,28 @@ Route::group(['prefix'=>'hris/admin'], function() {
             Route::post('/validate_request', 'validate_request');
         });
 
-        Route::controller(GroupDetails::class)->prefix('group_details')->group(function() {
-            Route::post('/member_list', 'member_list');
-            Route::post('/approver_list', 'approver_list');
+        Route::group(['prefix'=>'group_details'], function() {
+            Route::controller(GroupApprover::class)->prefix('approver')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/info', 'info');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
 
-            Route::post('/employee_list', 'employee_list');
+                Route::post('/check_final_approver', 'check_final_approver');
+                Route::post('/check_approver', 'check_approver');
+                Route::post('/check_approver_level', 'check_approver_level');
+            });
 
-            Route::post('/update_approver', 'update_approver');
-            Route::post('/update_member', 'update_member');
+            Route::controller(GroupMember::class)->prefix('member')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/update', 'update');
+                Route::post('/info', 'info');
+                Route::post('/delete', 'delete');
 
-            Route::post('/remove_member', 'remove_member');
-            Route::post('/remove_approver', 'remove_approver');
+                Route::post('/employee_list', 'employee_list');
+            });
 
-            Route::post('/info', 'info');
-            Route::post('/check_final_approver', 'check_final_approver');
-            Route::post('/check_approver', 'check_approver');
-            Route::post('/check_approver_level', 'check_approver_level');
         });
-
-        // Route::controller(ApproverSettings::class)->prefix('group_settings')->group(function() {
-        //     Route::post('/dt', 'dt');
-        //     Route::post('/create', 'create');
-        //     Route::post('/update', 'update');
-        //     Route::post('/info', 'info');
-        //     Route::post('/delete', 'delete');
-
-        //     Route::post('/check_approver', 'check_approver');
-        //     Route::post('/check_final_approver', 'check_final_approver');
-        //     Route::post('/check_approver_level', 'check_approver_level');
-        // });
 
     });
 
