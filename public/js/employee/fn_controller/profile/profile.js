@@ -2,11 +2,11 @@
 import { data_bs_components } from "../../../global.js";
 import { Alert } from "../../../global/alert.js";
 import { RequestHandler } from "../../../global/request.js";
-import { fvEmployeeDetails } from "../../fv_controller/201_employee/fv_employee_details.js";
+// import { fvEmployeeDetails } from "../../fv_controller/201_employee/fv_employee_details.js";
 
-export var EmployeeDetailsController =  function (page,param) {
+export var EmployeeProfileController =  function (page,param) {
 
-    const _page = $('.page-employee-details');
+    const _page = $('.page-employee-profile');
     const _request = new RequestHandler;
 
     let tabLoaded = [];
@@ -18,7 +18,7 @@ export var EmployeeDetailsController =  function (page,param) {
                 let _formData = new FormData();
                 _formData.append("emp_id", param);
                 _formData.append("tab", tab);
-                _request.post('/hris/admin/201_employee/employee_details/form',_formData).then((res) => {
+                _request.post('/hris/employee/profile/form',_formData).then((res) => {
                     if(res.status == 'success'){
                         let view = window.atob(res.payload);
                         $(_page).find(`#form${tab}`).html(view);
@@ -30,7 +30,7 @@ export var EmployeeDetailsController =  function (page,param) {
                     Alert.alert('error',"Something went wrong. Try again later", false);
                 })
                 .finally(() => {
-                    fvEmployeeDetails(false,tab,param);
+                    // fvEmployeeDetails(false,tab,param);
                     data_bs_components();
                     $(`#form${tab}`).find('select[data-control="select2"]').select2();
                 });
@@ -86,6 +86,7 @@ export var EmployeeDetailsController =  function (page,param) {
                     let _this = $('a[data-tab='+tab+']');
                     _this.addClass('active');
                     $(_this.attr('href')).find('.tab_title').text(_this.attr('data-tab-title'));
+                    _page.find('button.edit').addClass('d-none');
                     $(`.tab${tab}`).addClass('show active');
                     tabLoaded.push(tab);
                 }

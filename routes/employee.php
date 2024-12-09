@@ -6,6 +6,8 @@ use App\Http\Controllers\EmployeeController\Approvals\OfficialBusiness as Approv
 use App\Http\Controllers\EmployeeController\Approvals\OvertimeRequisition as  ApproveOt;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController\PageController as Page;
+use App\Http\Controllers\EmployeeController\Profile\Action as ProfileAction;
+use App\Http\Controllers\EmployeeController\Profile\Tab as ProfileTab;
 use App\Http\Controllers\EmployeeController\Request\Leave;
 use App\Http\Controllers\EmployeeController\Request\OfficialBusiness;
 use App\Http\Controllers\EmployeeController\Request\OverTime;
@@ -92,6 +94,11 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/validate_request', 'validate_request');
         });
 
+    });
+
+    Route::group(['prefix'=>'profile'], function() {
+        Route::post('/form', [ProfileTab::class, 'form']);
+        Route::post('/update', [ProfileAction::class, 'update']);
     });
 
     Route::group(['prefix'=>'select'],function(){
