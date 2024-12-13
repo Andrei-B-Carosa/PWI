@@ -39,7 +39,7 @@ class HrisEmployeeLeaveRequest extends Model
 
     public function latest_approval_histories()
     {
-        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 2)->latestOfMany();
+        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 2)->latest();
     }
 
     public function leave_type()

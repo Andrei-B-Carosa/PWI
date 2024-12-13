@@ -38,7 +38,7 @@ class HrisEmployeeOfficialBusinessRequest extends Model
 
     public function latest_approval_histories()
     {
-        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 3)->latestOfMany();
+        return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 3)->latest();
     }
 
     public function emp_contact_person()

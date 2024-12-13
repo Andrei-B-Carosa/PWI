@@ -33,6 +33,29 @@ export var dtOvertimeRequisition = function (param=false) {
                     searchable:false,
                 },
                 {
+                    data: "employee_full_name", name: "employee_full_name", title: "Employee",
+                    sortable:false,
+                    className:'',
+                    render(data,type,row)
+                    {
+                        return `<div class="d-flex align-items-center">
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-800 text-hover-primary mb-1">
+                                        ${data}
+                                    </span>
+                                    <span class="text-muted fs-7">${row.position_name}</span>
+                                </div>
+                            </div>
+                        `
+                    }
+                },
+                {
+                    data: "position_name", name: "position_name", title: "Position",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
                     data: "overtime_date", name: "overtime_date", title: "overtime_date",
                     sortable:false,
                     searchable:false,
@@ -55,8 +78,8 @@ export var dtOvertimeRequisition = function (param=false) {
                     render: function (data, type, row) {
                         let status = {
                             1: ["success", "Approved"],
-                            2: ["info", "Disapproved"],
-                            null:["warning","Pending"]
+                            2: ["danger", "Disapproved"],
+                            null:["secondary","Pending"]
                         };
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
                     },
@@ -66,96 +89,67 @@ export var dtOvertimeRequisition = function (param=false) {
                     sortable:false,
                     searchable:false,
                 },
-                // {
-                //     data: "approver_level", name: "approver_level", title: "Approver Level",
-                //     sortable:false,
-                //     searchable:false,
-                //     visible:false,
-                // },
                 {
                     data: "approver", name: "approver", title: "Approver",
                     sortable:false,
                     searchable:false,
-                    className:'',
-                    // render(data,type,row)
-                    // {
-                    //     if(!data){
-                    //         return '--';
-                    //     }
-                    //     return `<div class="d-flex align-items-center">
-                    //             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                    //                 <span>
-                    //                     <div class="symbol-label fs-3 bg-light-info text-info">
-                    //                         ${data[0]}
-                    //                     </div>
-                    //                 </span>
-                    //             </div>
-                    //             <div class="d-flex flex-column">
-                    //                 <span class="text-gray-800 text-hover-primary mb-1">
-                    //                     ${data}
-                    //                 </span>
-                    //                 <span class="text-muted fs-7">${row.approver_level}</span>
-                    //             </div>
-                    //         </div>
-                    //     `
-                    // }
                 },
-                {
-                    data: "approver_remarks", name: "approver_remarks", title: "Remarks",
-                    sortable:false,
-                    searchable:false,
-                    render(data,type,row)
-                    {
-                        if(!data){
-                            return '--';
-                        }
+                // {
+                //     data: "approver_remarks", name: "approver_remarks", title: "Remarks",
+                //     sortable:false,
+                //     searchable:false,
+                //     render(data,type,row)
+                //     {
+                //         if(!data){
+                //             return '--';
+                //         }
 
-                        return data;
-                    }
-                },
-                {
-                    data: "encrypted_id",
-                    name: "encrypted_id",
-                    title: "Action",
-                    sortable:false,
-                    className: "text-center",
-                    responsivePriority: -1,
-                    render: function (data, type, row) {
-                        return `<div class="d-flex justify-content-center flex-shrink-0">
-                            <a href="#" class="btn btn-icon btn-light-primary btn-sm me-1 hover-elevate-up"
-                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" title="More Actions">
-                                <i class="ki-duotone ki-pencil fs-2x">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
-                            </a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                <div class="menu-item px-3 text-start">
-                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
-                                        More Actions
-                                    </div>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="javascript:;" data-id="${data}" class="menu-link px-3 view-details">
-                                        Edit Details
-                                    </a>
-                                </div>
-                            </div>
+                //         return data;
+                //     }
+                // },
+                // {
+                //     data: "encrypted_id",
+                //     name: "encrypted_id",
+                //     title: "Action",
+                //     sortable:false,
+                //     className: "text-center",
+                //     responsivePriority: -1,
+                //     render: function (data, type, row) {
+                //         return `<div class="d-flex justify-content-center flex-shrink-0">
+                //             <a href="#" class="btn btn-icon btn-light-primary btn-sm me-1 hover-elevate-up"
+                //             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" title="More Actions">
+                //                 <i class="ki-duotone ki-pencil fs-2x">
+                //                     <span class="path1"></span>
+                //                     <span class="path2"></span>
+                //                     <span class="path3"></span>
+                //                     <span class="path4"></span>
+                //                 </i>
+                //             </a>
+                //             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
+                //                 <div class="menu-item px-3 text-start">
+                //                     <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
+                //                         More Actions
+                //                     </div>
+                //                 </div>
+                //                 <div class="menu-item px-3">
+                //                     <a href="javascript:;" data-id="${data}" class="menu-link px-3 view-details">
+                //                         Edit Details
+                //                     </a>
+                //                 </div>
+                //             </div>
 
-                            <a href="javascript:;" class="btn btn-icon btn-icon btn-light-danger btn-sm me-1 hover-elevate-up delete" data-id="${data}"
-                             data-bs-toggle="tooltip" title="Delete this record">
-                                <i class="ki-duotone ki-trash fs-2x">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
-                            </a>
-                        </div>`;
-                    },
-                },
+                //             <a href="javascript:;" class="btn btn-icon btn-icon btn-light-danger btn-sm me-1 hover-elevate-up delete" data-id="${data}"
+                //              data-bs-toggle="tooltip" title="Delete this record">
+                //                 <i class="ki-duotone ki-trash fs-2x">
+                //                     <span class="path1"></span>
+                //                     <span class="path2"></span>
+                //                     <span class="path3"></span>
+                //                     <span class="path4"></span>
+                //                 </i>
+                //             </a>
+                //         </div>`;
+                //     },
+                // },
             ],
             null,
         );

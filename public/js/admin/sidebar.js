@@ -12,6 +12,10 @@ import { EmployeeDetailsController } from './fn_controller/201_employee/employee
 import { OverTimeRequisitionController } from './fn_controller/approval/overtime_requisition.js';
 import { GroupSettingsController } from './fn_controller/settings/group_settings/group_settings.js';
 import { GroupDetailsController } from './fn_controller/settings/group_settings/group_details.js';
+import { OfficialBusinessController } from './fn_controller/approval/official_business.js';
+import { ApplicationForLeaveController } from './fn_controller/approval/application_for_leave.js';
+import { RoleListController } from './fn_controller/user_management/role_list.js';
+import { PermissionController } from './fn_controller/user_management/permission.js';
 
 
 async function init_page() {
@@ -66,7 +70,11 @@ const _handlers = {
     group_details: (page, param) =>GroupDetailsController(page, param).init(),
     employee_masterlist: (page, param) =>EmployeeMasterlistController(page, param).init(),
     employee_details: (page, param) =>EmployeeDetailsController(page, param).init(),
+    role_list: (page, param) =>RoleListController(page, param).init(),
+    permissions: (page, param) =>PermissionController(page, param).init(),
     overtime_requisition:(page,param)=>OverTimeRequisitionController(page, param).init(),
+    official_business:(page,param)=>OfficialBusinessController(page, param).init(),
+    application_for_leave:(page,param)=>ApplicationForLeaveController(page, param).init(),
 };
 
 $(document).ready(function(e){

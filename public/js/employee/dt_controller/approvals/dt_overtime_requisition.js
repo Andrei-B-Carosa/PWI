@@ -174,7 +174,7 @@ export var dtOvertimeRequisition = function (param=false) {
                         if(row.is_approved == 2 || row.is_approved == 1 || row.is_current_approver === false){
                             return `
                                 <a href="javascript:;" class="btn btn-icon btn-icon btn-info btn-sm hover-elevate-up history" data-id="${data}"
-                                data-bs-toggle="tooltip" title="View Approval History">
+                                data-bs-toggle="tooltip" title="View Approval History" id="kt_activities_toggle">
                                     <i class="ki-duotone ki-burger-menu-5 fs-2"></i>
                                 </a>
                             `;
@@ -206,7 +206,7 @@ export var dtOvertimeRequisition = function (param=false) {
         );
 
         $(`#${_table}_table`).ready(function() {
-
+            _page.off();
             _page.on('click','button.filter',function(e){
                 e.preventDefault()
                 e.stopImmediatePropagation()
@@ -329,6 +329,82 @@ export var dtOvertimeRequisition = function (param=false) {
                     }
                 });
 
+
+            })
+
+            $(`#${_table}_table`).on('click','.history',function(e){
+                e.preventDefault()
+                // e.stopImmediatePropagation()
+
+                let _this = $(this);
+                let id    =_this.attr('data-id');
+                let formData = new FormData;
+
+                formData.append('id',id);
+                _request.post('/hris/employee/approvals/overtime_requisition/view_history',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        let html = '';
+                        $.each(payload, function(index, entry) {
+                            let icon = `<i class="ki-duotone ki-check fs-2 text-success"></i>`;
+                            if(entry.is_approved =='rejected'){
+                                icon =`
+                                    <i class="ki-duotone ki-cross fs-2 text-danger">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>`;
+                            }else if(entry.is_approved == 'pending'){
+                                icon =`
+                                    <i class="ki-duotone ki-information fs-2 text-info">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>`;
+                            }
+
+                            html+=`
+                            <div class="timeline-item">
+                            <div class="timeline-line"></div>
+                            <div class="timeline-icon">
+                               ${icon}
+                            </div>
+                            <div class="timeline-content mt-n1">
+                                <div class="pe-3 mb-5">
+                                    <div class="fs-5 fw-semibold mb-2">
+                                     ${entry.action}
+                                    </div>
+                                    <div class="d-flex align-items-center mt-1 fs-6">
+                                        <div class="text-muted me-2 fs-7">${entry.recorded_at}</div>
+                                        ${entry.is_final_approver ?`<a href="#" class="text-primary fw-bold me-1">Final Approver</a>`:``}
+                                    </div>
+                                </div>
+                                ${
+                                    entry.approver_remarks ?`
+                                        <div class="overflow-auto pb-5">
+                                        <div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-650px px-7 py-3 mb-5">
+                                            Remarks : ${entry.approver_remarks}
+                                           
+                                        </div>
+                                    </div>
+                                    `:``
+
+                                }
+
+                            </div>
+                        </div>
+                            `;
+                        });
+
+                        $('.approval-timeline').empty().append(html);
+                    }
+                })
+                .catch((error) => {
+                    Alert.alert('error', "Something went wrong. Try again later", false);
+                })
+                .finally((error) => {
+
+                });
 
             })
 

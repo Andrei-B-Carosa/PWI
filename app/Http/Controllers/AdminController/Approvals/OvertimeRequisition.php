@@ -22,7 +22,8 @@ class OvertimeRequisition extends Controller
             $item->overtime_date = Carbon::parse($item->overtime_date)->format('F d, Y');
             $item->overtime_from = Carbon::parse($item->overtime_from)->format('h:i A');
             $item->overtime_to = Carbon::parse($item->overtime_to)->format('h:i A');
-            $item->encrypted_id = Crypt::encrypt($item->emp_lr_id);
+
+            $item->encrypted_id = Crypt::encrypt($item->id);
             return $item;
         });
 

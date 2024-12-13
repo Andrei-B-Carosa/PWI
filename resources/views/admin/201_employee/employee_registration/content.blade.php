@@ -191,8 +191,7 @@
                                 <a href="#" class="link-primary fw-bold">Help Page</a>.
                             </div>
                         </div>
-                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                            <form id="form2"></form>
+                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid" id="form2">
                         </div>
                     </div>
                 </div>
@@ -208,8 +207,7 @@
                                 <a href="#" class="link-primary fw-bold">Help Page</a>.
                             </div>
                         </div>
-                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                            <form id="form3"></form>
+                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid" id="form3">
                         </div>
                     </div>
                 </div>

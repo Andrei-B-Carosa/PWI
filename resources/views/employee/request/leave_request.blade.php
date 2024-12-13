@@ -1,4 +1,39 @@
 <div class="page-leave-request">
+    <div class="row">
+        <div class="col">
+            <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                <span class="fs-4 fw-semibold text-primary pb-1 px-2">Pending Request</span>
+                <span class="fs-lg-2tx fw-bold d-flex justify-content-center">
+                    <span data-kt-countup="true" id="kt_countup_1" data-kt-countup-value="0" class="counted pending" data-kt-initialized="1"></span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                <span class="fs-4 fw-semibold text-success pb-1 px-2">Approved Leave</span>
+                <span class="fs-lg-2tx fw-bold d-flex justify-content-center">
+                    <span data-kt-countup="true" id="kt_countup_2" data-kt-countup-value="0" class="counted approved" data-kt-initialized="1"></span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                <span class="fs-4 fw-semibold text-danger pb-1 px-2">Rejected Leave</span>
+                <span class="fs-lg-2tx fw-bold d-flex justify-content-center">
+                    <span data-kt-countup="true" id="kt_countup_3" data-kt-countup-value="0" class="counted rejected" data-kt-initialized="1"></span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-dashed flex-center min-w-175px my-3 p-6">
+                <span class="fs-4 fw-semibold text-info pb-1 px-2">Total Request</span>
+                <span class="fs-lg-2tx fw-bold d-flex justify-content-center">
+                    <span data-kt-countup="true" id="kt_countup_4" data-kt-countup-value="0" class="counted total-rq" data-kt-initialized="1"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header border-0 pb-6 pt-6">
             <div class="card-title">

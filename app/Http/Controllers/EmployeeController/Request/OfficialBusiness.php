@@ -23,20 +23,20 @@ class OfficialBusiness extends Controller
 
         $data = OBRequest::with(['latest_approval_histories','emp_contact_person'])
         ->where([['emp_id',$emp_id],['is_deleted',null]])
-        ->when($filter_status, function ($q) use ($filter_status) {
-            $status = [
-                'pending'=>null,
-                'approved'=>1,
-                'disapproved'=>2,
-            ];
-            $q->where('is_approved', $status[$filter_status]);
-        })
-        ->when($filter_month, function ($q) use ($filter_month) {
-            $q->whereRaw('MONTH(ob_filing_date) = ?', [$filter_month]);
-        })
-        ->when($filter_year, function ($q) use ($filter_year) {
-            $q->whereRaw('YEAR(ob_filing_date) = ?', [$filter_year]);
-        })
+        // ->when($filter_status, function ($q) use ($filter_status) {
+        //     $status = [
+        //         'pending'=>null,
+        //         'approved'=>1,
+        //         'disapproved'=>2,
+        //     ];
+        //     $q->where('is_approved', $status[$filter_status]);
+        // })
+        // ->when($filter_month, function ($q) use ($filter_month) {
+        //     $q->whereRaw('MONTH(ob_filing_date) = ?', [$filter_month]);
+        // })
+        // ->when($filter_year, function ($q) use ($filter_year) {
+        //     $q->whereRaw('YEAR(ob_filing_date) = ?', [$filter_year]);
+        // })
         ->orderBy('id', 'ASC')
         ->get();
 
@@ -48,14 +48,13 @@ class OfficialBusiness extends Controller
             // }elseif($item->created_by !=null){
             //     $last_updated_by = $item->created_by_emp->fullname();
             // }
-
             $approver = $item->latest_approval_histories;
             $approved_by = null;
             $approver_level = null;
             $approver_remarks = null;
             $approver_status = null;
             $approver_type = null;
-            if($item->latest_approval_histories){
+            if($approver){
                 $approved_by = $approver->employee->fullname();
                 $approver_level = 'Level '.$approver->approver_level;
                 $approver_remarks = $approver->approver_remarks;
@@ -234,5 +233,36 @@ class OfficialBusiness extends Controller
             'valid' => !$exist,
             'message' => 'There is a OB request that overlaps with the specified date and time.'
         ];
+    }
+
+    public function widgets()
+    {
+        try{
+            $user_id = Auth::user()->emp_id;
+            $results = OBRequest::selectRaw("
+                COUNT(*) as total_requests,
+                SUM(CASE WHEN is_approved IS NULL THEN 1 ELSE 0 END) as pending_requests,
+                SUM(CASE WHEN is_approved = 1 THEN 1 ELSE 0 END) as approved_requests,
+                SUM(CASE WHEN is_approved = 2 THEN 1 ELSE 0 END) as rejected_requests
+            ")
+            ->where('emp_id', $user_id)
+            ->where('is_deleted',null)
+            ->first();
+
+            return [
+                'valid' => 'success',
+                'message' => 'success',
+                'payload' => [
+                    'total_requests' => $results->total_requests ??0,
+                    'pending_requests' => $results->pending_requests??0,
+                    'approved_requests' => $results->approved_requests??0,
+                    'rejected_requests' => $results->rejected_requests??0,
+                ]
+            ];
+
+        }catch(Exception $e)
+        {
+            return response()->json(['status'=>400,'message' =>$e->getMessage()]);
+        }
     }
 }

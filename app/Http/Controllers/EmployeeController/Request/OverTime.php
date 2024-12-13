@@ -56,7 +56,7 @@ class OverTime extends Controller
             $approver_remarks = null;
             $approver_status = null;
             $approver_type = null;
-            if($item->latest_approval_histories){
+            if($approver){
                 $approved_by = $approver->employee->fullname();
                 $approver_level = 'Level '.$approver->approver_level;
                 $approver_remarks = $approver->approver_remarks;
@@ -254,6 +254,37 @@ class OverTime extends Controller
                 'status' => 400,
                 'message' => $e->getMessage(),
             ]);
+        }
+    }
+
+    public function widgets()
+    {
+        try{
+            $user_id = Auth::user()->emp_id;
+            $results = HrisEmployeeOvertimeRequest::selectRaw("
+                COUNT(*) as total_requests,
+                SUM(CASE WHEN is_approved IS NULL THEN 1 ELSE 0 END) as pending_requests,
+                SUM(CASE WHEN is_approved = 1 THEN 1 ELSE 0 END) as approved_requests,
+                SUM(CASE WHEN is_approved = 2 THEN 1 ELSE 0 END) as rejected_requests
+            ")
+            ->where('emp_id', $user_id)
+            ->where('is_deleted',null)
+            ->first();
+
+            return [
+                'valid' => 'success',
+                'message' => 'success',
+                'payload' => [
+                    'total_requests' => $results->total_requests ??0,
+                    'pending_requests' => $results->pending_requests??0,
+                    'approved_requests' => $results->approved_requests??0,
+                    'rejected_requests' => $results->rejected_requests??0,
+                ]
+            ];
+
+        }catch(Exception $e)
+        {
+            return response()->json(['status'=>400,'message' =>$e->getMessage()]);
         }
     }
 

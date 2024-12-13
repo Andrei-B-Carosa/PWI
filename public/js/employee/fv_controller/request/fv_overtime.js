@@ -7,7 +7,7 @@ import { dtOverTime } from "../../dt_controller/request/dt_overtime.js";
 export function fvOverTime(_table=false,param=false){
 
     var init_fvOvertime = (function () {
-
+        const countUpInstances = {};
         var _handlefvOverTime = function(){
             let fvOverTime;
             let form = document.querySelector("#form_request_overtime");
@@ -132,6 +132,7 @@ export function fvOverTime(_table=false,param=false){
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
                                         fvOverTime.resetForm();
+                                        _Handlewidgets();
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{
@@ -155,9 +156,50 @@ export function fvOverTime(_table=false,param=false){
             })
         }
 
+        function _Handlewidgets()
+        {
+            (new RequestHandler).get("/hris/employee/request/overtime/widgets")
+                .then((res) => {
+                    let payload = res.payload;
+
+                    const countUpMapping = {
+                        pending_requests: 'kt_countup_1',
+                        approved_requests: 'kt_countup_2',
+                        rejected_requests: 'kt_countup_3',
+                        total_requests: 'kt_countup_4'
+                    };
+
+                    Object.entries(countUpMapping).forEach(([key, id]) => {
+                        const value = payload[key];
+
+                        // Check if instance already exists
+                        if (countUpInstances[id]) {
+                            // Update the existing instance
+                            countUpInstances[id].update(value);
+                        } else {
+                            // Create a new instance and store it in the cache
+                            const countUpInstance = new countUp.CountUp(id, value);
+                            if (!countUpInstance.error) {
+                                countUpInstance.start();
+                                countUpInstances[id] = countUpInstance; // Cache the instance
+                            } else {
+                                console.error(`CountUp Error for ${id}:`, countUpInstance.error);
+                            }
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+
+                })
+                .finally(() => {
+                });
+        }
+
         return {
             init: function () {
                 _handlefvOverTime();
+                _Handlewidgets();
             },
         };
 

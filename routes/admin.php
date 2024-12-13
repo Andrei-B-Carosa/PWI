@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminController\Approvals\ApplicationForLeave;
+use App\Http\Controllers\AdminController\Approvals\OfficialBusiness;
 use App\Http\Controllers\AdminController\Approvals\OvertimeRequisition;
 use App\Http\Controllers\AdminController\Employee\EmployeeDetails;
 use App\Http\Controllers\AdminController\Employee\EmployeeMasterlist;
@@ -21,6 +23,8 @@ use App\Http\Controllers\AdminController\Settings\LeaveSettings\AutomaticCredit;
 use App\Http\Controllers\AdminController\Settings\LeaveSettings\LeaveManagement;
 use App\Http\Controllers\AdminController\Settings\LeaveSettings\LeaveType;
 use App\Http\Controllers\AdminController\Settings\LeaveSettings\ManualCredit;
+use App\Http\Controllers\AdminController\UserManagement\Permission;
+use App\Http\Controllers\AdminController\UserManagement\RoleList;
 use App\Models\HrisCompany;
 use App\Services\Reusable\Select\CompanyOptions;
 use App\Services\Reusable\Select\LeaveTypeOptions;
@@ -201,12 +205,15 @@ Route::group(['prefix'=>'hris/admin'], function() {
     Route::group(['prefix'=>'201_employee'], function() {
         Route::controller(EmployeeMasterlist::class)->prefix('employee_masterlist')->group(function() {
             Route::post('/dt', 'dt');
+            Route::post('/restore', 'restore');
+            Route::post('/archive', 'archive');
             Route::post('/update', 'update');
             Route::post('/delete', 'delete');
         });
         Route::controller(EmployeeDetails::class)->prefix('employee_details')->group(function() {
             Route::post('/form', 'form');
             Route::post('/update', 'update');
+            Route::post('/delete', 'delete');
         });
 
         Route::controller(EmployeeRegistration::class)->prefix('employee_registration')->group(function() {
@@ -222,9 +229,34 @@ Route::group(['prefix'=>'hris/admin'], function() {
             Route::post('/update', 'update');
         });
 
-        // Route::controller(OvertimeRequisition::class)->prefix('overtime_requisition')->group(function() {
-        // });
+        Route::controller(OfficialBusiness::class)->prefix('official_business')->group(function() {
+            Route::post('/dt', 'dt');
+            Route::post('/update', 'update');
+        });
 
+        Route::controller(ApplicationForLeave::class)->prefix('application_for_leave')->group(function() {
+            Route::post('/dt', 'dt');
+            Route::post('/update', 'update');
+        });
+    });
+
+    Route::group(['prefix'=>'user_management'], function() {
+        Route::controller(RoleList::class)->prefix('role_list')->group(function() {
+            Route::get('/list', 'list');
+            Route::post('/update', 'update');
+            Route::post('/update_system_file', 'update_system_file');
+            Route::post('/update_file_layer', 'update_file_layer');
+
+            Route::post('/delete', 'delete');
+
+            Route::post('/employee_list', 'employee_list');
+            Route::post('/user_list', 'user_list');
+        });
+
+        Route::controller(Permission::class)->prefix('permission')->group(function() {
+            Route::post('/dt', 'dt');
+            Route::post('/update', 'update');
+        });
     });
 
 

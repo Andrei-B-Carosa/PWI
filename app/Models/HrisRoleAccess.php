@@ -19,4 +19,9 @@ class HrisRoleAccess extends Model
     public function system_file(){
         return $this->belongsTo(HrisSystemFile::class,'file_id');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(HrisRole::class,'role_id');
+    }
 }

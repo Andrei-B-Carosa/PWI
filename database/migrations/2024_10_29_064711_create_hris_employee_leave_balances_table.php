@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('emp_id');
             $table->integer('leave_type_id');
-            $table->integer('leave_balance');
+            $table->float('leave_balance');
 
             $table->tinyInteger('is_active')->nullable();
             $table->tinyInteger('is_deleted')->nullable();

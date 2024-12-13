@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Employee extends Model
 {
@@ -53,28 +54,45 @@ class Employee extends Model
     }
 
     public static function generateEmployeeId($employee)
-   {
-        // Combine parts to form the final ID
+    {
         $date = Carbon::now();
-
         $lastRecord = self::whereYear('created_at', $date->format('Y'))->count();
-        // Get the last two digits of the year
         $lastTwoDigitsOfYear = $date->format('y');
-        // Get employee birth year
         $employee_birthyear = Carbon::parse($employee->birthday)->format('ym');
-        // Current seconds
         $filler = str_pad($lastRecord + 1, 4, '0', STR_PAD_LEFT);
-
-        // $type = $request->type === 'admin' ? 'A' : 'F';
-
         $ID = $lastTwoDigitsOfYear . $employee_birthyear . $filler;
 
+        $hashedPassword = Hash::make($ID);
+        $username = strtolower($employee->fname . '.' . $employee->lname);
+
+        $existingAccount = EmployeeAccount::where([['emp_id', $employee->id], ['is_active', 1]])->first();
+        if (!$existingAccount) {
+            // Create an employee account
+            EmployeeAccount::create([
+                'emp_id' => $employee->id, // Assuming $employee->id exists
+                'username' => $username,
+                'password' => $hashedPassword,
+                'is_active' => 1,
+                'created_at' => $date,
+            ]);
+        }
+
         return $ID;
-   }
+    }
 
     public function emp_details()
     {
         return $this->hasOne(HrisEmployeePosition::class,'emp_id')->withDefault();
+    }
+
+    public function emp_account()
+    {
+        return $this->hasOne(EmployeeAccount::class,'emp_id');
+    }
+
+    public function documents()
+    {
+        return $this->HasMany(HrisEmployeeDocument::class,'emp_id');
     }
 
     public function fullname()
@@ -115,5 +133,10 @@ class Employee extends Model
     public function group_approver()
     {
         return $this->hasMany(HrisGroupApprover::class,'emp_id');
+    }
+
+    public function user_roles()
+    {
+        return $this->hasMany(HrisUserRole::class,'emp_id');
     }
 }

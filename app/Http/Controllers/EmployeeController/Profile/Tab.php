@@ -8,6 +8,7 @@ use App\Services\Reusable\Select\ClassificationOptions;
 use App\Services\Reusable\Select\CompanyLocationOptions;
 use App\Services\Reusable\Select\CompanyOptions;
 use App\Services\Reusable\Select\DepartmentOptions;
+use App\Services\Reusable\Select\DocumentTypeOptions;
 use App\Services\Reusable\Select\EmploymentTypeOptions;
 use App\Services\Reusable\Select\PositionOptions;
 use App\Services\Reusable\Select\SectionOptions;
@@ -29,6 +30,7 @@ class Tab extends Controller
             $view = match($rq->tab){
                 '1',1=>self::personal_details($rq,$components,$employee),
                 '2',2=>self::employment_details($rq,$components,$employee),
+                '6',2=>self::document_attachments($rq,$components,$employee),
                 '8',8=>self::account_security($rq,$components,$employee),
                 default=>false,
             };
@@ -101,10 +103,26 @@ class Tab extends Controller
         return view($components.'employment-details', compact('employee','isRegisterEmployee','options'))->render();
     }
 
-    public function account_security($rq, $components, $employee)
+    public function document_attachments($rq,$components,$employee)
     {
         $isRegisterEmployee = $this->isRegisterEmployee;
-        $view = view($components.'employee-account', compact('employee','isRegisterEmployee'))->render();
+        $documents = $employee->documents;
+
+        $request = $rq->merge(['id' => null, 'type'=>'options']);
+        $document_type = (new DocumentTypeOptions)->list($request);
+
+        $options = [
+            'document_type'=>$document_type,
+        ];
+        return view($components.'document-attachments', compact('employee','isRegisterEmployee','options','documents'))->render();
+    }
+
+    public function account_security($rq,$components,$employee)
+    {
+        $isRegisterEmployee = $this->isRegisterEmployee;
+        $isSystemAdmin = false;
+        $emp_account = $employee->emp_account;
+        return view($components.'employee-account', compact('employee','isRegisterEmployee','emp_account','isSystemAdmin'))->render();
     }
 
 }

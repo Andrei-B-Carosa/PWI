@@ -15,4 +15,16 @@ class HrisStoredProcedure extends Model
             DB::select('call sp_get_overtime_request()')
         );
     }
+
+    public static function sp_get_ob_request(){
+        return static::hydrate(
+            DB::select('call sp_get_ob_request()')
+        );
+    }
+
+    public static function sp_get_leave_request(){
+        return static::hydrate(
+            DB::select('call sp_get_leave_request()')
+        );
+    }
 }

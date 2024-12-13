@@ -34,6 +34,10 @@ class PageController extends Controller
             $file_layer = [];
             foreach($data->system_file->file_layer as $row)
             {
+                if($row->status == 2){
+                    continue;
+                }
+                
                 $file_layer[]=[
                     'name'=>$row->name,
                     'href'=>$row->href,

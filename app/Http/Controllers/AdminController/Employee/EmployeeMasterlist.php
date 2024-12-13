@@ -17,8 +17,9 @@ class EmployeeMasterlist extends Controller
     public function dt(Request $rq)
     {
         // $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
-
-        $data = Employee::with(['emp_details'])->where([['is_active',1],['is_deleted',null]])->get();
+        $data = Employee::with(['emp_details'])
+        ->where([['is_active',$rq->filter_status],['is_deleted',null]])
+        ->get();
 
         $data->transform(function ($item, $key) {
 
@@ -57,6 +58,60 @@ class EmployeeMasterlist extends Controller
             'recordsFiltered' =>  $table->getRecordsFiltered(),
             'data' => $table->getRows()
         ]);
+    }
+
+    public function restore(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+            $id =  Crypt::decrypt($rq->id);
+
+            $query = Employee::find($id);
+            $query->is_active = $rq->is_active;
+            $query->updated_by = $user_id;
+            $query->save();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message'=>'Employee record is restored',
+                'payload' => Employee::where('is_active',1)->count()
+            ]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function archive(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+            $id =  Crypt::decrypt($rq->id);
+
+            $query = Employee::find($id);
+            $query->is_active = $rq->is_active;
+            $query->updated_by = $user_id;
+            $query->save();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'info',
+                'message'=>'Record is archived',
+                'payload' => Employee::where('is_active',1)->count()
+            ]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function delete(Request $rq)

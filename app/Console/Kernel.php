@@ -12,7 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Run Leav credit distribution monthy 
+        $schedule->command('app:distribute-leave-credits')->monthlyOn(1, '00:00');
+
+        // Run Increment leave credit yearly
+        $schedule->command('app:increment-milestones')->yearlyOn(1, '00:30');
+
+        // Run ResetLeaveCredits on December 13 every year
+        $schedule->command('app:reset-leave-credits')->yearlyOn(12, 13, '00:00');
     }
 
     /**
@@ -23,5 +30,7 @@ class Kernel extends ConsoleKernel
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
+
+
     }
 }

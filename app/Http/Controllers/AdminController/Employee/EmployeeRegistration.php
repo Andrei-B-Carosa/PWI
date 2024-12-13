@@ -20,60 +20,21 @@ use Illuminate\Support\Facades\DB;
 
 class EmployeeRegistration extends Controller
 {
+
     public function form(Request $rq)
     {
         try {
             $emp_id = isset($rq->emp_id) ?Crypt::decrypt($rq->emp_id):null;
             $components = 'components.employee-details.';
-            $employee = Employee::with('emp_details')->find($emp_id);
-            $isRegisterEmployee = true;
-            if($rq->form ==2){
-                $view =view($components.'personal-information', compact('employee','isRegisterEmployee'))->render();
-            }elseif($rq->form == 3){
-                $emp_details = $employee->emp_details?$employee->emp_details:null;
+            $employee = Employee::with('emp_details','documents','emp_account:id,emp_id,username,c_email')->find($emp_id);
 
-                $classification_id  = $emp_details? Crypt::encrypt($emp_details->classification_id):null;
-                $request = $rq->merge(['id' => $classification_id, 'type'=>'options']);
-                $classification = (new ClassificationOptions)->list($request);
+            $view = match($rq->form){
+                '2',1=>self::personal_details($rq,$components,$employee),
+                '3',2=>self::employment_details($rq,$components,$employee),
+                default=>false,
+            };
 
-                $employment_id  = $emp_details? Crypt::encrypt($emp_details->employment_id):null;
-                $request = $rq->merge(['id' => $employment_id, 'type'=>'options']);
-                $employment_type = (new EmploymentTypeOptions)->list($request);
-
-                $department_id  = $emp_details? Crypt::encrypt($emp_details->department_id):null;
-                $request = $rq->merge(['id' => $department_id, 'type'=>'options']);
-                $department = (new DepartmentOptions)->list($request);
-
-                $section_id  = $emp_details? Crypt::encrypt($emp_details->section_id):null;
-                $request = $rq->merge(['id' => $section_id, 'type'=>'options']);
-                $section = (new SectionOptions)->list($request);
-
-                $position_id  = $emp_details? Crypt::encrypt($emp_details->position_id):null;
-                $request = $rq->merge(['id' => $position_id, 'type'=>'options']);
-                $position = (new PositionOptions)->list($request);
-
-                $company_id  = $emp_details? Crypt::encrypt($emp_details->company_id):null;
-                $request = $rq->merge(['id' => $company_id, 'type'=>'options']);
-                $company = (new CompanyOptions)->list($request);
-
-                $company_location_id  = $emp_details? Crypt::encrypt($emp_details->company_location_id):null;
-                $request = $rq->merge(['id' => $company_location_id, 'type'=>'options']);
-                $company_location = (new CompanyLocationOptions)->list($request);
-
-                $options = [
-                    'classification'=>$classification,
-                    'employment_type'=>$employment_type,
-                    'department'=>$department,
-                    'section'=>$section,
-                    'section'=>$section,
-                    'position'=>$position,
-                    'company'=>$company,
-                    'company_location'=>$company_location,
-                ];
-                $view = view($components.'employment-details', compact('employee','isRegisterEmployee','options'))->render();
-            }else{
-                 throw new \Exception("Form not found!");
-            }
+            if($view === false) { throw new \Exception("Form not found!"); }
 
             return response()->json([
                 'status' =>'success',
@@ -88,6 +49,59 @@ class EmployeeRegistration extends Controller
         }
     }
 
+    public function personal_details($rq,$components,$employee)
+    {
+        $isRegisterEmployee = true;
+        return view($components.'personal-information', compact('employee','isRegisterEmployee'))->render();
+    }
+
+    public function employment_details($rq,$components,$employee)
+    {
+        $isRegisterEmployee = true;
+        $emp_details = $employee->emp_details?$employee->emp_details:null;
+
+        $classification_id  = $emp_details? Crypt::encrypt($emp_details->classification_id):null;
+        $request = $rq->merge(['id' => $classification_id, 'type'=>'options']);
+        $classification = (new ClassificationOptions)->list($request);
+
+        $employment_id  = $emp_details? Crypt::encrypt($emp_details->employment_id):null;
+        $request = $rq->merge(['id' => $employment_id, 'type'=>'options']);
+        $employment_type = (new EmploymentTypeOptions)->list($request);
+
+        $department_id  = $emp_details? Crypt::encrypt($emp_details->department_id):null;
+        $request = $rq->merge(['id' => $department_id, 'type'=>'options']);
+        $department = (new DepartmentOptions)->list($request);
+
+        $section_id  = $emp_details? Crypt::encrypt($emp_details->section_id):null;
+        $request = $rq->merge(['id' => $section_id, 'type'=>'options']);
+        $section = (new SectionOptions)->list($request);
+
+        $position_id  = $emp_details? Crypt::encrypt($emp_details->position_id):null;
+        $request = $rq->merge(['id' => $position_id, 'type'=>'options']);
+        $position = (new PositionOptions)->list($request);
+
+        $company_id  = $emp_details? Crypt::encrypt($emp_details->company_id):null;
+        $request = $rq->merge(['id' => $company_id, 'type'=>'options']);
+        $company = (new CompanyOptions)->list($request);
+
+        $company_location_id  = $emp_details? Crypt::encrypt($emp_details->company_location_id):null;
+        $request = $rq->merge(['id' => $company_location_id, 'type'=>'options']);
+        $company_location = (new CompanyLocationOptions)->list($request);
+
+        $options = [
+            'classification'=>$classification,
+            'employment_type'=>$employment_type,
+            'department'=>$department,
+            'section'=>$section,
+            'section'=>$section,
+            'position'=>$position,
+            'company'=>$company,
+            'company_location'=>$company_location,
+        ];
+        return view($components.'employment-details', compact('employee','isRegisterEmployee','options'))->render();
+
+    }
+
     public function update(Request $rq)
     {
         try {
@@ -97,7 +111,7 @@ class EmployeeRegistration extends Controller
                 default => throw new \Exception("Form not found!"),
             };
 
-            if(!$res['status']){
+            if(!$res['status'] || $res['status'] =='error'){
                 return response()->json($res);
             }
 
@@ -204,4 +218,5 @@ class EmployeeRegistration extends Controller
             return [ 'status' => 'error', 'message' => $e->getMessage() ];
         }
     }
+
 }

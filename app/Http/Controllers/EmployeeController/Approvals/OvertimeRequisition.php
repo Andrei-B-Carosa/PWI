@@ -149,6 +149,66 @@ class OvertimeRequisition extends Controller
         }
     }
 
+    public function view_history(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+
+            $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):false;
+            if(!$id)
+            {
+                return response()->json(['status' => 'error','message'=>'Missing ID in Request']);
+            }
+
+            $overtimeRequest = HrisEmployeeOvertimeRequest::find($id);
+            $overtimeRequestHistory = HrisApprovalHistory::with('employee')->where([['entity_id',$id],['entity_table',1]])->get();
+            if(!$overtimeRequestHistory)
+            {
+                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
+            }
+
+            $history[] = [
+                'is_approved' => 'pending',
+                'action' => $overtimeRequest->employee->fullname().' filed an overtime request',
+                'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y H:i A')
+            ];
+
+            if($overtimeRequestHistory->isNotEmpty())
+            {
+                foreach($overtimeRequestHistory as $data){
+                    $action = '<span class="text-success fw-bold">Approved</span>'.' the overtime request';
+                    $is_approved = 'approved';
+                    $approver_remarks =$data->approver_remarks;
+                    $approver_level =$data->approver_level;
+                    $is_final_approver =$data->is_final_approver;
+                    if($data->is_approved ==2){
+                        $action = '<span class="text-danger fw-bold">Rejected</span> the overtime request';
+                        $is_approved = 'rejected';
+                    }
+
+                    $history[]=[
+                        'is_approved' => $is_approved,
+                        'action' => $data->employee->fullname().' '.$action,
+                        'approver_remarks' =>$approver_remarks,
+                        'approver_level' =>$approver_level,
+                        'is_final_approver' =>$is_final_approver,
+                        'recorded_at' =>Carbon::parse($data->created_at)->format('M d, Y H:i A')
+                    ];
+                }
+            }
+
+            $payload =base64_encode(json_encode($history));
+            return response()->json(['status' => 'success','message'=>'success', 'payload'=>$payload]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function isApprovingOpen($user_id,$overtime_id,$group_id)
     {
         try{
@@ -169,11 +229,12 @@ class OvertimeRequisition extends Controller
                 return false;
             }
 
-            // Check if there are any required lower levels pending approval
-            $requiredLowerLevels = self::checkRequiredLowerLevels($overtime_id,$group_id,$currentApprover);
+            // If is_required==null check for the next required approver
+            $requiredLowerLevels = self::checkNextRequiredApprover($overtime_id,$group_id,$currentApprover);
             if ($requiredLowerLevels) {
                 return false;
             }
+
 
             // Allow approval if the current approver is the logged-in user
             return $currentApprover->emp_id == $user_id || $currentApprover->is_required == null;
@@ -222,8 +283,12 @@ class OvertimeRequisition extends Controller
 
     }
 
-    public function checkRequiredLowerLevels($overtime_id,$group_id,$currentApprover)
+    public function checkNextRequiredApprover($overtime_id,$group_id,$currentApprover)
     {
+        if($currentApprover->is_required){
+            return false;
+        }
+
         $lowestApprover = HrisGroupApprover::where([['group_id',$group_id],['is_active',1]])
         ->orderBy('is_final_approver', 'ASC')->orderBy('approver_level', 'DESC')->first();
 

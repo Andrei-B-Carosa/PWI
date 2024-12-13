@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('birthplace')->nullable();
             $table->tinyInteger('sex')->nullable();
             $table->tinyInteger('civil_status')->nullable();
-            $table->integer('height')->nullable();
-            $table->integer('weight')->nullable();
+            $table->string('height',50)->nullable();
+            $table->string('weight',50)->nullable();
             $table->string('blood_type')->nullable();
             $table->string('sss',50)->nullable();
             $table->string('pagibig',50)->nullable();
@@ -61,7 +61,7 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate()->nullable();
-            
+
             $table->tinyInteger('is_deleted')->nullable();
             $table->tinyInteger('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
