@@ -259,7 +259,6 @@ Route::group(['prefix'=>'hris/admin'], function() {
         });
     });
 
-
     Route::group(['prefix'=>'select'], function() {
         Route::post('/get_company', [CompanyOptions::class, 'list']);
     });

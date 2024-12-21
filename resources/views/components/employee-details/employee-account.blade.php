@@ -10,7 +10,7 @@
 <div class="d-flex flex-wrap align-items-center">
     <!--begin::Label-->
     <div id="kt_signin_email">
-        <div class="fs-6 fw-bold mb-1">Email Address</div>
+        <div class="fs-6 fw-bold mb-1">Corporate Email</div>
         <div class="fw-semibold text-gray-600">{{ $emp_account->c_email }}</div>
     </div>
     <!--end::Label-->

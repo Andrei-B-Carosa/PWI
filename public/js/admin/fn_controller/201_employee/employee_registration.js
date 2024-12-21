@@ -138,6 +138,7 @@ var stepper = (function () {
             if(res.status == 'success'){
                 let view = window.atob(res.payload);
                 $(_page).find(`#form${form}`).html(view);
+                console.log(`#form${form}`)
                 element.find('select[data-control="select2"]').select2();
             }
         })
@@ -153,7 +154,7 @@ var stepper = (function () {
 
     var _handleStepperFormValidation = function(emp_id,form_id){
         let fvStepper;
-        let form = document.querySelector('#form'+form_id+'');
+        let form = document.querySelector('#form'+form_id+' form');
         if ( form && !form.hasAttribute('data-fv-initialized')) {
             const validationRules = {};
             const fields = form.querySelectorAll('input, select');

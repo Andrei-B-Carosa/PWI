@@ -16,6 +16,7 @@ class HrisEmployeeOfficialBusinessRequest extends Model
         'ob_time_in',
         'destination',
         'contact_person_id',
+        'is_approved',
         'purpose',
         'created_by',
         'updated_by',
@@ -39,6 +40,10 @@ class HrisEmployeeOfficialBusinessRequest extends Model
     public function latest_approval_histories()
     {
         return $this->hasOne(HrisApprovalHistory::class,'entity_id')->where('entity_table', 3)->latest();
+    }
+
+    public function approving_history(){
+        return $this->hasMany(HrisApprovalHistory::class, 'entity_id')->where('entity_table', 3);
     }
 
     public function emp_contact_person()

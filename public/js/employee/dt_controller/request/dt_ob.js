@@ -15,6 +15,7 @@ export var dtObRequest = function (param=false) {
     const _request = new RequestHandler;
     const dataTableHelper = new DataTableHelper(`${_table}_table`,`${_table}_wrapper`);
 
+
     function initTable(){
 
         dataTableHelper.initTable(
@@ -76,7 +77,7 @@ export var dtObRequest = function (param=false) {
                     render: function (data, type, row) {
                         let status = {
                             1: ["success", "Approved"],
-                            2: ["info", "Disapproved"],
+                            2: ["danger", "Disapproved"],
                             null:["secondary","Pending"]
                         };
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
@@ -131,8 +132,14 @@ export var dtObRequest = function (param=false) {
                     responsivePriority: -1,
                     render: function (data, type, row) {
                         if(row.is_approved == 1 || row.is_approved === null){
-                            return `<span class="text-muted"> -- </span>`;
+                            return `
+                                <a href="javascript:;" class="btn btn-icon btn-icon btn-info btn-sm hover-elevate-up history" data-id="${data}"
+                                data-bs-toggle="tooltip" title="View Approval History" id="">
+                                    <i class="ki-duotone ki-burger-menu-5 fs-2"></i>
+                                </a>
+                            `;
                         }
+
                         return `<div class="d-flex justify-content-center flex-shrink-0">
                             <a href="#" class="btn btn-icon btn-light-primary btn-sm me-1 hover-elevate-up"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" title="More Actions">
@@ -173,6 +180,8 @@ export var dtObRequest = function (param=false) {
         );
 
         $(`#${_table}_table`).ready(function() {
+
+            _page.off();
 
             _page.on('click','button.filter',function(e){
                 e.preventDefault()
@@ -266,6 +275,94 @@ export var dtObRequest = function (param=false) {
                     }
                 });
 
+
+            })
+
+            $(`#${_table}_table`).on('click','.history',function(e){
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                let _this = $(this);
+                let id    =_this.attr('data-id');
+                let formData = new FormData;
+
+                formData.append('id',id);
+                _request.post('/hris/employee/request/official_business/view_history',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        let html = '';
+
+                        let drawerWidth = payload.length ==1 ? ``: `{default:'300px', 'lg': '500px'}`;
+                        $('#kt_activities_request').attr("data-kt-drawer-width",drawerWidth);
+
+                        const drawerElement = document.querySelector("#kt_activities_request");
+                        const _drawer = KTDrawer.getInstance(drawerElement);
+                        _drawer.update();
+
+                        $.each(payload, function(index, entry) {
+
+                            let icon = `<i class="ki-duotone ki-check fs-2 text-success"></i>`;
+                            if(entry.is_approved =='rejected'){
+                                icon =`
+                                    <i class="ki-duotone ki-cross fs-2 text-danger">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>`;
+                            }else if(entry.is_approved == 'pending'){
+                                icon =`
+                                    <i class="ki-duotone ki-information fs-2 text-info">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>`;
+                            }
+
+                            html+=`
+                            <div class="timeline-item">
+                            <div class="timeline-line"></div>
+                            <div class="timeline-icon ${entry.is_approved=='rejected'?'bg-light-danger border-danger':
+                                (entry.is_approved=='approved'?'bg-light-success border-success':'bg-light-info border-info')}">
+                               ${icon}
+                            </div>
+                            <div class="timeline-content mt-n1">
+                                <div class="pe-3 mb-5">
+                                    <div class="fs-5 fw-semibold mb-2">
+                                     ${entry.action}
+                                    </div>
+                                    <div class="d-flex align-items-center mt-1 fs-6">
+                                        <div class="text-muted me-2 fs-7">${entry.recorded_at}</div>
+                                        ${entry.is_final_approver ?`<a href="#" class="text-primary fw-bold me-1">Final Approver</a>`:``}
+                                    </div>
+                                </div>
+                                ${
+                                    entry.approver_remarks || entry.approver_remarks === null?`
+                                        <div class="overflow-auto pb-5">
+                                        <div class="d-flex align-items-center border border-dashed ${entry.is_approved == 'approved'?'border-success':'border-danger'}
+                                                    rounded min-w-350px px-7 py-3 mb-5">
+                                            ${entry.approver_remarks !== null ? `${'Remarks: '+entry.approver_remarks}`:`<span class="text-muted">No Remarks</span>`}
+                                        </div>
+                                    </div>
+                                    `:``
+
+                                }
+
+                            </div>
+                        </div>
+                            `;
+                        });
+
+                        $('.approval-timeline').empty().append(html);
+                        _drawer.toggle();
+
+                    }
+                })
+                .catch((error) => {
+                    console.error(error)
+                    Alert.alert('error', "Something went wrong. Try again later", false);
+                })
+                .finally((error) => {
+                });
 
             })
 

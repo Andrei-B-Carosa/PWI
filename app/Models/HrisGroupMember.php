@@ -40,4 +40,9 @@ class HrisGroupMember extends Model
     {
         return $this->belongsTo(Employee::class,'deleted_by');
     }
+
+    public function group()
+    {
+        return $this->belongsTo(HrisGroup::class,'group_id');
+    }
 }

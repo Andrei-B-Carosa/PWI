@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\EmployeeController\Request;
 
 use App\Http\Controllers\Controller;
+use App\Models\HrisApprovalHistory;
 use App\Models\HrisEmployeeOfficialBusinessRequest as OBRequest;
+use App\Models\HrisEmployeeOfficialBusinessRequest;
 use App\Services\Reusable\DTServerSide;
+use App\Services\Reusable\GroupApproverNotification;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,20 +26,20 @@ class OfficialBusiness extends Controller
 
         $data = OBRequest::with(['latest_approval_histories','emp_contact_person'])
         ->where([['emp_id',$emp_id],['is_deleted',null]])
-        // ->when($filter_status, function ($q) use ($filter_status) {
-        //     $status = [
-        //         'pending'=>null,
-        //         'approved'=>1,
-        //         'disapproved'=>2,
-        //     ];
-        //     $q->where('is_approved', $status[$filter_status]);
-        // })
-        // ->when($filter_month, function ($q) use ($filter_month) {
-        //     $q->whereRaw('MONTH(ob_filing_date) = ?', [$filter_month]);
-        // })
-        // ->when($filter_year, function ($q) use ($filter_year) {
-        //     $q->whereRaw('YEAR(ob_filing_date) = ?', [$filter_year]);
-        // })
+        ->when($filter_status, function ($q) use ($filter_status) {
+            $status = [
+                'pending'=>null,
+                'approved'=>1,
+                'disapproved'=>2,
+            ];
+            $q->where('is_approved', $status[$filter_status]);
+        })
+        ->when($filter_month, function ($q) use ($filter_month) {
+            $q->whereRaw('MONTH(ob_filing_date) = ?', [$filter_month]);
+        })
+        ->when($filter_year, function ($q) use ($filter_year) {
+            $q->whereRaw('YEAR(ob_filing_date) = ?', [$filter_year]);
+        })
         ->orderBy('id', 'ASC')
         ->get();
 
@@ -64,8 +67,8 @@ class OfficialBusiness extends Controller
 
             $item->count = $key + 1;
             $item->ob_filing_date = Carbon::parse($item->ob_filing_date)->format('m/d/Y');
-            $item->ob_time_out = Carbon::parse($item->ob_time_out)->format('H:i A');
-            $item->ob_time_in = Carbon::parse($item->ob_time_in)->format('H:i A');
+            $item->ob_time_out = Carbon::parse($item->ob_time_out)->format('h:i A');
+            $item->ob_time_in = Carbon::parse($item->ob_time_in)->format('h:i A');
 
             // $item->contact_person_name = $contact_person_name;
             // $item->contact_person_number = $contact_person_number;
@@ -101,7 +104,10 @@ class OfficialBusiness extends Controller
             $obFillingDate = Carbon::createFromFormat('m-d-Y', $rq->ob_filing_date)->format('Y-m-d');
             $obTimeIn = Carbon::createFromFormat('H:i', $rq->ob_time_in)->format('H:i');
             $obTimeOut = Carbon::createFromFormat('H:i', $rq->ob_time_out)->format('H:i');
+
             $obContactPerson = isset($rq->contact_person) ? Crypt::decrypt($rq->contact_person):null;
+            $sendEmail = true;
+
             $attribute = ['id'=>$id];
             $values = [
                 'ob_time_out' => $obTimeOut,
@@ -123,10 +129,23 @@ class OfficialBusiness extends Controller
             $query = OBRequest::updateOrCreate($attribute,$values);
             if($query->is_approved == 2){
                 $query->update([ 'is_approved'=> null ]);
+                $sendEmail = false;
+                $isNotified = true;
             }
 
-            DB::commit();
-            return response()->json(['status' => 'success','message'=>$message]);
+            if($sendEmail){
+                $isNotified = (new GroupApproverNotification)
+                ->sendApprovalNotification($query,3,'approver.ob_request');
+            }
+
+            if($isNotified){
+                DB::commit();
+                return response()->json(['status' => 'success','message'=>$message]);
+            }else{
+                DB::rollback();
+                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+            }
+
         }catch(Exception $e){
             DB::rollback();
             return response()->json([
@@ -263,6 +282,66 @@ class OfficialBusiness extends Controller
         }catch(Exception $e)
         {
             return response()->json(['status'=>400,'message' =>$e->getMessage()]);
+        }
+    }
+
+    public function view_history(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+
+            $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):false;
+            if(!$id)
+            {
+                return response()->json(['status' => 'error','message'=>'Missing ID in Request']);
+            }
+
+            $overtimeRequest = HrisEmployeeOfficialBusinessRequest::find($id);
+            $overtimeRequestHistory = HrisApprovalHistory::with('employee')->where([['entity_id',$id],['entity_table',3]])->get();
+            if(!$overtimeRequestHistory)
+            {
+                return response()->json(['status' => 'error','message'=>'OB Request Not Found']);
+            }
+
+            $history[] = [
+                'is_approved' => 'pending',
+                'action' => 'You filed a OB request',
+                'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y H:i A')
+            ];
+
+            if($overtimeRequestHistory->isNotEmpty())
+            {
+                foreach($overtimeRequestHistory as $data){
+                    $action = '<span class="text-success fw-bold">Approved</span>'.' the OB request';
+                    $is_approved = 'approved';
+                    $approver_remarks =$data->approver_remarks;
+                    $approver_level =$data->approver_level;
+                    $is_final_approver =$data->is_final_approver;
+                    if($data->is_approved ==2){
+                        $action = '<span class="text-danger fw-bold">Rejected</span> the OB request';
+                        $is_approved = 'rejected';
+                    }
+
+                    $history[]=[
+                        'is_approved' => $is_approved,
+                        'action' => $data->employee->fullname().' '.$action,
+                        'approver_remarks' =>$approver_remarks,
+                        'approver_level' =>$approver_level,
+                        'is_final_approver' =>$is_final_approver,
+                        'recorded_at' =>Carbon::parse($data->created_at)->format('M d, Y H:i A')
+                    ];
+                }
+            }
+
+            $payload =base64_encode(json_encode($history));
+            return response()->json(['status' => 'success','message'=>'success', 'payload'=>$payload]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }

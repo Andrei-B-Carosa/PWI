@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminController\Settings\GroupSettings;
 
 use App\Http\Controllers\Controller;
 use App\Models\HrisGroupApprover;
+use App\Models\HrisGroupMember;
 use App\Services\Reusable\DTServerSide;
 use Carbon\Carbon;
 use Exception;
@@ -153,7 +154,8 @@ class GroupApprover extends Controller
             $approver_id = Crypt::decrypt($rq->approver_id);
             $group_id = Crypt::decrypt($rq->group_id);
             $excluded_id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id) : false;
-            $exists = HrisGroupApprover::where([
+
+            $isExistingApprover = HrisGroupApprover::where([
                 ['emp_id',$approver_id],
                 ['group_id',$group_id],
                 ['is_active',1],
@@ -163,12 +165,23 @@ class GroupApprover extends Controller
             )
             ->exists();
 
-            if($exists){
+            if($isExistingApprover){
                 $message = 'Approver already exist';
-            }else{
-                $message = 'Valid';
+                return ['valid' => !$isExistingApprover, 'message'=>$message];
             }
-            return ['valid' => !$exists, 'message'=>$message];
+
+            $isExistingMember = HrisGroupMember::where([
+                ['emp_id',$approver_id],
+                ['group_id',$group_id],
+                ['is_active',1]
+            ])->exists();
+
+            if($isExistingMember){
+                $message = "A group member can't be set as an approver";
+                return ['valid' => !$isExistingMember, 'message'=>$message];
+            }
+
+            return ['valid' => 'true', 'message'=>'Valid'];
         } catch (\Exception $e) {
             return [
                 'valid' => false,
@@ -228,4 +241,5 @@ class GroupApprover extends Controller
             return response()->json(['status'=>400,'message' =>$e->getMessage()]);
         }
     }
+
 }

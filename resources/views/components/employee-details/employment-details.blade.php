@@ -30,10 +30,10 @@
                     </div>
                 </div>
                 <div class="row mb-6">
-                    <label class="col-lg-4 col-form-label required fw-bold fs-6">Section</label>
+                    <label class="col-lg-4 col-form-label fw-bold fs-6">Section</label>
                     <div class="col-lg-8 fv-row">
                         <select class="form-select-sm form-select" name="section_id" data-control="select2"
-                        data-minimum-results-for-search="Infinity" data-placeholder="Select an option" @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif>
+                        data-minimum-results-for-search="Infinity" data-placeholder="Select an option" data-required="false" @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif >
                             {!! $options['section'] !!}
                         </select>
                     </div>

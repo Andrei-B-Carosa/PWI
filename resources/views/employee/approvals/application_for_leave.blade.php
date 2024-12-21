@@ -26,19 +26,25 @@
                     </div>
                     <div class="separator border-gray-200"></div>
                     <div class="px-7 py-5">
-                        <div class="mb-10">
+                        <div class="mb-7">
+                            <label class="form-label fs-5 fw-semibold mb-3">Groups:</label>
+                            <select class="form-select form-select-solid fw-bold" name="filter_group" data-kt-select2="true" data-minimum-results-for-search="Infinity" data-placeholder="Select option" data-allow-clear="true">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="mb-7">
                             <label class="form-label fs-5 fw-semibold mb-3">Year:</label>
                             <select class="form-select form-select-solid fw-bold" name="filter_year" data-kt-select2="true" data-minimum-results-for-search="Infinity" data-placeholder="Select option" data-allow-clear="true">
                                 <option></option>
                             </select>
                         </div>
-                        <div class="mb-10">
+                        <div class="mb-7">
                             <label class="form-label fs-5 fw-semibold mb-3">Month:</label>
                             <select class="form-select form-select-solid fw-bold" name="filter_month" data-kt-select2="true" data-minimum-results-for-search="Infinity"  data-placeholder="Select option" data-allow-clear="true">
                                 <option></option>
                             </select>
                         </div>
-                        <div class="mb-10">
+                        <div class="mb-7">
                             <label class="form-label fs-5 fw-semibold mb-3">Status:</label>
                             <div class="d-flex flex-column flex-wrap fw-semibold">
                                 <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
@@ -69,7 +75,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-light btn-active-light-primary me-2 reset" data-kt-menu-dismiss="true" >Reset</button>
+                            {{-- <button type="button" class="btn btn-light btn-active-light-primary me-2 reset" data-kt-menu-dismiss="true" >Reset</button> --}}
 
                             <button type="button" class="btn btn-primary filter" data-kt-menu-dismiss="true">Apply</button>
                         </div>
@@ -90,6 +96,33 @@
                         </table>
                     </div>
                 </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="kt_activities" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="activities"
+        data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'lg': '800px'}"
+        data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_activities_toggle"
+        data-kt-drawer-close="#kt_activities_close">
+
+        <div class="card shadow-none border-0 rounded-0">
+            <div class="card-header" id="kt_activities_header">
+                <h3 class="card-title fw-bold text-dark">Approval History <span class="request"></span></h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5"
+                        id="kt_activities_close">
+                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body position-relative" id="kt_activities_body">
+                <div id="kt_activities_scroll" class="position-relative" data-kt-scroll="true"
+                    data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_activities_body"
+                    data-kt-scroll-dependencies="#kt_activities_header, #kt_activities_footer" data-kt-scroll-offset="5px">
+                    <div class="timeline timeline-border-dashed approval-timeline">
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class Employee extends Model
@@ -61,21 +62,6 @@ class Employee extends Model
         $employee_birthyear = Carbon::parse($employee->birthday)->format('ym');
         $filler = str_pad($lastRecord + 1, 4, '0', STR_PAD_LEFT);
         $ID = $lastTwoDigitsOfYear . $employee_birthyear . $filler;
-
-        $hashedPassword = Hash::make($ID);
-        $username = strtolower($employee->fname . '.' . $employee->lname);
-
-        $existingAccount = EmployeeAccount::where([['emp_id', $employee->id], ['is_active', 1]])->first();
-        if (!$existingAccount) {
-            // Create an employee account
-            EmployeeAccount::create([
-                'emp_id' => $employee->id, // Assuming $employee->id exists
-                'username' => $username,
-                'password' => $hashedPassword,
-                'is_active' => 1,
-                'created_at' => $date,
-            ]);
-        }
 
         return $ID;
     }

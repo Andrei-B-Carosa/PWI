@@ -1,5 +1,5 @@
 'use strict';
-import { get_filter_month, get_filter_year } from "../../../global/select.js";
+import { get_filter_month, get_filter_year, get_group } from "../../../global/select.js";
 import { dtApplicationForLeave } from "../../dt_controller/approvals/dt_application_for_leave.js";
 
 
@@ -9,6 +9,8 @@ export var ApplicationForLeaveController = function (page,param) {
 
     get_filter_year('select[name="filter_year"]',2,false);
     get_filter_month('select[name="filter_month"]');
+    get_group('select[name="filter_group"]');
+
 
     return {
         init: function () {

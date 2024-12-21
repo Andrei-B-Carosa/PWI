@@ -123,10 +123,10 @@
                 </div>
                 <div class="col-xl-12 mb-7">
                     <div class="form-floating ">
-                        <input type="text" class="form-control" id="email" placeholder="Email (if any)"
+                        <input type="text" class="form-control" id="email" placeholder="Personal Email (if any)"
                             name="email" value="{{ isset($employee) ? $employee->p_email : '' }}"
                             @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif  data-required="false"/>
-                        <label for="email">Email (if any)</label>
+                        <label for="email">Personal Email (if any)</label>
                     </div>
                 </div>
             </div>

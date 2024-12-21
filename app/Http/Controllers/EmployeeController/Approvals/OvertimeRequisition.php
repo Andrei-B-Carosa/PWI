@@ -22,11 +22,10 @@ class OvertimeRequisition extends Controller
         $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
         $filter_month = $rq->filter_month ?? false;
         $filter_year = $rq->filter_year ?? false;
-
-        $filter_group = $rq->filter_group ?? false;
+        $filter_group = isset($rq->filter_group) ? Crypt::decrypt($rq->filter_group) : false;
 
         $emp_id = Auth::user()->emp_id;
-        $group_id = HrisGroupApprover::where([['emp_id',$emp_id],['is_active',1]])->pluck('group_id');
+        $ApproversGroupIds = HrisGroupApprover::where([['emp_id',$emp_id],['is_active',1]])->pluck('group_id');
 
         $data = HrisEmployeeOvertimeRequest::with(['group_member','latest_approval_histories','employee','employee_position'])
         ->when($filter_status, function ($q) use ($filter_status) {
@@ -37,15 +36,22 @@ class OvertimeRequisition extends Controller
             ];
             $q->where('is_approved', $status[$filter_status]);
         })
+        ->when($filter_group, fn($q) =>
+            $q->whereHas('group_member',fn($q) =>
+                $q->where('group_id',$filter_group)
+            )
+        )
+        ->when(!$filter_group, fn($q) =>
+            $q->whereHas('group_member',fn($q) =>
+                $q->whereIn('group_id',$ApproversGroupIds)
+            )
+        )
         ->when($filter_month, fn($q) =>
             $q->whereRaw('MONTH(overtime_date) = ?', [$filter_month])
         )
         ->when($filter_year, fn($q) =>
             $q->whereRaw('YEAR(overtime_date) = ?', [$filter_year])
         )
-        ->whereHas('group_member',function($q) use($group_id){
-            $q->whereIn('group_id',$group_id);
-        })
         ->where([['emp_id','!=',$emp_id],['is_deleted',null]])
         ->orderBy('id', 'ASC')
         ->get();
@@ -68,6 +74,7 @@ class OvertimeRequisition extends Controller
 
             $item->count = $key + 1;
             $item->requestor = $item->employee->fullname();
+            $item->group_name = $item->group_member->group->name;
 
             $item->overtime_date = Carbon::parse($item->overtime_date)->format('m/d/Y');
             $item->overtime_from = Carbon::parse($item->overtime_from)->format('h:i A');
@@ -170,7 +177,7 @@ class OvertimeRequisition extends Controller
 
             $history[] = [
                 'is_approved' => 'pending',
-                'action' => $overtimeRequest->employee->fullname().' filed an overtime request',
+                'action' => $overtimeRequest->employee->fullname().' filed a overtime request',
                 'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y H:i A')
             ];
 

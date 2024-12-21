@@ -26,7 +26,18 @@ class AdminLogin extends Controller
         }
 
         $user = Auth::user();
-        $user_role =$user->user_roles;
+        $user_role = $user->user_roles;
+
+        if(!$user_role)
+        {
+            Auth::logout();
+            return response()->json([
+                'status' => 'error',
+                'message'=>'Account set-up is incomplete, try again later',
+                'payload'=>csrf_token()
+            ]);
+        }
+
         if(!$user->employee->is_active || !$user->is_active || !$user_role->is_active)
         {
             Auth::logout();

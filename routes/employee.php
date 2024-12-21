@@ -49,6 +49,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/validate_request', 'validate_request');
 
             Route::get('/widgets','widgets');
+            Route::post('/view_history','view_history');
         });
 
         Route::controller(Leave::class)->prefix('leave')->group(function() {
@@ -61,6 +62,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/check_leave_balance', 'check_leave_balance');
 
             Route::get('/widgets', 'widgets');
+            Route::post('/view_history','view_history');
 
         });
 
@@ -72,6 +74,8 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/validate_request', 'validate_request');
 
             Route::get('/widgets', 'widgets');
+            Route::post('/view_history','view_history');
+
         });
     });
 
@@ -82,6 +86,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
+            
             Route::post('/view_history', 'view_history');
         });
 
@@ -91,6 +96,8 @@ Route::group(['prefix'=>'hris/employee'], function() {
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
+
+            Route::post('/view_history', 'view_history');
         });
 
         Route::controller(ApproveOB::class)->prefix('official_business')->group(function() {
@@ -99,6 +106,8 @@ Route::group(['prefix'=>'hris/employee'], function() {
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
+
+            Route::post('/view_history', 'view_history');
         });
 
     });

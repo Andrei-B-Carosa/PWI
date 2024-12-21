@@ -47,7 +47,7 @@ export var dtEmployeeMasterlist = function (param=false) {
                                     <span class="mb-1 text-dark text-hover-primary fw-bolder">
                                         ${data} <span class="badge badge-outline badge-primary ">${row.emp_no??'No Employee Number'}</span>
                                     </span>
-                                    <div class="fs-7 text-muted fw-bolder">${row.p_email??'No Email Address'}</div>
+                                    <div class="fs-7 text-muted fw-bolder">${row.c_email??'No Email Address'}</div>
                                 </div>`;
                     }
                 },
@@ -57,12 +57,7 @@ export var dtEmployeeMasterlist = function (param=false) {
                     visible:false
                 },
                 {
-                    data: "p_email", name: "p_email", title: "Personal Email",
-                    sortable:false,
-                    visible:false
-                },
-                {
-                    data: "date_employed", name: "date_employed", title: "Date Employed",
+                    data: "c_email", name: "c_email", title: "Corporation Email",
                     sortable:false,
                     visible:false
                 },
@@ -73,16 +68,20 @@ export var dtEmployeeMasterlist = function (param=false) {
                     render(data,type,row){
                         return`<div class="d-flex flex-column">
                                     <span>${data}</span>
-                                    ${row.section_name ?`<span class="text-muted">${row.section_name}</span>`: ``}
+                                    ${row.position_name ?`<span class="text-muted">${row.position_name}</span>`: ``}
                                 </div>`;
                     }
                 },
                 {
-                    data: "section_name", name: "section_name", title: "Section",
+                    data: "position_name", name: "position_name", title: "Position",
                     sortable:false,
                     searchable:false,
                     className:'text-center',
                     visible:false,
+                },
+                {
+                    data: "date_employed", name: "date_employed", title: "Date Employed",
+                    sortable:false,
                 },
                 {
                     data: "is_active", name: "is_active", title: "Status",

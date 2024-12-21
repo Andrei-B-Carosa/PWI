@@ -133,6 +133,7 @@ export function fvOverTime(_table=false,param=false){
                                     if(res.status == 'success'){
                                         fvOverTime.resetForm();
                                         _Handlewidgets();
+                                        if(_this.attr('data-id')){ modal_state(modal_id); }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{

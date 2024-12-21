@@ -81,7 +81,7 @@ class EmployeeDetails extends Controller
         $request = $rq->merge(['id' => $department_id, 'type'=>'options']);
         $department = (new DepartmentOptions)->list($request);
 
-        $section_id  = $emp_details? Crypt::encrypt($emp_details->section_id):null;
+        $section_id  = $emp_details && $emp_details->section_id? Crypt::encrypt($emp_details->section_id):null;
         $request = $rq->merge(['id' => $section_id, 'type'=>'options']);
         $section = (new SectionOptions)->list($request);
 

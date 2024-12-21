@@ -63,7 +63,7 @@ export class Alert {
         const isRequired = option.isRequired ?? true;
         const inputPlaceholder = option.inputPlaceholder ?? "Enter your response";
         Swal.fire({
-            title: message,
+            html: message,
             icon: icon,
             input: 'text', // Input type
             inputPlaceholder: inputPlaceholder, // Placeholder text
@@ -170,8 +170,12 @@ export class Alert {
 
     static loading(message, option) {
         Swal.fire({
+            icon:'info',
             html: message,
             allowOutsideClick: false,
+            timer:3500,
+            timerProgressBar:true,
+            allowOutsideClick: () => !Swal.isLoading(),
             didOpen: () => {
                 Swal.showLoading();
                 if (typeof option.didOpen === "function") {

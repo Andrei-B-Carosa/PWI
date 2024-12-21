@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\EmployeeController\Request;
 
 use App\Http\Controllers\Controller;
+use App\Models\HrisApprovalHistory;
 use App\Models\HrisEmployeeLeaveRequest;
 use App\Models\HrisEmployeeOvertimeRequest;
 use App\Services\Reusable\DTServerSide;
+use App\Services\Reusable\GroupApproverNotification;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -124,8 +126,15 @@ class OverTime extends Controller
                 $query->update([ 'is_approved'=> null ]);
             }
 
-            DB::commit();
-            return response()->json(['status' => 'success','message'=>$message]);
+            // DB::commit();
+            $isNotified = (new GroupApproverNotification)->sendApprovalNotification($query,1,route('approver.ot_request'));
+            if($isNotified){
+                DB::commit();
+                return response()->json(['status' => 'success','message'=>$message]);
+            }else{
+                DB::rollback();
+                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+            }
         }catch(Exception $e){
             DB::rollback();
             return response()->json([
@@ -285,6 +294,66 @@ class OverTime extends Controller
         }catch(Exception $e)
         {
             return response()->json(['status'=>400,'message' =>$e->getMessage()]);
+        }
+    }
+
+    public function view_history(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+
+            $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):false;
+            if(!$id)
+            {
+                return response()->json(['status' => 'error','message'=>'Missing ID in Request']);
+            }
+
+            $overtimeRequest = HrisEmployeeOvertimeRequest::find($id);
+            $overtimeRequestHistory = HrisApprovalHistory::with('employee')->where([['entity_id',$id],['entity_table',1]])->get();
+            if(!$overtimeRequestHistory)
+            {
+                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
+            }
+
+            $history[] = [
+                'is_approved' => 'pending',
+                'action' => 'You filed a overtime request',
+                'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y H:i A')
+            ];
+
+            if($overtimeRequestHistory->isNotEmpty())
+            {
+                foreach($overtimeRequestHistory as $data){
+                    $action = '<span class="text-success fw-bold">Approved</span>'.' the overtime request';
+                    $is_approved = 'approved';
+                    $approver_remarks =$data->approver_remarks;
+                    $approver_level =$data->approver_level;
+                    $is_final_approver =$data->is_final_approver;
+                    if($data->is_approved ==2){
+                        $action = '<span class="text-danger fw-bold">Rejected</span> the overtime request';
+                        $is_approved = 'rejected';
+                    }
+
+                    $history[]=[
+                        'is_approved' => $is_approved,
+                        'action' => $data->employee->fullname().' '.$action,
+                        'approver_remarks' =>$approver_remarks,
+                        'approver_level' =>$approver_level,
+                        'is_final_approver' =>$is_final_approver,
+                        'recorded_at' =>Carbon::parse($data->created_at)->format('M d, Y H:i A')
+                    ];
+                }
+            }
+
+            $payload =base64_encode(json_encode($history));
+            return response()->json(['status' => 'success','message'=>'success', 'payload'=>$payload]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 

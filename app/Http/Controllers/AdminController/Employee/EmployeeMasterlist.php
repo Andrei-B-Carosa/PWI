@@ -41,8 +41,9 @@ class EmployeeMasterlist extends Controller
 
             $item->employee_name = $item->fullname();
             $item->emp_no = $item->emp_no;
-            $item->department_name = $emp_details->department->code;
-            $item->section_name = $emp_details->section->name;
+            $item->department_name = $emp_details->department->name;
+            $item->position_name = $emp_details->position->name;
+            $item->c_email = $item->emp_account->c_email;
             $item->date_employed = $emp_details->date_employed?Carbon::parse($emp_details->date_employed)->format('F j, Y'):'No Date Hired';
 
             $item->encrypted_id = Crypt::encrypt($item->id);

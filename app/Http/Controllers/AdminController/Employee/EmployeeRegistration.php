@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminController\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\EmployeeAccount;
 use App\Models\HrisEmployeePosition;
 use App\Services\Reusable\Select\ClassificationOptions;
 use App\Services\Reusable\Select\CompanyLocationOptions;
@@ -183,14 +184,14 @@ class EmployeeRegistration extends Controller
             $company_id = Crypt::decrypt($rq->company_id);
             $location_id = Crypt::decrypt($rq->location_id);
             $department_id = Crypt::decrypt($rq->department_id);
-            $section_id = Crypt::decrypt($rq->section_id);
+            $section_id = isset($rq->section_id) ?Crypt::decrypt($rq->section_id):null;
             $employment_id = Crypt::decrypt($rq->employment_id);
             $position_id = Crypt::decrypt($rq->position_id);
             $classification_id = Crypt::decrypt($rq->classification_id);
 
             $query = Employee::find($emp_id);
             if(!$query){
-                // THROW ERROR
+                return [ 'status' => 'error','message'=>'Employee record not found'];
             }
 
             $attribute = ['emp_id' =>$emp_id];
@@ -208,10 +209,12 @@ class EmployeeRegistration extends Controller
             ];
             $emp_position = HrisEmployeePosition::updateOrCreate($attribute,$value);
             if ($emp_position->wasRecentlyCreated) {
-                $emp_position->update(['created_by'=>$user_id,]);
+                $emp_position->update(['created_by'=>$user_id]);
+                EmployeeAccount::createAccount($query);
             }else{
                 $emp_position->update(['updated_by' => $user_id,]);
             }
+
             DB::commit();
             return [ 'status' => 'success','message'=>'Registration is Completed', 'payload' => $query->emp_no];
         } catch (\Exception $e) {
