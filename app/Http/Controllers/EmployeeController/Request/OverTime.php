@@ -97,7 +97,7 @@ class OverTime extends Controller
         try{
             DB::beginTransaction();
             $user_id = Auth::user()->emp_id;
-
+            $isResubmit = false;
             $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):null;
 
             $overtimeDate = Carbon::createFromFormat('m-d-Y', $rq->overtime_date)->format('Y-m-d');
@@ -124,16 +124,21 @@ class OverTime extends Controller
             //this will check if record is disapproved means its for resubmission
             if($query->is_approved == 2){
                 $query->update([ 'is_approved'=> null ]);
+                $isResubmit = true;
             }
 
-            // DB::commit();
-            $isNotified = (new GroupApproverNotification)->sendApprovalNotification($query,1,route('approver.ot_request'));
+            $isNotified = (new GroupApproverNotification)
+            ->sendApprovalNotification($query,1,'approver.ot_request',$isResubmit);
             if($isNotified){
                 DB::commit();
                 return response()->json(['status' => 'success','message'=>$message]);
             }else{
                 DB::rollback();
-                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    // 'message' => $e->getMessage(),
+                ]);
             }
         }catch(Exception $e){
             DB::rollback();

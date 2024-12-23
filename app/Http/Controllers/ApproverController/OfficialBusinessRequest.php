@@ -39,7 +39,7 @@ class OfficialBusinessRequest extends Controller
         }
 
         $now = Carbon::now();
-        if ($now->greaterThan($query->link_expired_at) || ($query->link == 1 || $query->link == 2)){
+        if ( ($now->greaterThan($query->link_expired_at) || $query->link_status ==2) || ($query->link == 1 || $query->link == 2) ){
             return [
                 'status' => 'error',
                 'message' => 'The link has expired or you already approve/reject the request !',
@@ -78,28 +78,34 @@ class OfficialBusinessRequest extends Controller
         try{
             DB::beginTransaction();
 
-            $data = self::isUrlValid($rq);
-            if (isset($data['status']) && $data['status'] === 'error') {
-                return response()->json($data);
-            }
-
-            $approver = HrisGroupApprover::where([['emp_id',$data->emp_id],['group_id',$data->group_id],['is_active',1]])->first();
-            if(!$approver){
+            $data = HrisGroupApproverNotification::where([['request_link_token',$rq->param]])->first();
+            if(!$data){
                 return response()->json([
                     'status' => 'error',
-                    'message'=>'You are not eligible for approving',
-                    'payload'=>'error'
+                    'message'=>'Link is invalid, Login to view all requests !',
+                    'payload'=>'error',
                 ]);
             }
 
-            $query = HrisGroupApproverNotification::where([['emp_id',$data->emp_id],['is_approved',null],['entity_table',3]])->latest()->first();
+            $query = HrisGroupApproverNotification::where([['emp_id',$data->emp_id],['is_approved',null],['entity_table',3]])->first();
             if($query){
+                $isApprover = HrisGroupApprover::where([['emp_id',$query->emp_id],['group_id',$query->group_id],['is_active',1]])->exists();
+                if(!$isApprover){
+                    return response()->json([
+                        'status' => 'error',
+                        'message'=>'You are not eligible for approving',
+                        'payload'=>'error'
+                    ]);
+                }
                 $view = self::modal($query);
             }else{
                 $view = self::modal(false);
             }
 
-            return response()->json(['status' => 'success','message'=>'success', 'payload'=>base64_encode($view)]);
+            return response()->json(['status' => 'success','message'=>'success', 'payload'=>[
+                'view'=>base64_encode($view),
+                'token'=>$query->request_link_token ?? false
+            ]]);
         }catch(Exception $e){
             DB::rollback();
             return response()->json([
@@ -115,6 +121,7 @@ class OfficialBusinessRequest extends Controller
         if($data && $data->id){
             $query = OBRequest::find($data->entity_id);
             $isCurrentApprover = (new OfficialBusiness)->isApprovingOpen($data->emp_id,$query->id,$query->group_member->group_id);
+            $latestApproval = $query->latest_approval_histories;
             $data = [
                 'encrypted_id' =>Crypt::encrypt($query->id),
                 'requestor' =>$query->employee->fullname(),
@@ -125,7 +132,10 @@ class OfficialBusinessRequest extends Controller
                 'purpose' =>$query->purpose,
                 'contact_person_id' =>optional($query->emp_contact_person)->fullname() ?? null,
                 'is_approved'=>$query->is_approved,
+                'approver_remarks'=> $latestApproval? $latestApproval->approver_remarks : '--',
+                'approver'=> $latestApproval?$latestApproval->employee->fullname() :false,
                 'ob_duration_hours' => Carbon::parse($query->ob_time_out)->diffInHours(Carbon::parse($query->ob_time_in)),
+                'is_required'=> $data->is_required,
             ];
         }
         return view('approver.ob_request',compact('data','isCurrentApprover'))->render();
@@ -139,9 +149,11 @@ class OfficialBusinessRequest extends Controller
             $id = Crypt::decrypt($rq->id);
             $obRequest = HrisEmployeeOfficialBusinessRequest::with('employee_position')->find($id);
             if(!$obRequest){
-                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
-            }elseif($obRequest->is_approved ==1 || $obRequest->is_approved ==2) {
-                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+                return response()->json(['status' => 'error','message'=>'OB Request Not Found']);
+            }elseif($obRequest->is_approved ==1) {
+                return response()->json(['status' => 'error','message'=>'Request is already approved']);
+            }elseif($obRequest->is_approved ==2) {
+                return response()->json(['status' => 'error','message'=>'Request is already rejected']);
             }
 
             $data = self::isUrlValid($rq);
@@ -170,6 +182,7 @@ class OfficialBusinessRequest extends Controller
                 'is_approved'=>$rq->is_approved,
                 'approver_level'=>$approver->approver_level,
                 'is_final_approver'=>$approver->is_final_approver,
+                'is_required'=>$approver->is_required,
                 'approver_remarks'=>$rq->approver_remarks,
                 'created_by'=>$data->emp_id,
             ]);

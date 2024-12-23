@@ -62,8 +62,17 @@
                                                 <p
                                                     style="margin-bottom:9px; color:#181C32; font-size: 16px; font-weight:600">
                                                     Dear Approver,</p>
-                                                <p style="margin-bottom:4px; color:#5E6278">{{ $data['message'] }}</p>
-                                                <p style="margin-bottom:2px; color:#5E6278">Click the button below to approve their request </p>
+                                                <p style="margin-bottom:4px; color:#5E6278">
+                                                    {{ $data['message'] }}
+                                                </p>
+                                                @if($data['isResubmit'])
+                                                    <br>
+                                                    <p style="margin-bottom:4px; color:#5E6278">
+                                                        This request is resubmitted
+                                                    </p>
+                                                @endif
+                                                <br>
+                                                <p style="margin-bottom:2px; color:#5E6278">Click the link below to approve/reject their request</p>
 
                                             </div>
                                             <a href="{{ $data['link'] }}" target="_blank"
@@ -75,7 +84,7 @@
                                 </tr>
                                 <tr>
                                     <td align="center" valign="center" style="font-size: 13px; padding:0 15px; text-align:center; font-weight: 500; color: #A1A5B7;font-family:Arial,Helvetica,sans-serif">
-                                        <p> © Copyright HRIS.</p>
+                                        <p> © Copyright HRIS</p>
                                     </td>
                                 </tr>
                             </tbody>

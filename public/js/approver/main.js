@@ -40,6 +40,8 @@ export async function page_handler(page, param){
 
 const _handlers = {
     ob_request: (page, param) => ApproverController(page, param),
+    ot_request: (page, param) => ApproverController(page, param),
+    leave_request: (page, param) => ApproverController(page, param),
 };
 
 $(document).ready(function(e){

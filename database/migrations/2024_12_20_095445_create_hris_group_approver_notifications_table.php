@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('emp_id');
             $table->tinyInteger('approver_level')->nullable();
             $table->tinyInteger('is_final_approver')->nullable()->comment('1=final approver ,null=not final approver');
+            $table->tinyInteger('is_required')->nullable();
 
             $table->dateTime('link_expired_at')->nullable();
             $table->tinyInteger('link_status')->nullable();

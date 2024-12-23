@@ -177,7 +177,7 @@ class ApplicationForLeave extends Controller
             }
 
             // Check if there are any required lower levels pending approval
-            $requiredLowerLevels = self::checkRequiredLowerLevels($leave_id,$group_id,$currentApprover);
+            $requiredLowerLevels = self::checkRequiredLowerLevels($leave_id,$group_id,$currentApprover,$user_id);
             if ($requiredLowerLevels) {
                 return false;
             }
@@ -227,7 +227,7 @@ class ApplicationForLeave extends Controller
 
     }
 
-    public function checkRequiredLowerLevels($leave_id,$group_id,$currentApprover)
+    public function checkRequiredLowerLevels($leave_id,$group_id,$currentApprover,$user_id)
     {
         if($currentApprover->is_required){
             return false;
@@ -236,7 +236,7 @@ class ApplicationForLeave extends Controller
         $lowestApprover = HrisGroupApprover::where([['group_id',$group_id],['is_active',1]])
         ->orderBy('is_final_approver', 'ASC')->orderBy('approver_level', 'DESC')->first();
 
-        $userApproverLevel = HrisGroupApprover::where([['group_id',$group_id],['emp_id',Auth::user()->emp_id],['is_active',1]])->first();
+        $userApproverLevel = HrisGroupApprover::where([['group_id',$group_id],['emp_id',$user_id],['is_active',1]])->first();
         if($userApproverLevel->approver_level == $lowestApprover->approver_level)
         {
             return false;
@@ -265,7 +265,7 @@ class ApplicationForLeave extends Controller
         }
 
         // If the pending approver is the current user, they can approve
-        if($pendingApprover->emp_id == Auth::user()->emp_id){
+        if($pendingApprover->emp_id == $user_id){
             return false;
         }
 

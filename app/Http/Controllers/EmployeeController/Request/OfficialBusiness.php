@@ -106,7 +106,7 @@ class OfficialBusiness extends Controller
             $obTimeOut = Carbon::createFromFormat('H:i', $rq->ob_time_out)->format('H:i');
 
             $obContactPerson = isset($rq->contact_person) ? Crypt::decrypt($rq->contact_person):null;
-            $sendEmail = true;
+            $isResubmit = false;
 
             $attribute = ['id'=>$id];
             $values = [
@@ -129,21 +129,20 @@ class OfficialBusiness extends Controller
             $query = OBRequest::updateOrCreate($attribute,$values);
             if($query->is_approved == 2){
                 $query->update([ 'is_approved'=> null ]);
-                $sendEmail = false;
-                $isNotified = true;
+                $isResubmit = true;
             }
-
-            if($sendEmail){
-                $isNotified = (new GroupApproverNotification)
-                ->sendApprovalNotification($query,3,'approver.ob_request');
-            }
-
+            $isNotified = (new GroupApproverNotification)
+                ->sendApprovalNotification($query,3,'approver.ob_request',$isResubmit);
             if($isNotified){
                 DB::commit();
                 return response()->json(['status' => 'success','message'=>$message]);
             }else{
                 DB::rollback();
-                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    // 'message' => $e->getMessage(),
+                ]);
             }
 
         }catch(Exception $e){

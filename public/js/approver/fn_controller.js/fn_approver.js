@@ -5,7 +5,7 @@ import {RequestHandler} from "../../global/request.js";
 
 export var ApproverController = function (page, param) {
 
-    const _modal = '#ob_request_modal';
+    const _modal = '#request_modal';
     const _div = '#kt_app_main';
     const _title = page
     .split('_') // Split the string at underscores
@@ -13,7 +13,7 @@ export var ApproverController = function (page, param) {
         index === 0 ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1)
     )
     .join(' ');
-    console.log(_title)
+
     async function ModalHandler(path = 'info')
     {
         const _request = new RequestHandler;
@@ -23,7 +23,15 @@ export var ApproverController = function (page, param) {
         _request.post('/hris/approver/'+page+'/'+path,_formData)
         .then((res) => {
             if(res.status == 'success'){
-                let view = window.atob(res.payload);
+                let view = '', payload = res.payload;
+                if(path == 'next-request'){
+                    if(payload.token){
+                        window.history.pushState(null, null,payload.token);
+                    }
+                    view =window.atob(payload.view);
+                }else if(path == 'info'){
+                    view =window.atob(payload);
+                }
                 $(_div).empty().append(view);
 
                 modal_state(_modal,'show');
@@ -75,14 +83,15 @@ export var ApproverController = function (page, param) {
                     _formData.append('approver_remarks',approver_remarks);
                     _request.post('/hris/approver/'+page+'/update',_formData)
                     .then((res) => {
-                        Alert.toast('success',res.message);
                         if(res.status == 'success')
                         {
-                            Alert.confirm('question','Approve next '+_title+' ?', {
+                            Alert.toast('success',res.message);
+                            Alert.confirm('question','Proceed to next '+_title+' ?', {
                                 onConfirm: function() {
                                     ModalHandler('next-request');
                                 },
                                 onCancel: function() {
+                                    // ModalHandler();
                                     Alert.loading('Redirecting you to login . . .',{
                                         didOpen:function(){
                                             setTimeout(function() {
@@ -92,12 +101,15 @@ export var ApproverController = function (page, param) {
                                     });
                                 }
                             })
+                        }else{
+                            Alert.alert(res.status,res.message, false);
+                            ModalHandler();
                         }
                     })
                     .catch((error) => {
                         console.log(error);
                         Alert.alert('error', "Something went wrong. Try again later", false);
-                        // modal_state(_modal,'show');
+                        ModalHandler();
                     })
                     .finally((error) => {
                         // modal_state(_modal,'show');
@@ -109,14 +121,6 @@ export var ApproverController = function (page, param) {
 
             });
         })
-
-        // $(document).on('click','button.next-request',function(e){
-        //     e.preventDefault();
-        //     e.stopImmediatePropagation();
-
-        //     modal_state(_modal,'hide');
-        //     ModalHandler('next-request');
-        // })
     }
 
     $(async function () {

@@ -35,7 +35,6 @@ class GroupApproverNotification
                 'column_date'=>'leave_filing_date',
                 'column_from'=>'leave_date_from',
                 'column_to'=>'leave_date_to',
-
             ],
             3 =>[
                 'subject'=>'Approval for OB Request',
@@ -47,14 +46,14 @@ class GroupApproverNotification
         ];
     }
 
-    public function sendApprovalNotification($query, $entity_table, $route)
+    public function sendApprovalNotification($query, $entity_table, $route,$isResubmit)
     {
         $entity_id = $query->id;
         $group_id = $query->group_member->group_id;
         $isNotified = false;
 
         $approvers = self::getGroupApprovers($entity_id, $entity_table, $group_id);
-        foreach ($approvers as $approverRecord) {
+        foreach ($approvers as $key => $approverRecord) {
             $approver = EmployeeAccount::where([['emp_id', $approverRecord->emp_id],['is_active', 1]])->first();
             if (!$approver || !$approver->c_email) {
                 $isNotified = false;
@@ -70,14 +69,20 @@ class GroupApproverNotification
             ])->where(function ($query) {
                 $query->where('is_approved', 1)
                       ->orWhere('is_approved', null);
-            })->exists();
+            })->latest()->first();
+
             if ($alreadyNotified) {
-                continue; // Skip if already notified
+                //stop loop if the notified approver is required and their approval is pending
+                if($alreadyNotified->is_required){
+                    $isNotified = true;
+                    break;
+                }
+                continue;
             }
 
             // Prepare notification data
             [$link,$token] = self::generateLink($query, $approver, $route);
-            $data = $this->prepareNotificationData($query, $entity_table, $approver,$link);
+            $data = $this->prepareNotificationData($query, $entity_table, $approver,$link,$isResubmit);
             try {
                 Mail::to($approver->c_email)->send(new GroupApproverNotificationMail($data));
                 $isNotified = true; // Successfully notified
@@ -87,7 +92,7 @@ class GroupApproverNotification
                 break; // Exit on email failure
             }
 
-            // Log the notification
+            // // Log the notification
             if($isNotified){
                 HrisGroupApproverNotification::create([
                     'entity_id' => $entity_id,
@@ -99,6 +104,7 @@ class GroupApproverNotification
                     'emp_id' => $approverRecord->emp_id,
                     'approver_level' => $approverRecord->approver_level,
                     'is_final_approver' => $approverRecord->is_final_approver,
+                    'is_required' =>$approverRecord->is_required,
                 ]);
             }
 
@@ -107,10 +113,8 @@ class GroupApproverNotification
                 break;
             }
         }
-
         return $isNotified;
     }
-
 
     public function getGroupApprovers($entity_id,$entity_table,$group_id)
     {
@@ -137,7 +141,7 @@ class GroupApproverNotification
         return [route($route, $routeData),$uniqueToken];
     }
 
-    private function prepareNotificationData($query, $entity_table, $approver, $link)
+    private function prepareNotificationData($query, $entity_table, $approver, $link,$isResubmit)
     {
         return [
             'subject' => $this->type[$entity_table]['subject'],
@@ -147,6 +151,7 @@ class GroupApproverNotification
                         {$query->{$this->type[$entity_table]['column_from']}}
                         to {$query->{$this->type[$entity_table]['column_to']}}.",
             'link' => $link,
+            'isResubmit'=>$isResubmit,
         ];
     }
 }

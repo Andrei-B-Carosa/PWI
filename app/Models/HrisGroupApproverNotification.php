@@ -17,6 +17,7 @@ class HrisGroupApproverNotification extends Model
         'link_status',
         'link_expired_at',
         'is_approved',
+        'is_required',
         'is_final_approver',
         'group_id',
         'created_by',

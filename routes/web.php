@@ -48,8 +48,8 @@ Route::group(['prefix'=>'hris'], function() {
             Route::post('/info', 'info');
         });
 
-        Route::controller(LeaveRequest::class)->prefix('ot_request')->group(function() {
-            Route::get('/{token}', 'index')->name('approver.ot_request');
+        Route::controller(LeaveRequest::class)->prefix('leave_request')->group(function() {
+            Route::get('/{token}', 'index')->name('approver.leave_request');
             Route::post('/update', 'update');
             Route::post('/next-request', 'next_request');
             Route::post('/info', 'info');

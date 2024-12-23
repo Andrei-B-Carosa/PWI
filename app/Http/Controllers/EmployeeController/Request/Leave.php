@@ -103,6 +103,7 @@ class Leave extends Controller
             $leaveDate = Carbon::createFromFormat('m-d-Y', $rq->leave_filing_date)->format('Y-m-d');
             $leaveFrom = Carbon::createFromFormat('m-d-Y', $rq->leave_date_from)->format('Y-m-d');
             $leaveTo = Carbon::createFromFormat('m-d-Y', $rq->leave_date_to)->format('Y-m-d');
+            $isResubmit = false;
 
             $attribute = ['id'=>$id];
             $values = [
@@ -125,15 +126,21 @@ class Leave extends Controller
             $query = HrisEmployeeLeaveRequest::updateOrCreate($attribute,$values);
             if($query->is_approved == 2){
                 $query->update([ 'is_approved'=> null ]);
+                $isResubmit = true;
             }
 
-            $isNotified = (new GroupApproverNotification)->sendApprovalNotification($query,2,route('approver.leave_request'));
+            $isNotified = (new GroupApproverNotification)
+            ->sendApprovalNotification($query,2,'approver.leave_request',$isResubmit);
             if($isNotified){
                 DB::commit();
                 return response()->json(['status' => 'success','message'=>$message]);
             }else{
                 DB::rollback();
-                return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    // 'message' => $e->getMessage(),
+                ]);
             }
         }catch(Exception $e){
             DB::rollback();
