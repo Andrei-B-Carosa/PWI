@@ -40,17 +40,16 @@ class PageController extends Controller
         ->exists();
         foreach($query as $data)
         {
-            if($data->file_id == 7 && (!$is_approver || !$is_guard)){
-                continue;
-            }
-
-            if($data->file_id == 7 && $is_guard && $data->id !=12){
+            if($data->file_id == 7 && (!$is_approver && !$is_guard)){
                 continue;
             }
 
             $file_layer = [];
             foreach($data->system_file->file_layer as $row)
             {
+                if($data->file_id == 7 && $is_guard && $row->id !=12){
+                    continue;
+                }
 
                 $file_layer[]=[
                     'name'=>$row->name,

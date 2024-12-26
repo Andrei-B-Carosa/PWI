@@ -24,7 +24,6 @@ class OfficialBusiness extends Controller
             return $item;
         });
 
-
         $table = new DTServerSide($rq, $data);
         $table->renderTable();
 

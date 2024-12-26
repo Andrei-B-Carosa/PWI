@@ -7,6 +7,7 @@ use App\Models\HrisApprovalHistory;
 use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeeLeaveRequest;
 use App\Models\HrisEmployeeOfficialBusinessRequest;
+use App\Models\HrisEmployeePosition;
 use App\Models\HrisGroupApprover;
 use App\Services\Reusable\DTServerSide;
 use App\Services\Reusable\GroupApproverNotification;
@@ -30,6 +31,11 @@ class OfficialBusiness extends Controller
 
         // $ApproverIds = HrisGroupApprover::where([['is_active',1],['is_deleted',null]])->pluck('emp_id');
         $ApproversGroupIds = HrisGroupApprover::where([['emp_id',$emp_id],['is_active',1]])->pluck('group_id');
+        $isGuard = HrisEmployeePosition::where([['emp_id',Auth::user()->emp_id],['is_active',1]])
+        ->whereHas('position', function ($q) {
+            $q->whereRaw('LOWER(name) = ?', ['guard']);
+        })
+        ->exists();
 
         $data = HrisEmployeeOfficialBusinessRequest::with(['latest_approval_histories','employee','employee_position'])
         ->when($filter_group, fn($q) =>
@@ -37,7 +43,7 @@ class OfficialBusiness extends Controller
                 $q->where('group_id',$filter_group)
             )
         )
-        ->when(!$filter_group, fn($q) =>
+        ->when(!$filter_group && !$isGuard, fn($q) =>
             $q->whereHas('group_member',fn($q) =>
                 $q->whereIn('group_id',$ApproversGroupIds)
             )
