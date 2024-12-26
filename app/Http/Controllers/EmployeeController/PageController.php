@@ -4,6 +4,7 @@ namespace App\Http\Controllers\EmployeeController;
 
 use App\Http\Controllers\Controller;
 use App\Models\HrisApprovingOfficer;
+use App\Models\HrisEmployeePosition;
 use App\Models\HrisGroupApprover;
 use App\Models\HrisRoleAccess;
 use App\Models\HrisSystemFile;
@@ -32,15 +33,25 @@ class PageController extends Controller
 
         $result = [];
         $is_approver = HrisGroupApprover::where([['emp_id',Auth::user()->emp_id],['is_active',1]])->exists();
+        $is_guard = HrisEmployeePosition::where([['emp_id',Auth::user()->emp_id],['is_active',1]])
+        ->whereHas('position', function ($q) {
+            $q->whereRaw('LOWER(name) = ?', ['guard']);
+        })
+        ->exists();
         foreach($query as $data)
         {
-            if($data->file_id == 7 && !$is_approver){
+            if($data->file_id == 7 && (!$is_approver || !$is_guard)){
+                continue;
+            }
+
+            if($data->file_id == 7 && $is_guard && $data->id !=12){
                 continue;
             }
 
             $file_layer = [];
             foreach($data->system_file->file_layer as $row)
             {
+
                 $file_layer[]=[
                     'name'=>$row->name,
                     'href'=>$row->href,

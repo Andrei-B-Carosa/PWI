@@ -189,10 +189,17 @@ class OfficialBusinessRequest extends Controller
 
             if($approver->is_final_approver != 1 && $rq->is_approved != 2){
                 $isNotified = (new GroupApproverNotification)
-                ->sendApprovalNotification($obRequest,3,'approver.ob_request',$approver->approver_level);
-                if(!$isNotified){
+                ->sendApprovalNotification($obRequest,3,'approver.ob_request',false);
+                if($isNotified){
+                    DB::commit();
+                    return response()->json(['status' => 'success','message'=>'OB Request is updated']);
+                }else{
                     DB::rollback();
-                    return response()->json(['status' => 'error','message'=>'Something went wrong, try again later']);
+                    return response()->json([
+                        'status' => 'error',
+                        'message'=>'Something went wrong, try again later',
+                        // 'message' => $e->getMessage(),
+                    ]);
                 }
             }
             DB::commit();

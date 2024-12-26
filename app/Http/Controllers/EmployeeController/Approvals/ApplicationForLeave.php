@@ -8,6 +8,7 @@ use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeeLeaveRequest;
 use App\Models\HrisGroupApprover;
 use App\Services\Reusable\DTServerSide;
+use App\Services\Reusable\GroupApproverNotification;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -144,8 +145,21 @@ class ApplicationForLeave extends Controller
                 'created_by'=>$user_id,
             ]);
 
-            DB::commit();
-            return response()->json(['status' => 'info','message'=>'OB Request is updated']);
+            if($approvingOfficer->is_final_approver != 1 && $rq->is_approved != 2){
+                $isNotified = (new GroupApproverNotification)
+                ->sendApprovalNotification($leaveRequest,2,'approver.leave_request');
+                if($isNotified){
+                    DB::commit();
+                    return response()->json(['status' => 'success','message'=>'Leave Request is updated']);
+                }else{
+                    DB::rollback();
+                    return response()->json([
+                        'status' => 'error',
+                        'message'=>'Something went wrong, try again later',
+                        // 'message' => $e->getMessage(),
+                    ]);
+                }
+            }
         }catch(\Throwable $e){
             DB::rollback();
             return response()->json([

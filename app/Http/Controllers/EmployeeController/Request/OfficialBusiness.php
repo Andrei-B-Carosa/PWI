@@ -104,7 +104,6 @@ class OfficialBusiness extends Controller
             $obFillingDate = Carbon::createFromFormat('m-d-Y', $rq->ob_filing_date)->format('Y-m-d');
             $obTimeIn = Carbon::createFromFormat('H:i', $rq->ob_time_in)->format('H:i');
             $obTimeOut = Carbon::createFromFormat('H:i', $rq->ob_time_out)->format('H:i');
-
             $obContactPerson = isset($rq->contact_person) ? Crypt::decrypt($rq->contact_person):null;
             $isResubmit = false;
 
@@ -113,7 +112,7 @@ class OfficialBusiness extends Controller
                 'ob_time_out' => $obTimeOut,
                 'ob_time_in' => $obTimeIn,
                 'destination' => $rq->destination,
-                'contact_person' => $obContactPerson,
+                'contact_person_id' => $obContactPerson,
                 'purpose' => $rq->purpose,
             ];
             if($id == null){

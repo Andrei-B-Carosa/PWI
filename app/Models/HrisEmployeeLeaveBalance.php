@@ -19,4 +19,9 @@ class HrisEmployeeLeaveBalance extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function leave_type()
+    {
+        return $this->belongsTo(HrisLeaveType::class,'leave_type_id');
+    }
 }

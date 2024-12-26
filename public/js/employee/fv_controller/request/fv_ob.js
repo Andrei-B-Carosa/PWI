@@ -55,7 +55,7 @@ export function fvObRequest(_table=false,param=false){
                         },
                         ob_time_out: fv_validator(),
                         ob_time_in: fv_validator(),
-                        // contact_person: fv_validator(),
+                        contact_person: fv_validator(),
                         purpose: fv_validator(),
                     },
                     plugins: {
@@ -88,8 +88,7 @@ export function fvObRequest(_table=false,param=false){
                         $('input[name="ob_time_in"], input[name="ob_time_out"]').each(function() {
                             this._flatpickr.setDate(formattedTime);
                         });
-                        $('select[name="contact_person"]').val('').trigger('change');
-
+                        $('select[name="contact_person"]').val('').trigger('change').attr('disabled',false);
                     }
                 })
             })

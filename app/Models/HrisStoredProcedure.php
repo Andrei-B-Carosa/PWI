@@ -27,4 +27,10 @@ class HrisStoredProcedure extends Model
             DB::select('call sp_get_leave_request()')
         );
     }
+
+    public static function sp_get_approval_history($emp_id){
+        return static::hydrate(
+            DB::select('call sp_get_approval_history(?)',[$emp_id])
+        );
+    }
 }

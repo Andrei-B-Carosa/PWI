@@ -210,7 +210,7 @@ class EmployeeRegistration extends Controller
             $emp_position = HrisEmployeePosition::updateOrCreate($attribute,$value);
             if ($emp_position->wasRecentlyCreated) {
                 $emp_position->update(['created_by'=>$user_id]);
-                EmployeeAccount::createAccount($query);
+                EmployeeAccount::createAccount($query,$user_id);
             }else{
                 $emp_position->update(['updated_by' => $user_id,]);
             }

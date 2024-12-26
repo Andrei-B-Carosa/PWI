@@ -43,12 +43,6 @@
 
                     <div class="separator my-2"></div>
 
-                    <div class="menu-item px-5">
-                        <a href="account/overview.html" class="menu-link px-5">
-                            My Profile
-                        </a>
-                    </div>
-
                     <div class="menu-item px-5" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
                         data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
                         <a href="#" class="menu-link px-5">

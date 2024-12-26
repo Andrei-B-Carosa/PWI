@@ -235,6 +235,7 @@ export var dtObRequest = function (param=false) {
                     $('textarea[name="purpose"]').val(payload.purpose);
                     $('input[name="destination"]').val(payload.destination);
                     $(modal_id).find('button.submit').attr('data-id',id);
+                    trigger_select('select[name="contact_person"]',payload.contact_person_id);
                 })
                 .catch((error) => {
                     console.log(error);

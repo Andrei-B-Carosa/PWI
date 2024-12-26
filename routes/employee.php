@@ -4,6 +4,7 @@ use App\Http\Controllers\AccessController\EmployeeLogin as Login;
 use App\Http\Controllers\EmployeeController\Approvals\ApplicationForLeave as ApproveLeave;
 use App\Http\Controllers\EmployeeController\Approvals\OfficialBusiness as ApproveOB;
 use App\Http\Controllers\EmployeeController\Approvals\OvertimeRequisition as  ApproveOt;
+use App\Http\Controllers\EmployeeController\Home as HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController\PageController as Page;
 use App\Http\Controllers\EmployeeController\Profile\Action as ProfileAction;
@@ -37,6 +38,14 @@ Route::group(['prefix'=>'hris/employee'], function() {
             }
         }
 
+    });
+
+    Route::controller(HomeController::class)->prefix('home')->group(function() {
+        Route::get('/leave_credit', 'leave_credit');
+        Route::post('/leave_credit_history', 'leave_credit_history');
+        Route::post('/approval_history', 'approval_history');
+        Route::get('/group_details', 'group_details');
+        Route::post('/get_group_members', 'get_group_members');
     });
 
     Route::group(['prefix'=>'request'], function() {
@@ -86,7 +95,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
-            
+
             Route::post('/view_history', 'view_history');
         });
 

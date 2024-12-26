@@ -121,13 +121,13 @@
         <div class="card-body py-0">
             <div class="d-flex flex-column flex-xl-row p-5">
                 <div class="flex-lg-row-fluid">
-                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-                    <div id="leave_request_wrapper">
-                        <table class="table table-striped table-sm align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
-                                id="leave_request_table">
-                        </table>
+                    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                        <div id="leave_request_wrapper">
+                            <table class="table table-striped table-sm align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+                                    id="leave_request_table">
+                            </table>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         </div>

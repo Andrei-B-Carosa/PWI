@@ -27,4 +27,19 @@ class HrisApprovalHistory extends Model
         return $this->belongsTo(Employee::class,'emp_id');
     }
 
+    public function overtime()
+    {
+        return $this->belongsTo(HrisEmployeeOvertimeRequest::class,'entity_id');
+    }
+
+    public function official_business()
+    {
+        return $this->belongsTo(HrisEmployeeOfficialBusinessRequest::class,'entity_id');
+    }
+
+    public function leave()
+    {
+        return $this->belongsTo(HrisEmployeeLeaveRequest::class,'entity_id');
+    }
+
 }

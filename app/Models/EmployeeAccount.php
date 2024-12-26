@@ -32,7 +32,7 @@ class EmployeeAccount extends Authenticatable
         'bypass_key',
     ];
 
-    public static function createAccount($employee)
+    public static function createAccount($employee,$user_id)
     {
         $hashedPassword = Hash::make($employee->emp_no);
         $username = strtolower($employee->fname.'.'.$employee->lname);
@@ -47,8 +47,16 @@ class EmployeeAccount extends Authenticatable
                 'c_email' =>$c_email,
                 'bypass_key' => self::generateUniqueBypassKey(),
                 'is_active' => 1,
-                'created_at' => Carbon::now(),
+                'created_by'=>$user_id
             ]);
+
+            HrisUserRole::create([
+                'emp_id' => $employee->id,
+                'role_id' => 2,
+                'is_active' => 1,
+                'created_by'=>$user_id
+            ]);
+
             return true;
         }
         return false;
@@ -64,7 +72,6 @@ class EmployeeAccount extends Authenticatable
             $exists = DB::table('employee_accounts')->where('bypass_key', $bypassKey)->exists();
 
         } while ($exists); // Repeat until a unique key is generated
-
         return $bypassKey;
     }
 

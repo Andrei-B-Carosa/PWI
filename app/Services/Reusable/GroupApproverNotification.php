@@ -46,7 +46,7 @@ class GroupApproverNotification
         ];
     }
 
-    public function sendApprovalNotification($query, $entity_table, $route,$isResubmit)
+    public function sendApprovalNotification($query, $entity_table, $route,$isResubmit=false)
     {
         $entity_id = $query->id;
         $group_id = $query->group_member->group_id;
@@ -84,7 +84,7 @@ class GroupApproverNotification
             [$link,$token] = self::generateLink($query, $approver, $route);
             $data = $this->prepareNotificationData($query, $entity_table, $approver,$link,$isResubmit);
             try {
-                Mail::to($approver->c_email)->send(new GroupApproverNotificationMail($data));
+                Mail::to($approver->c_email)->later(now()->addMinute(), new GroupApproverNotificationMail($data));
                 $isNotified = true; // Successfully notified
             } catch (\Exception $e) {
                 Log::error("Email failed to send to approver {$approver->employee->fullname()}: " . $e->getMessage());
