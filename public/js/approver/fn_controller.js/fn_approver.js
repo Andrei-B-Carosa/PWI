@@ -24,6 +24,7 @@ export var ApproverController = function (page, param) {
         .then((res) => {
             if(res.status == 'success'){
                 let view = '', payload = res.payload;
+
                 if(path == 'next-request'){
                     if(payload.token){
                         window.history.pushState(null, null,payload.token);
@@ -33,6 +34,7 @@ export var ApproverController = function (page, param) {
                     view =window.atob(payload);
                 }
                 $(_div).empty().append(view);
+                console.log(view)
 
                 modal_state(_modal,'show');
                 ModalEvents();

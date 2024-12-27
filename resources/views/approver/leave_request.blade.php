@@ -1,4 +1,4 @@
-<div class="modal fade" id="ob_request_modal" tabindex="-1" aria-hidden="false" data-bs-backdrop="static"
+<div class="modal fade" id="request_modal" tabindex="-1" aria-hidden="false" data-bs-backdrop="static"
     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
@@ -69,12 +69,12 @@
                 </div>
                 <div class="modal-footer flex-center border-0 pt-0">
                     @if($data['is_approved'] == null && $isCurrentApprover)
-                        <button type="button" modal-id="#ob_request_modal" data-id="{{ $data['encrypted_id'] }}" id="" class="btn btn-success me-4 action" data-action="approve">
+                        <button type="button" modal-id="#request_modal" data-id="{{ $data['encrypted_id'] }}" id="" class="btn btn-success me-4 action" data-action="approve">
                             <span class="indicator-label">Approve</span>
                             <span class="indicator-progress">Please wait...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
-                        <button type="button" modal-id="#ob_request_modal" data-id="{{ $data['encrypted_id'] }}"
+                        <button type="button" modal-id="#request_modal" data-id="{{ $data['encrypted_id'] }}"
                         class="btn btn-danger me-3 action" data-action="reject">Reject</button>
                     @endif
 

@@ -116,7 +116,7 @@ class LeaveRequest extends Controller
         $isCurrentApprover = false;
         if($data && $data->id){
             $query = EmployeeLeaveRequest::find($data->entity_id);
-            $isCurrentApprover = (new Leave)->isApprovingOpen($data->emp_id,$query->id,$query->group_member->group_id);
+            $isCurrentApprover = (new ApplicationForLeave)->isApprovingOpen($data->emp_id,$query->id,$query->group_member->group_id);
             $latestApproval = $query->latest_approval_histories;
             $data = [
                 'encrypted_id' =>Crypt::encrypt($query->id),
