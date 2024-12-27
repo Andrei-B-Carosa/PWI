@@ -59,7 +59,7 @@
                                 </div>
                             </div>
                             <div class="m-0">
-                                <div class="fw-semibold text-gray-600 fs-5">Overtime duration:</div>
+                                <div class="fw-semibold text-gray-600 fs-5">Leave dates:</div>
                                 <div class="fw-bold fs-4 text-gray-800 d-flex align-items-center">
                                     {{ $data['leave_date_from'] }} to {{ $data['leave_date_to'] }}
                                 </div>
