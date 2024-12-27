@@ -24,24 +24,12 @@ class GroupApproverNotification
         $this->type = [
             1 =>[
                 'subject'=>'Approval for OT Request',
-                'body'=>'is requesting to render overtime from',
-                'column_date'=>'overtime_date',
-                'column_from'=>'overtime_from',
-                'column_to'=>'overtime_to',
             ],
             2 =>[
                 'subject'=>'Approval for Leave Request',
-                'body'=>'is requesting for your authorization to leave from',
-                'column_date'=>'leave_filing_date',
-                'column_from'=>'leave_date_from',
-                'column_to'=>'leave_date_to',
             ],
             3 =>[
                 'subject'=>'Approval for OB Request',
-                'body'=>'is requesting for official business from',
-                'column_date'=>'ob_filing_date',
-                'column_from'=>'ob_time_out',
-                'column_to'=>'ob_time_in',
             ],
         ];
     }
@@ -79,10 +67,10 @@ class GroupApproverNotification
                 }
                 continue;
             }
-
             // Prepare notification data
             [$link,$token] = self::generateLink($query, $approver, $route);
-            $data = $this->prepareNotificationData($query, $entity_table, $approver,$link,$isResubmit);
+            $data = $this->prepareNotificationData($query, $entity_table, $approver,$link,$isResubmit,$approverRecord);
+            if($data===false){ return $data; }
             try {
                 Mail::to($approver->c_email)->later(now()->addMinute(), new GroupApproverNotificationMail($data));
                 $isNotified = true; // Successfully notified
@@ -141,19 +129,120 @@ class GroupApproverNotification
         return [route($route, $routeData),$uniqueToken];
     }
 
-    private function prepareNotificationData($query, $entity_table, $approver, $link,$isResubmit)
+    public function prepareNotificationData($query, $entity_table, $approver, $link,$isResubmit,$approverRecord)
     {
+        $message =  match($entity_table){
+            1=>self::prepareMessageOvertime($query,$isResubmit),
+            2=>self::prepareMessageLeave($query,$isResubmit),
+            3=>self::prepareMessagOfficialBusiness($query,$isResubmit),
+            default=>false,
+        };
+
+        if($message === false){   return $message; }
+
         return [
+            'approver'=> $approverRecord->employee->fullname(),
+            'approver_level'=> $approverRecord->approver_level,
+            'is_final_approver'=> $approverRecord->is_final_approver,
+            'is_required'=> $approverRecord->is_required,
             'subject' => $this->type[$entity_table]['subject'],
-            'message' => "{$query->employee->fullname()}
-                        {$this->type[$entity_table]['body']}
-                        {$query->{$this->type[$entity_table]['column_date']}}
-                        {$query->{$this->type[$entity_table]['column_from']}}
-                        to {$query->{$this->type[$entity_table]['column_to']}}.",
+            'message' => $message,
             'link' => $link,
             'isResubmit'=>$isResubmit,
         ];
     }
+
+    public function prepareMessageOvertime($query,$isResubmit)
+    {
+        $isResubmit = $isResubmit?'This request is resubmitted':'';
+        $html = '
+        <p style="margin-bottom:20px; color:#5E6278">
+            '.$query->employee->fullname().' is requesting for your authorization to render overtime, below are the details.'.$isResubmit.'
+        </p>
+        <div style="margin-bottom: 10px">
+            <div style="padding-bottom:9px">
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OT Filing Date</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif"> '.Carbon::parse($query->overtime_date)->format('F d, Y').'</div>
+                </div>
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->overtime_from)->format('h:ia').' to '.Carbon::parse($query->overtime_to)->format('h:ia').'</div>
+                </div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.$query->reason.'</div>
+                </div>
+                <div class="separator separator-dashed" style="margin:15px 0"></div>
+            </div>
+        </div>';
+
+        return $html;
+    }
+
+    public function prepareMessageLeave($query,$isResubmit)
+    {
+        $isResubmit = $isResubmit?'This request is resubmitted':'';
+        $html = '
+        <p style="margin-bottom:20px; color:#5E6278">
+            '.$query->employee->fullname().' is requesting for your authorization to leave, below are the details. '.$isResubmit.'
+        </p>
+        <div style="margin-bottom: 10px">
+            <div style="padding-bottom:9px">
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Leave Filing Date</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif"> '.Carbon::parse($query->leave_filing_date)->format('F d, Y').'</div>
+                </div>
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->date_from)->format('F d, Y').' to '.Carbon::parse($query->date_to)->format('F d, Y').'</div>
+                </div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.$query->reason.'</div>
+                </div>
+                <div class="separator separator-dashed" style="margin:15px 0"></div>
+            </div>
+        </div>';
+        return $html;
+    }
+
+    public function prepareMessagOfficialBusiness($query,$isResubmit)
+    {
+        $isResubmit = $isResubmit?'This request is resubmitted':'';
+        $html = '
+        <p style="margin-bottom:20px; color:#5E6278">
+            '.$query->employee->fullname().' is requesting for official business, below are the details.'.$isResubmit.'
+        </p>
+        <div style="margin-bottom: 10px">
+            <div style="padding-bottom:9px">
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OB Filing Date</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->ob_filing_date)->format('F d, Y').'</div>
+                </div>
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Time Out - Time In</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->ob_time_out)->format('h:ia').' to '.Carbon::parse($query->ob_time_in)->format('h:ia').'</div>
+                </div>
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Contact Person</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.$query->emp_contact_person->fullname().'</div>
+                </div>
+                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Destination</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.$query->destination.'</div>
+                </div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Purpose :</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.$query->purpose.'</div>
+                </div>
+                <div class="separator separator-dashed" style="margin:15px 0"></div>
+            </div>
+        </div>
+        ';
+        return $html;
+    }
+
 }
 
 ?>

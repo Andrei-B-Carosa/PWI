@@ -11,9 +11,9 @@ Route::get('/', function(){
     return redirect()->route('employee.form.login');
 });
 
-Route::get('/test-mail', function(){
-    return view('email.approver_notification');
-});
+// Route::get('/test-mail', function(){
+//     return view('email.approver_notification');
+// });
 
 //EMPLOYEE LOGIN & LOGOUT
 

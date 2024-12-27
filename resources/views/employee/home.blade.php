@@ -19,7 +19,7 @@
     </div>
 
     <div class="row g-5 g-xl-10">
-        <div class="col-xxl-4 col-md-4 mb-5 mb-lg-10">
+        <div class="col-xxl-4 col-12">
             <div class="card">
                 <div class="card-body p-0">
                     <div class="px-9 pt-7 card-rounded h-275px w-100" style="background-color: #1B283F;">
@@ -38,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xxl-8">
+        <div class="col-xxl-8 col-12">
             <div class="card card-flush h-xl-100">
                 <div class="card-header pt-7">
                     <h4 class="card-title align-items-start flex-column">

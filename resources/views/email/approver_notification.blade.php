@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
-
 <head>
     <title>{{ $data['subject'] }}</title>
     <meta charset="utf-8" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
-
     <link rel="canonical" href="../../index.html" />
     <link rel="shortcut icon" href="../../assets/media/logos/favicon.ico" />
-
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <link href="{{ asset('assets/admin/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/admin/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-
 </head>
-
 <body id="kt_body" class="app-blank">
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         <div class="d-flex flex-column flex-column-fluid">
@@ -57,27 +51,16 @@
                                                 <p style="margin-bottom:2px; color:#7E8299">
                                                 </p>
                                             </div>
-                                            <div
-                                                style="text-align:start; font-size: 15px; font-weight: 500; margin-bottom: 27px; font-family:Arial,Helvetica,sans-serif;">
-                                                <p
-                                                    style="margin-bottom:9px; color:#181C32; font-size: 16px; font-weight:600">
-                                                    Dear Approver,</p>
-                                                <p style="margin-bottom:4px; color:#5E6278">
-                                                    {{ $data['message'] }}
+                                            <div style="text-align:start; font-size: 15px; font-weight: 500; margin-bottom: 27px; font-family:Arial,Helvetica,sans-serif;">
+                                                <p style="margin-bottom:9px; color:#181C32; font-size: 16px; font-weight:600">
+                                                    Dear {{ $data['approver']??' Approver' }},
                                                 </p>
-                                                @if($data['isResubmit'])
-                                                    <br>
-                                                    <p style="margin-bottom:4px; color:#5E6278">
-                                                        This request is resubmitted
-                                                    </p>
-                                                @endif
-                                                <br>
+                                                {!! $data['message'] !!}
                                                 <p style="margin-bottom:2px; color:#5E6278">Click the link below to approve/reject their request</p>
-
                                             </div>
                                             <a href="{{ $data['link'] }}" target="_blank"
                                                 style="position: relative;background-color:#50cd89; border-radius:6px; display:inline-block; margin-top:27px; padding:11px 19px; color: #FFFFFF; font-size: 14px; font-weight:500;font-family:Arial,Helvetica,sans-serif;">
-                                                Approve Here
+                                                Click Here
                                             </a>
                                         </div>
                                     </td>
@@ -91,19 +74,8 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
-
-    <script>
-        var hostUrl = "../../assets/index.html";
-    </script>
-
-    <script src="{{ asset('assets/admin/plugins/global/plugins.bundle.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/scripts.bundle.js') }}"></script>
-
 </body>
-
 </html>
