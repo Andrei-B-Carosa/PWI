@@ -113,7 +113,10 @@ export function fvObRequest(_table=false,param=false){
                                     if(res.status == 'success'){
                                         fvObRequest.resetForm();
                                         _Handlewidgets();
-                                        if(_this.attr('data-id')){ modal_state(modal_id); }
+                                        if(_this.attr('data-id')){
+                                            modal_state(modal_id);
+                                            form.reset();
+                                        }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{

@@ -13,13 +13,13 @@
                                 </div>
                             </li>
                             <li class="nav-item w-md-200px me-0 mb-2">
-                                <a class="nav-link text-dark text-active-light fw-bold tab" tab-loaded="false"
+                                <a class="nav-link text-dark text-active-light fw-bold profile-tab" tab-loaded="false"
                                     data-tab="1" data-bs-toggle="tab" data-tab-title="Personal Information" href="#tab_content1">
                                     Personal Information
                                 </a>
                             </li>
                             <li class="nav-item w-md-200px me-0 mb-2">
-                                <a class="nav-link text-dark text-active-light fw-bold tab" tab-loaded="true"
+                                <a class="nav-link text-dark text-active-light fw-bold profile-tab" tab-loaded="true"
                                     data-tab="2" data-bs-toggle="tab" data-tab-title="Employment Details" href="#tab_content2">
                                     Employment Details
                                 </a>
@@ -54,14 +54,14 @@
                                     References
                                 </a>
                             </li> --}}
-                            <li class="nav-item w-md-200px me-0 mb-2">
-                                <a class="nav-link text-dark text-active-light fw-bold tab" tab-loaded="false"
-                                    data-tab="6"  data-tab-title="Document Attachments" data-bs-toggle="tab" href="#tab_content6">
+                            <li class="nav-item  me-0 mb-2">
+                                <a class="nav-link text-dark text-active-light fw-bold profile-tab" tab-loaded="false"
+                                    data-tab="6" data-tab-title="Document Attachments" data-bs-toggle="tab" href="#tab_content6">
                                     Document Attachments
                                 </a>
                             </li>
-                            <li class="nav-item w-md-200px me-0 mb-2">
-                                <a class="nav-link text-danger text-active-light fw-bold tab" tab-loaded="false"
+                            <li class="nav-item  me-0 mb-2">
+                                <a class="nav-link text-danger text-active-light fw-bold profile-tab" tab-loaded="false"
                                     data-tab="8" data-bs-toggle="tab" data-tab-title="Account Security" href="#tab_content8">
                                     Account Security
                                 </a>

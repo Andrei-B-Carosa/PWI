@@ -1,107 +1,3 @@
-// 'use strict';
-// import { data_bs_components } from "../../../global.js";
-// import { Alert } from "../../../global/alert.js";
-// import { RequestHandler } from "../../../global/request.js";
-// import { fvEmployeeDetails } from "../../fv_controller/201_employee/fv_employee_details.js";
-
-// export var EmployeeProfileController =  function (page,param) {
-
-//     const _page = $('.page-employee-profile');
-//     const _request = new RequestHandler;
-
-//     let tabLoaded = [];
-
-//     function loadActiveTab(tab=false){
-//         tab = (tab == false ? (localStorage.getItem("employee_details_tab") || '1') : tab);
-//         return new Promise(async (resolve, reject) => {
-//             if (tab) {
-//                 let _formData = new FormData();
-//                 _formData.append("emp_id", param);
-//                 _formData.append("tab", tab);
-//                 _request.post('/hris/employee/profile/form',_formData).then((res) => {
-//                     if(res.status == 'success'){
-//                         let view = window.atob(res.payload);
-//                         $(_page).find(`#form${tab}`).html(view);
-//                         resolve(tab);
-//                     }
-//                 })
-//                 .catch((error) => {
-//                     console.log(error)
-//                     Alert.alert('error',"Something went wrong. Try again later", false);
-//                 })
-//                 .finally(() => {
-//                     // fvEmployeeDetails(false,tab,param);
-//                     data_bs_components();
-//                     $(`#form${tab}`).find('select[data-control="select2"]').select2();
-//                 });
-//             } else {
-//                 resolve(false);
-//             }
-//         });
-//     }
-
-//     _page.on('click','a.tab',function(e){
-//         e.preventDefault();
-//         e.stopImmediatePropagation();
-//         let _this = $(this);
-//         let tab = $(this).attr('data-tab');
-//         _this.attr('disabled',true);
-//         _page.find('button.cancel').click();
-
-//         localStorage.setItem("employee_details_tab",tab);
-//         if(tabLoaded.includes(tab)){
-//             _this.attr('disabled',false);
-//             return;
-//         }
-
-//         page_block.block();
-//         tabLoaded.push(tab);
-//         loadActiveTab(tab).then((res) => {
-//             if (res) {
-//                 $(_this.attr('href')).find('.tab_title').text(_this.attr('data-tab-title'));
-//                 setTimeout(() => {
-//                     page_block.release();
-//                     _this.attr('disabled',false);
-//                 },500);
-//             }
-//         })
-//     });
-
-//     _page.on('click','button.edit',function(e){
-//         e.preventDefault();
-//         e.stopImmediatePropagation();
-
-//         const form = $(this).closest('.card').find('form');
-//         form.find('input, select').prop('disabled', false);
-//         $(this).addClass('d-none');
-//         $(this).siblings('.cancel, .save').removeClass('d-none');
-//     });
-
-//     return {
-//         init: function () {
-
-//             page_block.block();
-//             loadActiveTab().then((tab) => {
-//                 if(tab != false){
-//                     let _this = $('a[data-tab='+tab+']');
-//                     _this.addClass('active');
-//                     $(_this.attr('href')).find('.tab_title').text(_this.attr('data-tab-title'));
-//                     _page.find('button.edit').addClass('d-none');
-//                     $(`.tab${tab}`).addClass('show active');
-//                     tabLoaded.push(tab);
-//                 }
-//             })
-
-//             setTimeout(() => {
-//                 page_block.release();
-//             }, 300);
-
-//         }
-//     }
-
-// }
-
-
 'use strict';
 import { data_bs_components } from "../../../global.js";
 import { Alert } from "../../../global/alert.js";
@@ -121,8 +17,8 @@ export var EmployeeProfileController =  function (page,param) {
         8 : (tab,param) =>AccountSecurityHandler(tab,param),
     };
 
-    function loadActiveTab(tab=false){
-        tab = (tab == false ? (localStorage.getItem("employee_details_tab") || '1') : tab);
+    async function loadActiveTab(tab=false){
+        tab = (tab == false ? (localStorage.getItem("employee_profile_tab") || '1') : tab);
 
         let card = document.querySelector(`.tab-content`);
         let blockUI = KTBlockUI.getInstance(card) ?? new KTBlockUI(card, {
@@ -242,10 +138,11 @@ export var EmployeeProfileController =  function (page,param) {
             c();
         })
 
-        r.addEventListener("click", function () {
+        r.addEventListener("click", function (e) {
             d();
             loadActiveTab(tab);
         });
+
         l.addEventListener("click", function () {
             c();
         });
@@ -253,62 +150,53 @@ export var EmployeeProfileController =  function (page,param) {
         $(_page).find('#kt_signin_change_password, #kt_signin_change_email').attr('action','/hris/admin/201_employee/employee_details/update');
         $(`#card${tab}`).find('#kt_signin_email_button, #kt_signin_password_button').remove();
         // fvAccountSecurity(false,tab,param);
-
     }
 
-    _page.on('click','a.tab',function(e){
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        let _this = $(this);
-        if (_this.data("processing")) {
-            return; // Exit early if already in process
-        }
+    $(async function () {
 
-        _this.data("processing", true);
-
-        let tab = $(this).attr('data-tab');
-        _this.attr('disabled',true);
-        _page.find('button.cancel:not(.modal button.cancel)').click();
-
-        localStorage.setItem("employee_details_tab",tab);
-        if(tabLoaded.includes(tab)){
-            _this.attr('disabled',false);
-            return;
-        }
-
-        tabLoaded.push(tab);
-        loadActiveTab(tab)
-        .then((res) => {
-            if (res) {
+        await loadActiveTab().then((tab) => {
+            if(tab){
+                let _this = $('a[data-tab='+tab+']');
+                _this.addClass('active');
                 $(_this.attr('href')).find('.tab_title').text(_this.attr('data-tab-title'));
-                setTimeout(() => {
-                    _this.attr('disabled',false);
-                    _this.data("processing", false);
-                },500);
-
+                $(`.tab${tab}`).addClass('show active');
+                tabLoaded.push(tab);
             }
         })
-    });
 
-    return {
-        init: function () {
+        _page.on('click','a.profile-tab',function(e){
+            e.preventDefault();
+            e.stopImmediatePropagation();
 
-            page_block.block();
-            loadActiveTab().then((tab) => {
-                if(tab != false){
-                    let _this = $('a[data-tab='+tab+']');
-                    _this.addClass('active');
+            let _this = $(this);
+            if (_this.data("processing")) {
+                return; // Exit early if already in process
+            }
+            _this.data("processing", true);
+
+            let tab = $(this).attr('data-tab');
+            _this.attr('disabled',true);
+            // _page.find('button.cancel:not(.modal button.cancel)').click();
+            localStorage.setItem("employee_profile_tab",tab);
+            if(tabLoaded.includes(tab)){
+                _this.attr('disabled',false);
+                return;
+            }
+
+            loadActiveTab(tab).then((res) => {
+                if (res) {
                     $(_this.attr('href')).find('.tab_title').text(_this.attr('data-tab-title'));
-                    $(`.tab${tab}`).addClass('show active');
+                    setTimeout(() => {
+                        _this.attr('disabled',false);
+                        _this.data("processing", false);
+                    },500);
                     tabLoaded.push(tab);
+                    console.log(123)
                 }
             })
+        });
+    });
 
-            setTimeout(() => {
-                page_block.release();
-            }, 300);
 
-        }
-    }
 
 }

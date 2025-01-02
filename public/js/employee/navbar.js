@@ -57,7 +57,7 @@ const _handlers = {
     overtime_requisition: (page, param) => OverTimeRequisitionController(page, param).init(),
     application_for_leave:(page,param) =>ApplicationForLeaveController(page,param).init(),
     official_business: (page, param) => OfficialBusinessController(page, param).init(),
-    profile:(page,param) =>EmployeeProfileController(page,param).init(),
+    profile:(page,param) =>EmployeeProfileController(page,param),
 };
 
 jQuery(document).ready(function() {

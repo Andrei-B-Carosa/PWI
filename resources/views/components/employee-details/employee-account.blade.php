@@ -22,7 +22,7 @@
             <div class="row mb-6">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="fv-row mb-0">
-                        <label for="emailaddress" class="form-label fs-6 fw-bold mb-3">Enter New Email
+                        <label for="emailaddress" class="form-label fs-6 fw-bold mb-3">New Email
                             Address</label>
                         <input type="email" class="form-control form-control-lg form-control-solid" id="emailaddress"
                             placeholder="Email Address" name="emailaddress" value="{{ $emp_account->c_email }}" />
@@ -40,10 +40,8 @@
                 @endif
             </div>
             <div class="d-flex">
-                <button id="kt_signin_submit" type="button" class="btn btn-primary me-2 px-6 submit">Update
-                    Email</button>
-                <button id="kt_signin_cancel" type="button"
-                    class="btn btn-color-gray-400 btn-active-light-primary px-6 cancel">Cancel</button>
+                <button id="kt_signin_submit" type="button" class="btn btn-primary me-2 px-6 submit">Update Email</button>
+                <button id="kt_signin_cancel" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6 cancel">Cancel</button>
             </div>
         </form>
         <!--end::Form-->

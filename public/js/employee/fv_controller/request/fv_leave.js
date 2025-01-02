@@ -184,7 +184,8 @@ export function fvLeaveRequest(_table=false,param=false){
                         let now = new Date();
                         let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
 
-                        // $('input[name="leave_filing_date"]').val(formattedDate).attr('disabled',false);
+                        $('input[name="leave_filing_date"]').val(formattedDate);
+
                         $('input[name="leave_date_from"]').val(formattedDate);
                         $('input[name="leave_date_to"]').val(formattedDate);
                         trigger_select('select[name="leave_type_id"]','Vacation Leave (VL)').then(() =>{
@@ -216,7 +217,10 @@ export function fvLeaveRequest(_table=false,param=false){
                                     if(res.status == 'success'){
                                         fvLeaveRequest.resetForm();
                                         _Handlewidgets();
-                                        if(_this.attr('data-id')){ modal_state(modal_id); }
+                                        if(_this.attr('data-id')){
+                                            modal_state(modal_id);
+                                            form.reset();
+                                        }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{

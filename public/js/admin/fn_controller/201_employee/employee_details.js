@@ -161,7 +161,7 @@ export var EmployeeDetailsController =  function (page,param) {
 
         let tab = $(this).attr('data-tab');
         _this.attr('disabled',true);
-        _page.find('button.cancel:not(.modal button.cancel)').click();
+        // _page.find('button.cancel:not(.modal button.cancel)').click();
 
         localStorage.setItem("employee_details_tab",tab);
         if(tabLoaded.includes(tab)){
