@@ -148,16 +148,16 @@
                     <form id="form_request_overtime" modal-id="#modal_request_leave" class="form fv-plugins-bootstrap5 fv-plugins-framework" action="/hris/employee/request/leave/update">
                         <div class="px-5 px-lg-10">
                             <div class="row">
+                                <div class="d-flex flex-column col-12  fv-row mb-7 fv-plugins-icon-container">
+                                    <label class="required fw-semibold fs-6 mb-2">Date of filing</label>
+                                    <input type="text" name="leave_filing_date" input-control="date-picker" default-date="current" class="form-control mb-3 mb-lg-0 flatpickr" disabled>
+                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                                </div>
                                 <div class="fv-row mb-7 col-12 fv-plugins-icon-container">
                                     <label class="required fw-semibold fs-6 mb-2">Type of leave</label>
                                     <select name="leave_type_id" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity" class="form-select modal-select form-select-solid fw-bold">
                                         <option></option>
                                     </select>
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                                </div>
-                                <div class="d-flex flex-column col-12  fv-row mb-7 fv-plugins-icon-container">
-                                    <label class="required fw-semibold fs-6 mb-2">Date of filing</label>
-                                    <input type="text" name="leave_filing_date" input-control="date-picker" default-date="current" class="form-control form-control-solid mb-3 mb-lg-0 flatpickr">
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                                 </div>
                            </div>
-                           <div class="fv-row mb-7 col-12 fv-plugins-icon-container">
+                           {{-- <div class="fv-row mb-7 col-12 fv-plugins-icon-container">
                                 <label class="required fw-semibold fs-6 mb-2">Is Excused ?</label>
                                 <select name="is_excused" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity" class="form-select modal-select form-select-solid fw-bold">
                                     <option></option>
@@ -181,7 +181,7 @@
                                     <option class="No">No</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                            </div>
+                            </div> --}}
                             <div class="d-flex fv-row flex-column mb-7" id="kt_modal_add_user_scroll">
                                 <label class="fs-6 required fw-semibold mb-2">Reason for filing </label>
                                 <textarea class="form-control form-control-solid" rows="5" name="reason" placeholder="Reason for filing"></textarea>

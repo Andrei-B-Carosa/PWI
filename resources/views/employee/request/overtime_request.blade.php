@@ -150,7 +150,7 @@
                         <div class="px-5 px-lg-10">
                             <div class="d-flex flex-column fv-row mb-7 fv-plugins-icon-container">
                                 <label class="required fw-semibold fs-6 mb-2">Date of filing</label>
-                                <input type="text" name="overtime_date" input-control="date-picker" default-date="current" class="form-control form-control-solid mb-3 mb-lg-0 flatpickr">
+                                <input type="text" name="overtime_date" input-control="date-picker" default-date="current" class="form-control mb-3 mb-lg-0 flatpickr" disabled>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                             </div>
                            <div class="row">

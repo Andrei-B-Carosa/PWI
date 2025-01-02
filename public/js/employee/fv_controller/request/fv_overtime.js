@@ -56,27 +56,27 @@ export function fvOverTime(_table=false,param=false){
                             }
                         },
                         overtime_from: fv_validator(),
-                        overtime_to: {
-                            validators: {
-                                ...fv_validator(),
-                                // callback: {
-                                //     message: 'Overtime must be at least 1 hour',
-                                //     callback: function(input) {
-                                //         const overtimeFrom = form.querySelector('[name="overtime_from"]').value;
-                                //         const overtimeTo = input.value;
+                        // overtime_to: {
+                        //     validators: {
+                        //         ...fv_validator(),
+                        //         callback: {
+                        //             message: 'Overtime must be at least 1 hour',
+                        //             callback: function(input) {
+                        //                 const overtimeFrom = form.querySelector('[name="overtime_from"]').value;
+                        //                 const overtimeTo = input.value;
 
-                                //         if (!overtimeFrom || !overtimeTo) {
-                                //             return true;
-                                //         }
+                        //                 if (!overtimeFrom || !overtimeTo) {
+                        //                     return true;
+                        //                 }
 
-                                //         const startTime = new Date(`1970-01-01T${overtimeFrom}:00`);
-                                //         const endTime = new Date(`1970-01-01T${overtimeTo}:00`);
+                        //                 const startTime = new Date(`1970-01-01T${overtimeFrom}:00`);
+                        //                 const endTime = new Date(`1970-01-01T${overtimeTo}:00`);
 
-                                //         return (endTime - startTime) >= 60 * 60 * 1000;
-                                //     }
-                                // }
-                            }
-                        },
+                        //                 return (endTime - startTime) >= 60 * 60 * 1000;
+                        //             }
+                        //         }
+                        //     }
+                        // },
                         reason: fv_validator(),
                     },
                     plugins: {
@@ -98,17 +98,8 @@ export function fvOverTime(_table=false,param=false){
                     onConfirm: () => {
                         modal_state(modal_id);
                         fvOverTime.resetForm();
-                        form.reset();
+                        _handleResetForm();
                         $(modal_id).find('.submit').attr('data-id','');
-
-                        let now = new Date();
-                        let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
-                        let formattedTime = now.toTimeString().slice(0, 5);
-
-                        $('input[name="overtime_date"]').val(formattedDate);
-                        $('input[name="overtime_from"], input[name="overtime_to"]').each(function() {
-                            this._flatpickr.setDate(formattedTime);
-                        });
                     }
                 })
             })
@@ -132,11 +123,8 @@ export function fvOverTime(_table=false,param=false){
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
                                         fvOverTime.resetForm();
-                                        _Handlewidgets();
-                                        if(_this.attr('data-id')){
-                                            modal_state(modal_id);
-                                            form.reset();
-                                        }
+                                        _handleResetForm();
+                                        if(_this.attr('data-id')){ modal_state(modal_id); }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{
@@ -151,6 +139,7 @@ export function fvOverTime(_table=false,param=false){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    _Handlewidgets();
                                     blockUI.release();
                                 });
                             },
@@ -198,6 +187,18 @@ export function fvOverTime(_table=false,param=false){
                 })
                 .finally(() => {
                 });
+        }
+
+        function _handleResetForm()
+        {
+            let now = new Date();
+            let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
+            let formattedTime = now.toTimeString().slice(0, 5);
+            $('input[name="overtime_date"]').val(formattedDate);
+            $('input[name="overtime_from"], input[name="overtime_to"]').each(function() {
+                this._flatpickr.setDate(formattedTime);
+            });
+            $('textarea[name="reason"]').val('');
         }
 
         return {

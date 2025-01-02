@@ -63,32 +63,32 @@ export function fvLeaveRequest(_table=false,param=false){
                         leave_date_from: {
                             validators: {
                                 ...fv_validator(),
-                                callback: {
-                                    message: 'The start date cannot be a weekend (Saturday or Sunday)',
-                                    callback: function (input) {
-                                        const leaveDateFrom = input.value;
+                                // callback: {
+                                //     message: 'The start date cannot be a weekend (Saturday or Sunday)',
+                                //     callback: function (input) {
+                                //         const leaveDateFrom = input.value;
 
-                                        // Check if the 'from' date is filled
-                                        if (!leaveDateFrom) {
-                                            return true; // Allow if 'leave_date_from' is empty (handled by other validators)
-                                        }
+                                //         // Check if the 'from' date is filled
+                                //         if (!leaveDateFrom) {
+                                //             return true; // Allow if 'leave_date_from' is empty (handled by other validators)
+                                //         }
 
-                                        // Parse the 'from' date using the format (MM/DD/YYYY)
-                                        const fromDate = new Date(leaveDateFrom);
+                                //         // Parse the 'from' date using the format (MM/DD/YYYY)
+                                //         const fromDate = new Date(leaveDateFrom);
 
-                                        // Check if the 'from' date is a weekend (Saturday or Sunday)
-                                        const isFromWeekend = fromDate.getDay() === 0 || fromDate.getDay() === 6;
+                                //         // Check if the 'from' date is a weekend (Saturday or Sunday)
+                                //         const isFromWeekend = fromDate.getDay() === 0 || fromDate.getDay() === 6;
 
-                                        if (isFromWeekend) {
-                                            return {
-                                                valid: false,
-                                                message: 'The start date cannot be a weekend (Saturday or Sunday)',
-                                            };
-                                        }
+                                //         if (isFromWeekend) {
+                                //             return {
+                                //                 valid: false,
+                                //                 message: 'The start date cannot be a weekend (Saturday or Sunday)',
+                                //             };
+                                //         }
 
-                                        return true;
-                                    }
-                                }
+                                //         return true;
+                                //     }
+                                // }
                             }
                         },
                         leave_date_to: {
@@ -110,14 +110,14 @@ export function fvLeaveRequest(_table=false,param=false){
                                         const toDate = new Date(leaveDateTo);
 
                                         // Check if the 'to' date is a weekend (Saturday or Sunday)
-                                        const isToWeekend = toDate.getDay() === 0 || toDate.getDay() === 6;
+                                        // const isToWeekend = toDate.getDay() === 0 || toDate.getDay() === 6;
 
-                                        if (isToWeekend) {
-                                            return {
-                                                valid: false,
-                                                message: 'The end date cannot be a weekend (Saturday or Sunday)',
-                                            };
-                                        }
+                                        // if (isToWeekend) {
+                                        //     return {
+                                        //         valid: false,
+                                        //         message: 'The end date cannot be a weekend (Saturday or Sunday)',
+                                        //     };
+                                        // }
 
                                         // Check if 'to' date is not earlier than 'from' date
                                         if (toDate < fromDate) {
@@ -133,7 +133,7 @@ export function fvLeaveRequest(_table=false,param=false){
                             }
                         },
                         reason: fv_validator(),
-                        is_excused: fv_validator(),
+                        // is_excused: fv_validator(),
                         leave_type_id: {
                             validators: {
                                 notEmpty:{
@@ -178,21 +178,8 @@ export function fvLeaveRequest(_table=false,param=false){
                     onConfirm: () => {
                         modal_state(modal_id);
                         fvLeaveRequest.resetForm();
-                        form.reset();
+                        _handleResetForm();
                         $(modal_id).find('.submit').attr('data-id','');
-
-                        let now = new Date();
-                        let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
-
-                        $('input[name="leave_filing_date"]').val(formattedDate);
-
-                        $('input[name="leave_date_from"]').val(formattedDate);
-                        $('input[name="leave_date_to"]').val(formattedDate);
-                        trigger_select('select[name="leave_type_id"]','Vacation Leave (VL)').then(() =>{
-                            $('select[name="leave_type_id"]').attr('disabled',false);
-                        });
-                        $('select[name="is_excused"]').val('Yes').trigger('change');
-
                     }
                 })
             })
@@ -216,11 +203,8 @@ export function fvLeaveRequest(_table=false,param=false){
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
                                         fvLeaveRequest.resetForm();
-                                        _Handlewidgets();
-                                        if(_this.attr('data-id')){
-                                            modal_state(modal_id);
-                                            form.reset();
-                                        }
+                                        _handleResetForm();
+                                        if(_this.attr('data-id')){ modal_state(modal_id); }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{
@@ -235,6 +219,7 @@ export function fvLeaveRequest(_table=false,param=false){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    _Handlewidgets();
                                     blockUI.release();
                                 });
                             },
@@ -282,6 +267,21 @@ export function fvLeaveRequest(_table=false,param=false){
                 })
                 .finally(() => {
                 });
+        }
+
+        function _handleResetForm()
+        {
+            let now = new Date();
+            let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
+
+            $('input[name="leave_filing_date"]').val(formattedDate);
+            $('input[name="leave_date_from"]').val(formattedDate);
+            $('input[name="leave_date_to"]').val(formattedDate);
+            $('textarea[name="reason"]').val('');
+            trigger_select('select[name="leave_type_id"]','').then(() =>{
+                $('select[name="leave_type_id"]').attr('disabled',false);
+            });
+            $('select[name="is_excused"]').val('').trigger('change');
         }
 
         return {

@@ -101,7 +101,7 @@ class OfficialBusiness extends Controller
             DB::beginTransaction();
             $user_id = Auth::user()->emp_id;
             $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):null;
-            $obFillingDate = Carbon::createFromFormat('m-d-Y', $rq->ob_filing_date)->format('Y-m-d');
+            $obFillingDate = Carbon::now();
             $obTimeIn = Carbon::createFromFormat('H:i', $rq->ob_time_in)->format('H:i');
             $obTimeOut = Carbon::createFromFormat('H:i', $rq->ob_time_out)->format('H:i');
             $obContactPerson = isset($rq->contact_person) ? Crypt::decrypt($rq->contact_person):null;

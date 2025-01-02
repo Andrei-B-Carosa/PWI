@@ -15,7 +15,7 @@ export var LeaveRequestController = function (page,param) {
     get_filter_year('select[name="filter_year"]',2);
     get_filter_month('select[name="filter_month"]');
     get_leave_type('select[name="leave_type_id"]').then(() => {
-        trigger_select('select[name="leave_type_id"]','Vacation Leave (VL)')
+        // trigger_select('select[name="leave_type_id"]','Vacation Leave (VL)')
     });
 
     return {

@@ -79,16 +79,7 @@ export function fvObRequest(_table=false,param=false){
                         fvObRequest.resetForm();
                         form.reset();
                         $(modal_id).find('.submit').attr('data-id','');
-
-                        let now = new Date();
-                        let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
-                        let formattedTime = now.toTimeString().slice(0, 5);
-
-                        $('input[name="ob_filing_date"]').val(formattedDate);
-                        $('input[name="ob_time_in"], input[name="ob_time_out"]').each(function() {
-                            this._flatpickr.setDate(formattedTime);
-                        });
-                        $('select[name="contact_person"]').val('').trigger('change').attr('disabled',false);
+                        _handleResetForm();
                     }
                 })
             })
@@ -112,11 +103,8 @@ export function fvObRequest(_table=false,param=false){
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
                                         fvObRequest.resetForm();
-                                        _Handlewidgets();
-                                        if(_this.attr('data-id')){
-                                            modal_state(modal_id);
-                                            form.reset();
-                                        }
+                                        _handleResetForm();
+                                        if(_this.attr('data-id')){ modal_state(modal_id); }
                                         if($(_table).length){
                                             _table ?$(_table).DataTable().ajax.reload(null, false) :'';
                                         }else{
@@ -131,6 +119,7 @@ export function fvObRequest(_table=false,param=false){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    _Handlewidgets();
                                     blockUI.release();
                                 });
                             },
@@ -179,6 +168,22 @@ export function fvObRequest(_table=false,param=false){
                 .finally(() => {
                 });
         }
+
+        function _handleResetForm()
+        {
+            let now = new Date();
+            let formattedDate = ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '-' + now.getFullYear();
+            let formattedTime = now.toTimeString().slice(0, 5);
+
+            $('input[name="ob_filing_date"]').val(formattedDate);
+            $('input[name="ob_time_in"], input[name="ob_time_out"]').each(function() {
+                this._flatpickr.setDate(formattedTime);
+            });
+            $('select[name="contact_person"]').val('').trigger('change').attr('disabled',false);
+            $('input[name="destination"]').val('');
+            $('textarea[name="purpose"]').val('');
+        }
+
 
         return {
             init: function () {

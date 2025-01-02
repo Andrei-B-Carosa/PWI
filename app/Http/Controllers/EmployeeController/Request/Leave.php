@@ -100,7 +100,7 @@ class Leave extends Controller
             DB::beginTransaction();
             $user_id = Auth::user()->emp_id;
             $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):null;
-            $leaveDate = Carbon::createFromFormat('m-d-Y', $rq->leave_filing_date)->format('Y-m-d');
+            $leaveDate = Carbon::now();
             $leaveFrom = Carbon::createFromFormat('m-d-Y', $rq->leave_date_from)->format('Y-m-d');
             $leaveTo = Carbon::createFromFormat('m-d-Y', $rq->leave_date_to)->format('Y-m-d');
             $isResubmit = false;
@@ -111,7 +111,7 @@ class Leave extends Controller
                 'leave_date_from' => $leaveFrom,
                 'leave_date_to' => $leaveTo,
                 'reason' => $rq->reason,
-                'is_excused' => $rq->is_excused,
+                // 'is_excused' => $rq->is_excused,
             ];
 
             if($id == null){

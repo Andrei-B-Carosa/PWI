@@ -100,7 +100,7 @@ class OverTime extends Controller
             $isResubmit = false;
             $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):null;
 
-            $overtimeDate = Carbon::createFromFormat('m-d-Y', $rq->overtime_date)->format('Y-m-d');
+            $overtimeDate = Carbon::now();
             $overtimeFrom = Carbon::createFromFormat('H:i', $rq->overtime_from)->format('H:i');
             $overtimeTo = Carbon::createFromFormat('H:i', $rq->overtime_to)->format('H:i');
 
