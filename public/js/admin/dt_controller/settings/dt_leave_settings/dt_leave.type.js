@@ -209,6 +209,8 @@ export var dtLeaveType = function (param) {
                     form.find('input[name="code"]').val(payload.code);
 
                     trigger_select('select[name="company_id"]',payload.company_id);
+                    trigger_select('select[name="company_location_id"]',payload.company_location_id);
+
                     form.find('select[name="gender_type"]').val(payload.gender_type).trigger('change');
                     form.find('select[name="is_active"]').val(payload.is_active).trigger('change');
                     form.find('textarea[name="description"]').val(payload.description);

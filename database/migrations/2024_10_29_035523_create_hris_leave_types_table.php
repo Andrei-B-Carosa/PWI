@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->string('code')->nullable();
-            $table->string('company_id');
+            $table->integer('company_id')->nullable();
+            $table->integer('company_location_id')->nullable();
             $table->tinyInteger('gender_type')->nullable();
 
             $table->tinyInteger('is_active')->nullable();

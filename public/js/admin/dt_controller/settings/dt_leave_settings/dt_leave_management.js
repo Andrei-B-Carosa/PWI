@@ -37,19 +37,19 @@ export var dtLeaveManagement = function (param) {
                     visible:false,
                 },
 
-                {
-                    data: "company_name", name: "company_name", title: "Company",
-                    sortable:false,
-                    searchable:false,
-                    visible:false,
-                },
+                // {
+                //     data: "company_name", name: "company_name", title: "Company",
+                //     sortable:false,
+                //     searchable:false,
+                //     visible:false,
+                // },
                 {
                     data: "leave_name", name: "leave_name", title: "Type of Leave",
                     render: function (data, type, row) {
                         return `
                                 <div class="d-flex flex-column">
                                     <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${data} (${row.leave_code})</a>
-                                    <span class="text-muted">${row.company_name}</span>
+                                    <span class="text-muted">${row.credit_type}</span>
                                 </div>
                             `;
                     },
@@ -58,6 +58,7 @@ export var dtLeaveManagement = function (param) {
                     data: "credit_type", name: "credit_type", title: "Credit Type",
                     sortable:false,
                     searchable:false,
+                    visible:false,
                 },
                 {
                     data: "credit_type_id", name: "credit_type_id", title: "Credit Type ID",
@@ -66,7 +67,7 @@ export var dtLeaveManagement = function (param) {
                     visible:false,
                 },
                 {
-                    data: "fiscal_year", name: "fiscal_year", title: "Fiscal Year",
+                    data: "fiscal_year", name: "fiscal_year", title: "Credit Type",
                     sortable:false,
                     searchable:false,
                     render(data,type,row)

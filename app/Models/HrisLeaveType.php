@@ -13,6 +13,7 @@ class HrisLeaveType extends Model
         'description',
         'code',
         'company_id',
+        'company_location_id',
         'is_active',
         'gender_type',
         'created_by',
@@ -42,7 +43,12 @@ class HrisLeaveType extends Model
 
     public function company()
     {
-        return $this->belongsTo(HrisCompany::class,'company_id');
+        return $this->belongsTo(HrisCompany::class,'company_id')->withDefault();
+    }
+
+    public function company_location()
+    {
+        return $this->belongsTo(HrisCompanyLocation::class,'company_location_id')->withDefault();
     }
 
     public function leave_setting()

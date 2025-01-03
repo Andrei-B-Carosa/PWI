@@ -111,7 +111,7 @@
 <x-modal
     id="add_classification"
     title="Classification Details"
-    action="/hris/admin/settings/file_maintenance/classification/update" >
+    action="/hris/admin/settings/file_maintenance/classification/update">
     <div class="d-flex flex-column px-5 px-lg-10" style="max-height: 670px;">
         <div class="fv-row mb-7 fv-plugins-icon-container">
             <x-input
@@ -127,20 +127,20 @@
             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
         </div>
         <div class="fv-row mb-7 fv-plugins-icon-container">
-                <x-select
-                id="is_active"
-                name="is_active"
-                label="Status"
-                :options="['1' => 'Active', '2' => 'Inactive']"
-                placeholder="Select an option"
-                selected=""
-                class="fw-bold form-select-solid"
-                data-control="select2"
-                data-placeholder="Select an option"
-                data-minimum-results-for-search="Infinity"
-            />
-            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-        </div>
+            <x-select
+            id="is_active"
+            name="is_active"
+            label="Status"
+            :options="['1' => 'Active', '2' => 'Inactive']"
+            placeholder="Select an option"
+            selected=""
+            class="fw-bold form-select-solid"
+            data-control="select2"
+            data-placeholder="Select an option"
+            data-minimum-results-for-search="Infinity"
+        />
+        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+    </div>
         <div class="d-flex  fv-row flex-column mb-7">
             <x-textarea
                 id="description"

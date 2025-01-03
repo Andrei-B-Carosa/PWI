@@ -31,7 +31,13 @@ export var FileMaintenanceController = function (page,param) {
 
         return new Promise((resolve, reject) => {
             if (_tab[tab]) {
-                _tab[tab](tab).then(() => resolve(tab)).catch(reject);
+                _tab[tab](tab).then(() =>
+                    resolve(tab)
+                )
+                .catch(reject)
+                .finally(()=>{
+                    $(`#modal_add_${tab}`).find('select[name="is_active"]').select2()
+                });
             } else {
                 resolve(false);
             }

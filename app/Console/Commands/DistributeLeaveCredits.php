@@ -34,9 +34,11 @@ class DistributeLeaveCredits extends Command
             $locationIds = json_decode($setting->location_id, true);
 
             $users = DB::table('hris_employee_positions')
+                ->join('employees', 'hris_employee_positions.emp_id', '=', 'employees.id')
                 ->when($classificationIds, fn($query) => $query->whereIn('classification_id', $classificationIds))
                 ->when($employmentIds, fn($query) => $query->whereIn('employment_id', $employmentIds))
                 ->when($locationIds, fn($query) => $query->whereIn('company_location_id', $locationIds))
+                ->where('employees.is_active', 1)
                 ->get();
 
             foreach ($users as $user) {

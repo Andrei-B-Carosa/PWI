@@ -49,7 +49,7 @@ class AutomaticCredit extends Controller
                     'fiscal_year' =>$query->fiscal_year,
                     'assign_type' =>$query->assign_type,
 
-                    'is_reset' =>$query->is_reset,
+                    // 'is_reset' =>$query->is_reset,
                     'reset_month' =>$query->reset_month,
                     'reset_day' =>$query->reset_day,
 
@@ -81,7 +81,7 @@ class AutomaticCredit extends Controller
                 'carry_over_month' =>$rq->carry_over_month,
                 'carry_over_day' =>$rq->carry_over_day,
 
-                'is_reset' =>$rq->is_reset,
+                // 'is_reset' =>$rq->is_reset,
                 'reset_month' =>$rq->reset_month,
                 'reset_day' =>$rq->reset_day,
 

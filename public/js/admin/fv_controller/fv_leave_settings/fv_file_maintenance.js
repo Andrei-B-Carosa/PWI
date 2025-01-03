@@ -74,6 +74,7 @@ export function fvFileMaintenance(_table=false,form_id){
                         modal_state(modal_id);
                         fvFileMaintenance.resetForm();
                         form.reset();
+                        $(modal_id).find('select[name="is_active"]').val('').trigger('change');
                         $(modal_id).find('.submit').attr('data-id','');
                     }
                 })
@@ -98,12 +99,12 @@ export function fvFileMaintenance(_table=false,form_id){
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
                                         fvFileMaintenance.resetForm();
-                                        if($(_table).length && _table){
-                                             $(_table).DataTable().ajax.reload();
-                                        }else{
-                                            dtDepartment().init()
+                                        form.reset();
+                                        if(_this.attr('data-id')){
+                                            modal_state(modal_id);
+                                            $(modal_id).find('select[name="is_active"]').val('').trigger('change');
+                                            $(modal_id).find('.submit').attr('data-id','');
                                         }
-
                                     }
                                 })
                                 .catch((error) => {
@@ -113,6 +114,11 @@ export function fvFileMaintenance(_table=false,form_id){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    if($(_table).length && _table){
+                                        $(_table).DataTable().ajax.reload();
+                                    }else{
+                                        dtDepartment().init()
+                                    }
                                     blockUI.release();
                                 });
                             },

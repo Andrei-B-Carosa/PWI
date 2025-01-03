@@ -28,7 +28,7 @@ class ResetLeaveCredits extends Command
     {
         $today = now();
         $countResetted = 0;
-        $settings = DB::table('hris_leave_settings')->where([['is_reset', 1],['status',1]])->get();
+        $settings = DB::table('hris_leave_settings')->where([['is_carry_over',2],['status',1]])->get();
 
         foreach ($settings as $setting) {
             $resetDate = now()->setMonth($setting->reset_month)->setDay($setting->reset_day);
@@ -39,9 +39,11 @@ class ResetLeaveCredits extends Command
                 $locationIds = json_decode($setting->location_id, true);
 
                 $employees = DB::table('hris_employee_positions')
+                    ->join('employees', 'hris_employee_positions.emp_id', '=', 'employees.id')
                     ->when($classificationIds, fn($query) => $query->whereIn('classification_id', $classificationIds))
                     ->when($employmentIds, fn($query) => $query->whereIn('employment_id', $employmentIds))
                     ->when($locationIds, fn($query) => $query->whereIn('company_location_id', $locationIds))
+                    ->where('employees.is_active', 1)
                     ->get();
 
                 foreach ($employees as $employee) {

@@ -45,6 +45,7 @@ export function fvLeaveType(_table=false,param=false){
                         },
                         code:fv_validator(),
                         company_id:fv_validator(),
+                        company_location_id:fv_validator(),
                         gender_type:fv_validator(),
                     },
                     plugins: {
@@ -65,14 +66,7 @@ export function fvLeaveType(_table=false,param=false){
                 Alert.confirm('question',"Close this form ?",{
                     onConfirm: () => {
                         modal_state(modal_id);
-                        fvLeaveType.resetForm();
-                        form.reset();
-                        $(modal_id).find('.modal_title').text('New Type of Leave');
-                        $(modal_id).find('.submit').attr('data-id','');
-                        $(modal_id).find('select[name="is_active"]').val(1).trigger('change');
-
-                        $(modal_id).find('select[name="company_id"]').val('').trigger('change');
-                        $(modal_id).find('select[name="gender_type"]').val('3').trigger('change');
+                        _handleResetForm();
                     }
                 })
             })
@@ -95,12 +89,11 @@ export function fvLeaveType(_table=false,param=false){
                                 (new RequestHandler).post(url,formData).then((res) => {
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
-                                        fvLeaveType.resetForm();
-                                        if($(_table).length && _table){
-                                             $(_table).DataTable().ajax.reload();
-                                        }else{
-                                            dtLeaveType().init()
+                                        if(_this.attr('data-id')){
+                                            modal_state(modal_id);
                                         }
+                                        fvLeaveType.resetForm();
+                                        _handleResetForm();
                                     }
                                 })
                                 .catch((error) => {
@@ -110,6 +103,11 @@ export function fvLeaveType(_table=false,param=false){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    if($(_table).length && _table){
+                                        $(_table).DataTable().ajax.reload();
+                                    }else{
+                                        dtLeaveType().init()
+                                    }
                                     blockUI.release();
                                 });
                             },
@@ -117,6 +115,24 @@ export function fvLeaveType(_table=false,param=false){
                     }
                 })
             })
+
+            function _handleResetForm()
+            {
+                form.reset();
+                fvLeaveType.resetForm();
+
+                $(modal_id).find('.modal_title').text('New Type of Leave');
+                $(modal_id).find('.submit').attr('data-id','');
+
+                // $(modal_id).find('input[name="name"]').val('');
+                // $(modal_id).find('input[name="code"]').val('');
+                // $(modal_id).find('textarea[name="description"]').val('');
+
+                $(modal_id).find('select[name="is_active"]').val('').trigger('change');
+                $(modal_id).find('select[name="company_id"]').val('').trigger('change');
+                $(modal_id).find('select[name="company_location_id"]').val('').trigger('change');
+                $(modal_id).find('select[name="gender_type"]').val('').trigger('change');
+            }
         }
 
         return {
@@ -191,17 +207,7 @@ export function fvLeaveManagement(_table=false,param=false){
                 Alert.confirm('question',"Close this form ?",{
                     onConfirm: () => {
                         modal_state(modal_id);
-                        fvLeaveManagement.resetForm();
-                        // form.reset();
-                        $(modal_id).find('.modal_title').text('Manage Leave');
-                        $(modal_id).find('.submit').attr('data-id','');
-
-                        $(modal_id).find('select[name="leave_type_id"]').val('').trigger('change');
-                        $(modal_id).find('select[name="status"]').val('').trigger('change');
-                        $(modal_id).find('select[name="credit_type"]').val('').trigger('change');
-                        $(modal_id).find('select[name="fiscal_year"]').val('').select2().parent().addClass('d-none');
-
-                        $(modal_id).find('button.submit').attr('data-id','');
+                        _handleResetForm();
                     }
                 })
             })
@@ -212,6 +218,7 @@ export function fvLeaveManagement(_table=false,param=false){
 
                 let _this = $(this);
                 let url = form.getAttribute('action');
+
                 fvLeaveManagement && fvLeaveManagement.validate().then(function (v) {
                     if(v == "Valid"){
                         Alert.confirm("question","Submit this form?", {
@@ -224,12 +231,11 @@ export function fvLeaveManagement(_table=false,param=false){
                                 (new RequestHandler).post(url,formData).then((res) => {
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
-                                        fvLeaveManagement.resetForm();
-                                        if($(_table).length && _table){
-                                             $(_table).DataTable().ajax.reload();
-                                        }else{
-                                            dtLeaveManagement().init()
+                                        if(_this.attr('data-id')){
+                                            modal_state(modal_id);
                                         }
+                                        _handleResetForm();
+                                        fvLeaveManagement.resetForm();
                                     }
                                 })
                                 .catch((error) => {
@@ -239,6 +245,11 @@ export function fvLeaveManagement(_table=false,param=false){
                                 .finally(() => {
                                     _this.attr("data-kt-indicator","off");
                                     _this.attr("disabled",false);
+                                    if($(_table).length && _table){
+                                        $(_table).DataTable().ajax.reload();
+                                    }else{
+                                        dtLeaveManagement().init();
+                                    }
                                     blockUI.release();
                                 });
                             },
@@ -246,6 +257,21 @@ export function fvLeaveManagement(_table=false,param=false){
                     }
                 })
             })
+
+            function _handleResetForm()
+            {
+                form.reset();
+                fvLeaveManagement.resetForm();
+
+                $(modal_id).find('.modal_title').text('Manage Leave');
+                $(modal_id).find('.submit').attr('data-id','');
+
+                $(modal_id).find('select[name="leave_type_id"]').val('').trigger('change');
+                $(modal_id).find('select[name="credit_type"]').val('').trigger('change');
+                $(modal_id).find('select[name="status"]').val('').trigger('change');
+
+                $(modal_id).find('button.submit').attr('data-id','');
+            }
         }
 
         return {

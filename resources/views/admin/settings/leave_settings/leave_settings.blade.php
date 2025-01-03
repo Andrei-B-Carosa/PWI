@@ -84,70 +84,6 @@
                                         </div>
                                         <div class="card-toolbar">
                                             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                                {{-- <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                    <i class="ki-duotone ki-filter fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-                                                    Filter
-                                                </button>
-                                                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
-                                                    <div class="px-7 py-5">
-                                                        <div class="fs-4 text-dark fw-bold">Filter Options</div>
-                                                    </div>
-                                                    <div class="separator border-gray-200"></div>
-                                                    <div class="px-7 py-5">
-                                                        <div class="mb-10">
-                                                            <label class="form-label fs-5 fw-semibold mb-3">Year:</label>
-                                                            <select class="form-select form-select-solid fw-bold" name="filter_year" data-kt-select2="true" data-minimum-results-for-search="Infinity" data-placeholder="Select option" data-allow-clear="true">
-                                                                <option></option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-10">
-                                                            <label class="form-label fs-5 fw-semibold mb-3">Month:</label>
-                                                            <select class="form-select form-select-solid fw-bold" name="filter_month" data-kt-select2="true" data-minimum-results-for-search="Infinity"  data-placeholder="Select option" data-allow-clear="true">
-                                                                <option></option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-10">
-                                                            <label class="form-label fs-5 fw-semibold mb-3">Status:</label>
-                                                            <div class="d-flex flex-column flex-wrap fw-semibold">
-                                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                    <input class="form-check-input" type="radio" name="filter_status" value="all" checked="checked" />
-                                                                    <span class="form-check-label text-gray-600">
-                                                                        View All
-                                                                    </span>
-                                                                </label>
-                                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                    <input class="form-check-input" type="radio" name="filter_status" value="approved" />
-                                                                    <span class="form-check-label text-gray-600">
-                                                                        Approved
-                                                                    </span>
-                                                                </label>
-                                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
-                                                                    <input class="form-check-input" type="radio" name="filter_status" value="disapproved" />
-                                                                    <span class="form-check-label text-gray-600">
-                                                                        Disapproved
-                                                                    </span>
-                                                                </label>
-                                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
-                                                                    <input class="form-check-input" type="radio" name="filter_status" value="pending" />
-                                                                    <span class="form-check-label text-gray-600">
-                                                                        Pending
-                                                                    </span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="d-flex justify-content-end">
-                                                            <button type="button" class="btn btn-light btn-active-light-primary me-2 reset" data-kt-menu-dismiss="true" >Reset</button>
-
-                                                            <button type="button" class="btn btn-primary filter" data-kt-menu-dismiss="true">Apply</button>
-                                                        </div>
-                                                        <!--end::Actions-->
-                                                    </div>
-                                                    <!--end::Content-->
-                                                </div> --}}
                                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_add_leave_management">
                                                     Add Leave
                                                 </button>
@@ -211,6 +147,14 @@
                             <div class="fv-row mb-8 fv-plugins-icon-container">
                                 <label class="required fs-6 fw-semibold form-label mb-2">Company:</label>
                                 <select name="company_id" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity"
+                                        class="form-select form-select-solid fw-bold">
+                                    <option></option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+                            </div>
+                            <div class="fv-row mb-8 fv-plugins-icon-container">
+                                <label class="required fs-6 fw-semibold form-label mb-2">Location:</label>
+                                <select name="company_location_id" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity"
                                         class="form-select form-select-solid fw-bold">
                                     <option></option>
                                 </select>

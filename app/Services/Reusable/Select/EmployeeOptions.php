@@ -18,7 +18,7 @@ class EmployeeOptions
 
     public function list(Request $rq)
     {
-        $query = Employee::where([['is_deleted',null]]);
+        $query = Employee::where([['is_active',1],['is_deleted',null]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

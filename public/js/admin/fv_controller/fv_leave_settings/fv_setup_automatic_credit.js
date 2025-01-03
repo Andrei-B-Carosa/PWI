@@ -54,10 +54,10 @@ export function fvLeaveSetup(_table=false,param=false){
 
                         blockUI.block();
 
-                        _handleResetRepeater();
                         document.getElementById(_form_id).reset();
                         $("#"+_form_id).find('select.select2').val(null).trigger('change');
                         fvLeaveCondition.resetForm();
+                        _handleResetRepeater();
 
                         let formData = new FormData(form);
                         formData.append('id',param);
@@ -79,7 +79,7 @@ export function fvLeaveSetup(_table=false,param=false){
                         formData.append('location',JSON.stringify(location));
 
                         (new RequestHandler).post(url,formData).then((res) => {
-                            Alert.toast(res.status,res.message);
+                            // Alert.toast(res.status,res.message);
                             if(res.status == 'success'){
                                 let payload = JSON.parse(window.atob(res.payload));
                                 if(payload){
@@ -90,14 +90,15 @@ export function fvLeaveSetup(_table=false,param=false){
                                     $(card).find('select[name="carry_over_month"]').val(payload.carry_over_month).trigger('change');
                                     $(card).find('select[name="carry_over_day"]').val(payload.carry_over_day).trigger('change');
 
-                                    $(card).find('select[name="is_reset"]').val(payload.is_reset).trigger('change');
+                                    // $(card).find('select[name="is_reset"]').val(payload.is_reset).trigger('change');
                                     $(card).find('select[name="reset_month"]').val(payload.reset_month).trigger('change');
                                     $(card).find('select[name="reset_day"]').val(payload.reset_day).trigger('change');
 
                                     let milestonesData = JSON.parse(payload.increment_milestones || '[]');
                                     let repeaterAddField = $('#repeater').find('[data-repeater-create]');
                                     milestonesData.forEach(function (item, index) {
-                                        repeaterAddField.click();
+                                        index >0 ?repeaterAddField.click(): '';
+
                                         let lastRepeaterItem = $('#repeater').find('[data-repeater-item]').last();
                                         lastRepeaterItem.find('input[name="milestones['+index +'][year]"]').val(item.year).attr('disabled',true);
                                         lastRepeaterItem.find('input[name="milestones['+index+'][credit]"]').val(item.credit).attr('disabled',true);
@@ -140,19 +141,28 @@ export function fvLeaveSetup(_table=false,param=false){
                 $('#repeater').repeater({
                     initEmpty: false,
                     defaultValues: { 'text-input': 'foo' },
-
+                    isFirstItemUndeletable: true,
                     show: function () {
-                        fvLeaveCondition.addField('milestones['+rowIndex+'][year]',fv_numeric())
-                        fvLeaveCondition.addField('milestones['+rowIndex+'][credit]',fv_numeric())
-                        rowIndex++;
+                        const currentIndex = $(this).closest('[data-repeater-list]').find('[data-repeater-item]').index($(this));
+
+                        const yearFieldName = `milestones[${currentIndex}][year]`;
+                        const creditFieldName = `milestones[${currentIndex}][credit]`;
+
+                        fvLeaveCondition.addField(yearFieldName,fv_numeric())
+                        fvLeaveCondition.addField(creditFieldName,fv_numeric())
                         $(this).slideDown();
                     },
 
                     hide: function (deleteElement) {
-                        rowIndex--;
-                        fvLeaveCondition.removeField('milestones['+rowIndex+'][year]')
-                        fvLeaveCondition.removeField('milestones['+rowIndex+'][credit]')
-                        $(this).slideUp(deleteElement);
+                        $(this).find('[name]').each(function () {
+                            const fieldName = $(this).attr('name');
+                            if (fvLeaveCondition.getElements(fieldName)) {
+                                fvLeaveCondition.removeField(fieldName);
+                            }
+                        });
+                        $(this).slideUp(deleteElement, function () {
+                            updateFieldNames();
+                        });
                     }
                 });
 
@@ -176,7 +186,7 @@ export function fvLeaveSetup(_table=false,param=false){
                         'fiscal_year':fv_validator(),
                         'is_carry_over':fv_validator(),
                         'succeeding_year':fv_validator(),
-                        'is_reset':fv_validator(),
+                        // 'is_reset':fv_validator(),
                     },
                     plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -202,12 +212,6 @@ export function fvLeaveSetup(_table=false,param=false){
                     if(v == "Valid"){
                         Alert.confirm("question","Submit this form?", {
                             onConfirm: function() {
-                                //disable submit button and form inputs, selects
-                                // $(form).find('select ,input').attr('disabled',true);
-                                // _this.attr("data-kt-indicator","on");
-                                // _this.attr("disabled",true);
-                                // page_block.block();
-
                                 //process setup data
                                 let classifications = formSetupLeave.find('select[name="classification_id[]"] option:selected').map(function() {
                                     return $(this).val();
@@ -306,6 +310,8 @@ export function fvLeaveSetup(_table=false,param=false){
                 let _div = $('.succeeding_year');
 
                 if(_this ==1){
+                    fvLeaveCondition.addField('milestones[0][year]', fv_numeric());
+                    fvLeaveCondition.addField('milestones[0][credit]', fv_numeric());
                     _div.removeClass('d-none');
                 }else{
                     _div.addClass('d-none');
@@ -318,50 +324,85 @@ export function fvLeaveSetup(_table=false,param=false){
                 e.stopImmediatePropagation()
 
                 let _this = $(this).val();
-                let _div = $('.carry_over');
-                if(_this ==1){
-                    fvLeaveCondition.addField('carry_over_month',fv_validator())
-                    fvLeaveCondition.addField('carry_over_day',fv_validator())
-                    _div.removeClass('d-none');
-                }else{
-                    _div.addClass('d-none');
-                    if(fvLeaveCondition.getElements('carry_over_month') && fvLeaveCondition.getElements('carry_over_day')){
-                        fvLeaveCondition.removeField('carry_over_month')
-                        fvLeaveCondition.removeField('carry_over_day')
-                    }
-                }
-            })
+                let _divCarryOver = $('.carry_over');
+                let _divResetCredit = $('.reset_leave_credit');
 
-            $(form).on('change','select[name="is_reset"]',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
-
-                let _this = $(this).val();
-                let _div = $('.reset_leave_credit');
                 if(_this ==1){
-                    fvLeaveCondition.addField('reset_month',fv_validator())
-                    fvLeaveCondition.addField('reset_day',fv_validator())
-                    _div.removeClass('d-none');
-                }else{
-                    _div.addClass('d-none');
+                    fvLeaveCondition.addField('carry_over_month',fv_validator());
+                    fvLeaveCondition.addField('carry_over_day',fv_validator());
+
                     if(fvLeaveCondition.getElements('reset_month') && fvLeaveCondition.getElements('reset_day')){
                         fvLeaveCondition.addField('reset_month',fv_validator())
                         fvLeaveCondition.addField('reset_day',fv_validator())
                     }
+                    _divCarryOver.removeClass('d-none');
+                    _divResetCredit.addClass('d-none');
+
+                }else{
+                    fvLeaveCondition.addField('reset_month',fv_validator())
+                    fvLeaveCondition.addField('reset_day',fv_validator())
+
+                    if(fvLeaveCondition.getElements('carry_over_month') && fvLeaveCondition.getElements('carry_over_day')){
+                        fvLeaveCondition.removeField('carry_over_month')
+                        fvLeaveCondition.removeField('carry_over_day')
+                    }
+
+                    _divCarryOver.addClass('d-none');
+                    _divResetCredit.removeClass('d-none');
                 }
             })
+
+            function updateFieldNames() {
+                $('#repeater').find('[data-repeater-item]').each(function (index) {
+                    const $item = $(this);
+
+                     // Skip items with display: none
+                    if ($item.css('display') === 'none') {
+                        return; // Continue to the next iteration
+                    }
+
+                    // Update each input's name attribute based on the current index
+                    $item.find('[name]').each(function () {
+                        const $input = $(this);
+                        const oldName = $input.attr('name');
+                        const newName = oldName.replace(/\[\d+\]/, `[${index}]`);
+
+                        // Update the input name
+                        $input.attr('name', newName);
+
+                        // Update FormValidation.io
+                        if (fvLeaveCondition.getElements(oldName)) {
+                            fvLeaveCondition.removeField(oldName);
+                        }
+                        fvLeaveCondition.addField(newName, fv_numeric());
+                    });
+                });
+            }
         }
 
-        var _handleResetRepeater = function()
-        {
-            $('#repeater').find('[data-repeater-item]').remove();
-            if(rowIndex > 0){
-                for(let i=0; i<rowIndex; i++){
-                    fvLeaveCondition.removeField('milestones['+i+'][year]')
-                    fvLeaveCondition.removeField('milestones['+i+'][credit]')
+        var _handleResetRepeater = function(){
+            $('#repeater').find('[data-repeater-item]').each(function(index) {
+                // Get input fields inside the current repeater item
+                let currentIndex = index;
+                $(this).find('[name]').each(function() {
+                    const fieldName = $(this).attr('name');
+
+                    // Remove the field from validation
+                    if (fvLeaveCondition.getElements(fieldName)) {
+                        fvLeaveCondition.removeField(fieldName);
+                    }
+                });
+
+                if (currentIndex === 0) {
+                    return true;  // Continue to the next iteration, effectively skipping the deletion
                 }
-                rowIndex = 0;
-            }
+
+                // Remove the current repeater item
+                $(this).remove();
+            });
+
+            // Reset rowIndex to 0 (if you still need it elsewhere)
+            rowIndex = 0;
         }
 
         return {

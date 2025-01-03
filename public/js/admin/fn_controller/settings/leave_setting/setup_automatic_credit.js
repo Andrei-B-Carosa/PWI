@@ -13,7 +13,7 @@ export var AutomaticCreditController = function (page,param) {
             setTimeout(() => {
                 page_block.release();
                 $('.multi-select').select2({ closeOnSelect: false });
-                $('#repeater').find('[data-repeater-item]').remove();
+                // $('#repeater').find('[data-repeater-item]').remove();
             }, 300);
         }
     }

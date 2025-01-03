@@ -1,5 +1,5 @@
 'use strict';
-import { get_company, get_leave_credit_type, get_leave_type } from "../../../../global/select.js";
+import { get_company, get_company_location, get_leave_credit_type, get_leave_type } from "../../../../global/select.js";
 import { dtLeaveType } from "../../../dt_controller/settings/dt_leave_settings/dt_leave.type.js";
 import { dtLeaveManagement } from "../../../dt_controller/settings/dt_leave_settings/dt_leave_management.js";
 import { fvLeaveManagement, fvLeaveType } from "../../../fv_controller/fv_leave_settings/fv_leave_settings.js";
@@ -34,6 +34,7 @@ export var LeaveSettingController = function (page,param) {
                 dtLeaveType().init();
                 fvLeaveType('#leave_type_table');
                 get_company('select[name="company_id"]');
+                get_company_location('select[name="company_location_id"]');
                 resolve(true);
             } catch (error) {
                 resolve(false);

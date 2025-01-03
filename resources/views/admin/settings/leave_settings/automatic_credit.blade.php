@@ -151,7 +151,7 @@
                                 </div>
                             </div>
 
-                            <div class="separator mb-6"></div>
+                            {{-- <div class="separator mb-6"></div>
                             <div class="fv-row mb-7">
                                 <label class="fs-6 form-label fw-bold text-dark required">Reset Leave Credit ?</label>
                                 <select class="form-select form-select-solid" name="is_reset" data-control="select2"
@@ -160,7 +160,7 @@
                                     <option value="1">Yes</option>
                                     <option value="2">No</option>
                                 </select>
-                            </div>
+                            </div> --}}
                             <div class="row d-none reset_leave_credit">
                                 <div class="col-6">
                                     <div class="fv-row mb-7">

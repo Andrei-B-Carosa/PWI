@@ -50,12 +50,13 @@ class LeaveType extends Controller
     {
         try{
             $id = Crypt::decrypt($rq->id);
-            $query = HrisLeaveType::with('company')->find($id);
+            $query = HrisLeaveType::with(['company','company_location'])->find($id);
             $payload = [
                 'name' =>$query->name,
                 'description' =>$query->description,
                 'code' =>$query->code,
                 'company_id' =>$query->company->name,
+                'company_location_id' =>$query->company_location->name,
                 'is_active' =>$query->is_active,
                 'gender_type' =>$query->gender_type,
             ];
@@ -77,6 +78,7 @@ class LeaveType extends Controller
                 'description' =>$rq->description,
                 'code' =>$rq->code,
                 'company_id' =>Crypt::decrypt($rq->company_id),
+                'company_location_id' =>Crypt::decrypt($rq->company_location_id),
                 'is_active' =>$rq->is_active,
                 'gender_type' =>$rq->gender_type,
             ];
