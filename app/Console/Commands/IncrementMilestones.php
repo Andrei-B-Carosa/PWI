@@ -27,7 +27,6 @@ class IncrementMilestones extends Command
      */
     public function handle()
     {
-        $countIncrement = 0;
         $today = now();
 
         // Fetch leave settings with succeeding_year set to increment
@@ -75,12 +74,10 @@ class IncrementMilestones extends Command
                         ['emp_id' => $employee->emp_id, 'leave_type_id' => $setting->leave_type_id],
                         ['leave_balance' => DB::raw("leave_balance + $additionalCredit")]
                     );
-
-                    $countIncrement++;
                 }
             }
         }
 
-        $this->info('Milestone increments processed successfully. Incremeted:'.$countIncrement);
+        $this->info('Milestone increments processed successfully. Incremeted:');
     }
 }

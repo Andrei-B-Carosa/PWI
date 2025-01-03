@@ -161,16 +161,16 @@ class GroupApproverNotification
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OT Filing Date</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OT Filing Date :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif"> '.Carbon::parse($query->overtime_date)->format('F d, Y').'</div>
                 </div>
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->overtime_from)->format('h:ia').' to '.Carbon::parse($query->overtime_to)->format('h:ia').'</div>
                 </div>
                 <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.$query->reason.'</div>
                 </div>
                 <div class="separator separator-dashed" style="margin:15px 0"></div>
@@ -189,16 +189,16 @@ class GroupApproverNotification
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Leave Filing Date</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Leave Filing Date :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif"> '.Carbon::parse($query->leave_filing_date)->format('F d, Y').'</div>
                 </div>
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">From - To :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->date_from)->format('F d, Y').' to '.Carbon::parse($query->date_to)->format('F d, Y').'</div>
                 </div>
                 <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Reason :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.$query->reason.'</div>
                 </div>
                 <div class="separator separator-dashed" style="margin:15px 0"></div>
@@ -216,20 +216,20 @@ class GroupApproverNotification
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OB Filing Date</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">OB Filing Date :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->ob_filing_date)->format('F d, Y').'</div>
                 </div>
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Time Out - Time In</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Time Out - Time In :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->ob_time_out)->format('h:ia').' to '.Carbon::parse($query->ob_time_in)->format('h:ia').'</div>
                 </div>
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Contact Person</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Contact Person :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.$query->emp_contact_person->fullname().'</div>
                 </div>
-                <div style="display:flex; justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
-                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Destination</div>
+                <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
+                    <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Destination :</div>
                     <div style="font-family:Arial,Helvetica,sans-serif">'.$query->destination.'</div>
                 </div>
                 <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">

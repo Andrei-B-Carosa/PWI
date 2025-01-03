@@ -68,7 +68,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
 
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
-            Route::post('/check_leave_balance', 'check_leave_balance');
+            Route::post('/validate_leave_type', 'validate_leave_type');
 
             Route::get('/widgets', 'widgets');
             Route::post('/view_history','view_history');

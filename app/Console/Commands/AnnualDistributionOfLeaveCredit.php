@@ -3,30 +3,30 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
-class DistributeLeaveCredits extends Command
+class AnnualDistributionOfLeaveCredit extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:distribute-leave-credits';
+    protected $signature = 'app:annual-distribution-of-leave-credit';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Distribute leave credits monthly based on HRIS leave settings';
+    protected $description = 'Distribute leave credits yearly';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $settings = DB::table('hris_leave_settings')->where('credit_type', 1)->where('fiscal_year', 1)->get();
+        //fiscal_year : 1 = monthly 2 = annual
+        $settings = DB::table('hris_leave_settings')->where('credit_type', 1)->where('fiscal_year', 2)->where('status', 1)->get();
 
         foreach ($settings as $setting) {
             $classificationIds = json_decode($setting->classification_id, true);

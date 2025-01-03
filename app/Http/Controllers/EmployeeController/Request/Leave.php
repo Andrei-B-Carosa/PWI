@@ -5,6 +5,8 @@ namespace App\Http\Controllers\EmployeeController\Request;
 use App\Http\Controllers\Controller;
 use App\Models\HrisApprovalHistory;
 use App\Models\HrisEmployeeLeaveBalance;
+use App\Models\HrisLeaveType;
+
 use App\Models\HrisEmployeeLeaveRequest;
 use App\Services\Reusable\DTServerSide;
 use App\Services\Reusable\GroupApproverNotification;
@@ -197,6 +199,43 @@ class Leave extends Controller
             'valid' => !$exist,
             'message' => 'The date(s) of leave already exists or overlaps with an existing request.'
         ];
+    }
+
+    public function validate_leave_type(Request $rq)
+    {
+        $check_if_birthday_leave = $this->check_if_birthday_leave($rq);
+        if(!$check_if_birthday_leave['valid']){
+            return response()->json($check_if_birthday_leave);
+        }
+
+        $check_leave_balance = $this->check_leave_balance($rq);
+        if(!$check_leave_balance['valid']){
+            return response()->json($check_leave_balance);
+        }
+        
+        return ['valid' => true, 'message' => 'Eligible for filing leave'];
+    }
+
+    public function check_if_birthday_leave(Request $rq)
+    {
+        if(isset($rq->leave_type_id)){
+
+            $id = Crypt::decrypt($rq->leave_type_id);
+            $leave_type = HrisLeaveType::find($id);
+
+            if(in_array(strtolower($leave_type->name),['birthday leave','birthday'])){
+                $emp_birthday = Auth::user()->employee->birthday; // Assuming this is a Carbon instance or a valid date string
+                $birthday_month = Carbon::parse($emp_birthday)->month; // Get the month of the employee's birthday
+                $current_month = Carbon::now()->month; // Get the current month
+
+                if ($birthday_month == $current_month) {
+                    return ['valid' => true, 'message' => 'Eligible for filing leave due to birthday month'];
+                } else {
+                    return ['valid' => false, 'message' => 'Not eligible for birthday leave this month'];
+                }
+            }
+        }
+        return ['valid' => true, 'message' => 'Eligible for filing leave'];
     }
 
     public function check_leave_balance(Request $rq)

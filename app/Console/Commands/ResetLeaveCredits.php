@@ -27,7 +27,6 @@ class ResetLeaveCredits extends Command
     public function handle()
     {
         $today = now();
-        $countResetted = 0;
         $settings = DB::table('hris_leave_settings')->where([['is_carry_over',2],['status',1]])->get();
 
         foreach ($settings as $setting) {
@@ -48,11 +47,10 @@ class ResetLeaveCredits extends Command
 
                 foreach ($employees as $employee) {
                     DB::table('hris_employee_leave_balances')->where('emp_id', $employee->emp_id)->update(['leave_balance' => 0]);
-                    $countResetted++;
                 }
             }
         }
 
-        $this->info('Leave balances reset successfully. Resetted:'.$countResetted);
+        $this->info('Leave balances reset successfully. Resetted:');
     }
 }

@@ -140,7 +140,7 @@ export function fvLeaveRequest(_table=false,param=false){
                                     message:'This field is required'
                                 },
                                 remote: {
-                                    url: '/hris/employee/request/leave/check_leave_balance',
+                                    url: '/hris/employee/request/leave/validate_leave_type',
                                     method: 'POST',
                                     headers: {
                                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
