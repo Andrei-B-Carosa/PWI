@@ -177,6 +177,14 @@ class Leave extends Controller
 
     public function check_filing_date(Request $rq)
     {
+        if(isset($rq->leave_type_id)){
+            $id = Crypt::decrypt($rq->leave_type_id);
+            $leave_type = HrisLeaveType::find($id);
+            if(!in_array(strtolower($leave_type->name),['sick leave','emergency leave'])){
+                return ['valid' => true, 'message' => 'Eligible for filing leave'];
+            }
+        }
+
         $leaveFilingDate = Carbon::createFromFormat('m-d-Y', $rq->leave_filing_date)->startOfDay();
         $leaveFrom = Carbon::createFromFormat('m-d-Y', $rq->leave_date_from)->startOfDay();
 
