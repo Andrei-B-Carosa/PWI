@@ -301,9 +301,16 @@ class Leave extends Controller
                 ->orWhereRaw('? BETWEEN leave_date_from AND leave_date_to', [$leaveTo]);
         })
         ->get()
-        ->reduce(function ($total, $leave) {
-            $from = max($leave->leave_date_from, request()->leave_date_from);
-            $to = min($leave->leave_date_to, request()->leave_date_to);
+        ->reduce(function ($total,$leave) {
+            $from = Carbon::parse($leave->leave_date_from); // Ensure it's a Carbon instance
+            $to = Carbon::parse($leave->leave_date_to);     // Ensure it's a Carbon instance
+
+            $requestFrom = Carbon::createFromFormat('m-d-Y', request()->leave_date_from);
+            $requestTo = Carbon::createFromFormat('m-d-Y', request()->leave_date_to);
+
+            $from = max($from, $requestFrom);
+            $to = min($to, $requestTo);
+
             $period = CarbonPeriod::create($from, $to);
             foreach ($period as $date) {
                 if (!$date->isWeekend()) {
