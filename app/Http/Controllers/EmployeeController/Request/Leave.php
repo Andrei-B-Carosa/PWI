@@ -185,7 +185,7 @@ class Leave extends Controller
             }
         }
 
-        $leaveFilingDate = Carbon::createFromFormat('m-d-Y', $rq->leave_filing_date)->startOfDay();
+        $leaveFilingDate = Carbon::now()->startOfDay();
         $leaveFrom = Carbon::createFromFormat('m-d-Y', $rq->leave_date_from)->startOfDay();
 
         // Check if the filing date is at least 3 days before the leave start date
