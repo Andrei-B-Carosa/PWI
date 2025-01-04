@@ -162,6 +162,11 @@ class Leave extends Controller
                 return response()->json($check_date_request);
             }
 
+            $check_filing_date = $this->check_filing_date($rq);
+            if(!$check_filing_date['valid']){
+                return response()->json($check_filing_date);
+            }
+
             return ['valid' => true, 'message' => 'Eligible for filing leave'];
 
         }catch(Exception $e)
@@ -169,6 +174,20 @@ class Leave extends Controller
             return response()->json(['status'=>400,'message' =>$e->getMessage()]);
         }
     }
+
+    public function check_filing_date(Request $rq)
+    {
+        $leaveFilingDate = Carbon::createFromFormat('m-d-Y', $rq->leave_filing_date)->startOfDay();
+        $leaveFrom = Carbon::createFromFormat('m-d-Y', $rq->leave_date_from)->startOfDay();
+
+        // Check if the filing date is at least 3 days before the leave start date
+        if ($leaveFilingDate->diffInDays($leaveFrom, false) >= 3) {
+            return ['valid' => true, 'message' => 'Eligible for filing leave'];
+        } else {
+            return ['valid' => false, 'message' => 'The filing date must be at least 3 days before the leave start date'];
+        }
+    }
+
 
     public function check_date_request(Request $rq)
     {
@@ -212,7 +231,7 @@ class Leave extends Controller
         if(!$check_leave_balance['valid']){
             return response()->json($check_leave_balance);
         }
-        
+
         return ['valid' => true, 'message' => 'Eligible for filing leave'];
     }
 
