@@ -180,7 +180,7 @@ class Leave extends Controller
         if(isset($rq->leave_type_id)){
             $id = Crypt::decrypt($rq->leave_type_id);
             $leave_type = HrisLeaveType::find($id);
-            if(!in_array(strtolower($leave_type->name),['sick leave','emergency leave'])){
+            if(in_array(strtolower($leave_type->name),['sick leave','emergency leave'])){
                 return ['valid' => true, 'message' => 'Eligible for filing leave'];
             }
         }
