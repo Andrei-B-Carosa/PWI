@@ -19,6 +19,17 @@ class PageController extends Controller
     {
         $user_id = Auth::user()->emp_id;
         $user_role = HrisUserRole::where([['role_id',2],['emp_id',$user_id],['is_active',1]])->first();
+
+        if(!$user_role){
+            if (session()->has('user_id')) {
+                $role = session('user_role');
+                $default = session('default');
+                return redirect("hris/$role/$default");
+            }else{
+                return redirect("hris/admin/login");
+            }
+        }
+
         if(!$user_role->is_active || !$user_role)
         {
             //throw error

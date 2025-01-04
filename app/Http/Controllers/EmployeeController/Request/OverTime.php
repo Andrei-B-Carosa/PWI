@@ -324,7 +324,7 @@ class OverTime extends Controller
             $history[] = [
                 'is_approved' => 'pending',
                 'action' => 'You filed a overtime request',
-                'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y H:i A')
+                'recorded_at'  => Carbon::parse($overtimeRequest->created_at)->format('M d, Y h:i A')
             ];
 
             if($overtimeRequestHistory->isNotEmpty())

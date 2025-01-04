@@ -462,7 +462,7 @@ class Leave extends Controller
                         'approver_remarks' =>$approver_remarks,
                         'approver_level' =>$approver_level,
                         'is_final_approver' =>$is_final_approver,
-                        'recorded_at' =>Carbon::parse($data->created_at)->format('M d, Y H:i A')
+                        'recorded_at' =>Carbon::parse($data->created_at)->format('M d, Y h:i A')
                     ];
                 }
             }
