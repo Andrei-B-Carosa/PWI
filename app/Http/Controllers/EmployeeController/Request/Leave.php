@@ -294,22 +294,22 @@ class Leave extends Controller
         $pendingDays = HrisEmployeeLeaveRequest::where('emp_id', $user_id)
         ->where('leave_type_id', $leave_type_id)
         ->where('is_approved', null) // Pending leave requests
-        ->where(function ($query) use ($leaveFrom, $leaveTo) {
-            $query->whereBetween('leave_date_from', [$leaveFrom, $leaveTo])
-                ->orWhereBetween('leave_date_to', [$leaveFrom, $leaveTo])
-                ->orWhereRaw('? BETWEEN leave_date_from AND leave_date_to', [$leaveFrom])
-                ->orWhereRaw('? BETWEEN leave_date_from AND leave_date_to', [$leaveTo]);
-        })
+        // ->where(function ($query) use ($leaveFrom, $leaveTo) {
+        //     $query->whereBetween('leave_date_from', [$leaveFrom, $leaveTo])
+        //         ->orWhereBetween('leave_date_to', [$leaveFrom, $leaveTo])
+        //         ->orWhereRaw('? BETWEEN leave_date_from AND leave_date_to', [$leaveFrom])
+        //         ->orWhereRaw('? BETWEEN leave_date_from AND leave_date_to', [$leaveTo]);
+        // })
         ->get()
         ->reduce(function ($total,$leave) {
             $from = Carbon::parse($leave->leave_date_from); // Ensure it's a Carbon instance
             $to = Carbon::parse($leave->leave_date_to);     // Ensure it's a Carbon instance
 
-            $requestFrom = Carbon::createFromFormat('m-d-Y', request()->leave_date_from);
-            $requestTo = Carbon::createFromFormat('m-d-Y', request()->leave_date_to);
+            // $requestFrom = Carbon::createFromFormat('m-d-Y', request()->leave_date_from);
+            // $requestTo = Carbon::createFromFormat('m-d-Y', request()->leave_date_to);
 
-            $from = max($from, $requestFrom);
-            $to = min($to, $requestTo);
+            // $from = max($from, $requestFrom);
+            // $to = min($to, $requestTo);
 
             $period = CarbonPeriod::create($from, $to);
             foreach ($period as $date) {
@@ -324,7 +324,7 @@ class Leave extends Controller
         $effectiveBalance = $leave_balance - $pendingDays;
 
         if ($daysCount > $effectiveBalance) {
-            return ['valid' => false, 'message' => 'Insufficient leave balance '.($pendingDays>0?'(including pending requests if any)':'').''];
+            return ['valid' => false, 'message' => 'Insufficient leave balance '.($pendingDays>0?'(including pending requests)':'').''];
         }
 
         return ['valid' => true, 'message' => 'Eligible for filing leave'];
