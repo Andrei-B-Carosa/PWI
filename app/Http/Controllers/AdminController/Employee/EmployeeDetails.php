@@ -343,7 +343,7 @@ class EmployeeDetails extends Controller
 
             if($rq->column == 'password'){
                 if($rq->newpassword !== $rq->confirmpassword){
-                    return [ 'status' => 'success','message'=>'Passwords do not match', 'payload' => ''];
+                    return [ 'status' => 'error','message'=>'Passwords do not match', 'payload' => ''];
                 }
                 $values = Hash::make($rq->newpassword);
             }elseif ($rq->column == 'c_email') {
@@ -359,6 +359,7 @@ class EmployeeDetails extends Controller
             DB::commit();
             return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];
         } catch (\Exception $e) {
+            DB::rollback();
             return [ 'status' => 'error', 'message' => $e->getMessage() ];
         }
     }

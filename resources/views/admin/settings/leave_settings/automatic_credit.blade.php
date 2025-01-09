@@ -32,7 +32,18 @@
                                 <div class="col-xxl-12">
                                     <div class="row g-8">
                                         <div class="col-lg-4 fv-row">
-                                            <label class="fs-6 form-label fw-bold text-dark">Classification</label>
+                                            <label class="fs-6 form-label fw-bold text-dark">
+                                                <span class="required">
+                                                    Classification
+                                                </span>
+                                                <span class="ms-1" data-bs-toggle="tooltip" title="Employee classification for the leave condition to be applied">
+                                                    <i class="ki-duotone ki-information fs-7">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </span>
+                                            </label>
                                             <select class="form-select multi-select form-select-solid" name="classification_id[]"
                                                 data-control="select2"
                                                 data-placeholder="Select an Option"
@@ -44,7 +55,18 @@
                                             </select>
                                         </div>
                                         <div class="col-lg-4 fv-row">
-                                            <label class="fs-6 form-label fw-bold text-dark">Employment</label>
+                                            <label class="fs-6 form-label fw-bold text-dark">
+                                                <span class="required">
+                                                    Employment
+                                                </span>
+                                                <span class="ms-1" data-bs-toggle="tooltip" title="Employment type for the leave condition to be applied">
+                                                    <i class="ki-duotone ki-information fs-7">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </span>
+                                            </label>
                                             <select class="form-select multi-select form-select-solid" name="employment_id[]"
                                                 data-control="select2"
                                                 data-placeholder="Select an Option"
@@ -56,7 +78,18 @@
                                             </select>
                                         </div>
                                         <div class="col-lg-4 fv-row">
-                                            <label class="fs-6 form-label fw-bold text-dark">Location</label>
+                                            <label class="fs-6 form-label fw-bold text-dark">
+                                                <span class="required">
+                                                    Location
+                                                </span>
+                                                <span class="ms-1" data-bs-toggle="tooltip" title="Employee location for the leave condition to be applied">
+                                                    <i class="ki-duotone ki-information fs-7">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </span>
+                                            </label>
                                             <select class="form-select multi-select form-select-solid" name="location_id[]"
                                                 data-control="select2"
                                                 data-placeholder="Select an Option"
@@ -101,7 +134,7 @@
                             <div class="fv-row mb-7">
                                 <label class="fs-6 fw-semibold form-label mt-3">
                                     <span class="required fw-bold">Start Credit</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" title="Starting leave credit">
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="This is a starting leave credit to be distributed to valid employee">
                                         <i class="ki-duotone ki-information fs-7">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
@@ -112,7 +145,18 @@
                                 <input type="text" class="form-control" name="start_credit" value="" disabled/>
                             </div>
                             <div class="fv-row mb-7">
-                                <label class="fs-6 form-label fw-bold text-dark required">Effectivity</label>
+                                <label class="fs-6 form-label fw-bold text-dark">
+                                    <span class="required">
+                                        Effectivity
+                                    </span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="When to distributed the starting credit ?">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
                                 <select class="form-select form-select-solid" name="fiscal_year" data-control="select2"data-placeholder="Select an Option"
                                     data-minimum-results-for-search="Infinity" disabled>
                                     <option></option>
@@ -120,7 +164,18 @@
                                 </select>
                             </div>
                             <div class="fv-row mb-7">
-                                <label class="fs-6 form-label fw-bold text-dark required">Is Carry Over ?</label>
+                                <label class="fs-6 form-label fw-bold text-dark">
+                                    <span class="required">
+                                    Is Carry Over ?
+                                    </span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="Is the unused leave credit to be resetted or carry over next year ?">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
                                 <select class="form-select form-select-solid" name="is_carry_over" data-control="select2"
                                         data-placeholder="Select an Option" data-minimum-results-for-search="Infinity" disabled>
                                     <option></option>
@@ -141,7 +196,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="fv-row mb-7">
-                                        <label class="required fw-semibold required fs-6 mb-2">Day of Carry Over</label>
+                                        <label class="required fw-semibold fs-6 mb-2">Day of Carry Over</label>
                                         <select class="form-select form-select-solid" name="carry_over_day" data-control="select2"
                                                 data-placeholder="Select an Option" data-minimum-results-for-search="Infinity" disabled>
                                             <option></option>
@@ -174,7 +229,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="fv-row mb-7">
-                                        <label class="required fw-semibold required fs-6 mb-2">Day of Reset</label>
+                                        <label class="required fw-semibold fs-6 mb-2">Day of Reset</label>
                                         <select class="form-select form-select-solid" name="reset_day" data-control="select2"
                                                 data-placeholder="Select an Option" data-minimum-results-for-search="Infinity" disabled>
                                             <option></option>
@@ -186,19 +241,41 @@
 
                             <div class="separator mb-6"></div>
                             <div class="fv-row mb-7">
-                                <label class="fs-6 form-label fw-bold text-dark required">Succeeding Years</label>
+                                <label class="fs-6 form-label fw-bold text-dark">
+                                    <span class="required">
+                                        Succeeding Years
+                                    </span>
+                                    <span class="ms-1" data-bs-toggle="tooltip" title="Does the total leave credit increase or fixed on succeding years?">
+                                        <i class="ki-duotone ki-information fs-7">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+                                </label>
                                 <select class="form-select form-select-solid" name="succeeding_year" data-control="select2"
                                         data-placeholder="Select an Option" data-allow-clear="true"  data-minimum-results-for-search="Infinity" disabled>
                                     <option></option>
                                     <option value="1">Increment</option>
-                                    <option value="2">Fixed Credit</option>
+                                    <option value="2">Fixed</option>
                                 </select>
                             </div>
                             <div class="fv-row mb-7 d-none succeeding_year">
                                 <div id="repeater">
                                     <div class="form-group row g-1 justify-content-center">
                                         <div class="col-9">
-                                            <label class="fs-6 form-label fw-bold text-dark required">Increment Milestones (Year - Credits)</label>
+                                            <label class="fs-6 form-label fw-bold text-dark">
+                                                <span class="required">
+                                                    Increment Milestones (Year - Credits)
+                                                </span>
+                                                <span class="ms-1" data-bs-toggle="tooltip" title="Years required for tenure and credits distributed upon achievement">
+                                                    <i class="ki-duotone ki-information fs-7">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </span>
+                                            </label>
                                         </div>
                                         <div class="col-3 text-center">
                                             <a href="javascript:;" data-repeater-create class="btn btn-sm btn-light-primary float-end">

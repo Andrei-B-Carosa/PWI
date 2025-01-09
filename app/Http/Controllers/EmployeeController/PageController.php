@@ -82,34 +82,44 @@ class PageController extends Controller
 
     public function setup_page(Request $rq)
     {
-        $role    = 'employee';
         $page = new Page;
-        $rq->session()->put($role.'_page',$rq->page);
-        $view = $rq->session()->get($role.'_page','home');
+        $role = 'employee';
 
-        switch($view){
+        $rq->session()->put($role . '_page', $rq->page);
+        $view = $rq->session()->get($role . '_page', 'home');
 
-            default :
+        // $pages = [
+        //     'automatic_credit' => fn() => $page->automatic_credit($rq),
+        //     'manual_credit' => fn() => $page->manual_credit($rq),
+        //     'employee_details' => fn() => $page->employee_details($rq),
+        //     'group_details' => fn() => $page->group_details($rq),
+        // ];
 
-                $row = HrisSystemFile::with(["file_layer" => function($q) use($view) {
+        // if (array_key_exists($view, $pages)) {
+        //     return response(['page' => $pages[$view]()], 200);
+        // }
+
+        $row = HrisSystemFile::with(["file_layer" => function ($q) use ($view) {
+            $q->where([["status", 1], ["href", $view]]);
+        }])
+        ->where(function ($query) use ($view) {
+            $query->where([["status", 1], ["href", $view]])
+                ->orWhereHas("file_layer", function ($q) use ($view) {
                     $q->where([["status", 1], ["href", $view]]);
-                }])
-                ->where(function($query) use($view) {
-                    $query->where([["status", 1], ["href", $view]])
-                    ->orWhereHas("file_layer", function ($q) use($view) {
-                        $q->where([["status", 1], ["href", $view]]);
-                    });
-                })
-                ->first();
+                });
+        })
+        ->first();
 
-                if (!$row) { return view("$role.not_found"); }
-                $folders = !$row->file_layer->isEmpty()? $row->folder.'.'.$row->file_layer[0]->folder :$row->folder;
-                $file    = $row->file_layer[0]->href??$row->href;
+        if (!$row || !$row->file_layer) {
+            return view("$role.not_found");
+        }
 
-                return response([ 'page' => view("$role.$folders.$file")->render() ],200);
+        $folders = !$row->file_layer->isEmpty()
+            ? $row->folder . '.' . $row->file_layer[0]->folder
+            : $row->folder;
+        $file = $row->file_layer[0]->href ?? $row->href;
 
-            break;
-        };
+        return response(['page' => view("$role.$folders.$file")->render()], 200);
     }
 
 }

@@ -3,7 +3,7 @@
         <div id="kt_app_content" class="app-content  flex-column-fluid">
             <div id="kt_app_content_container" class="app-container  container-xxl">
                 {{-- PUT CONTENT HERE --}}
-                
+
                 <div class="card">
                     <div class="card-header border-0 pb-6 pt-6">
                         <div class="card-title">
@@ -109,3 +109,29 @@
     </div>
 </div>
 
+<div id="kt_activities_request" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="activities"
+    data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'0px', 'lg': '800px'}"
+    data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_activities_request_toggle"
+    data-kt-drawer-close="#kt_activities_request_close">
+
+    <div class="card shadow-none border-0 rounded-0">
+        <div class="card-header" id="kt_activities_request_header">
+            <h3 class="card-title fw-bold text-dark">Approval History <span class="request"></span></h3>
+            <div class="card-toolbar">
+                <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5"
+                    id="kt_activities_request_close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body position-relative" id="kt_activities_request_body">
+            <div id="kt_activities_request_scroll" class="position-relative" data-kt-scroll="true"
+                data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_activities_request_body"
+                data-kt-scroll-dependencies="#kt_activities_request_header, #kt_activities_request_footer" data-kt-scroll-offset="5px">
+                <div class="timeline timeline-border-dashed approval-timeline">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

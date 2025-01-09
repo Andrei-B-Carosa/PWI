@@ -86,7 +86,7 @@ export function fvLeaveSetup(_table=false,param=false){
                                     $(card).find('input[name="start_credit"]').val(payload.start_credit);
                                     $(card).find('select[name="fiscal_year"]').val(payload.fiscal_year).trigger('change');
 
-                                    $(card).find('select[name="is_carry_over"]').val(payload.is_carry_over).trigger('change');
+                                    $(card).find('select[name="is_carry_over"]').val(payload.is_carry_over??'').trigger('change');
                                     $(card).find('select[name="carry_over_month"]').val(payload.carry_over_month).trigger('change');
                                     $(card).find('select[name="carry_over_day"]').val(payload.carry_over_day).trigger('change');
 
@@ -327,28 +327,32 @@ export function fvLeaveSetup(_table=false,param=false){
                 let _divCarryOver = $('.carry_over');
                 let _divResetCredit = $('.reset_leave_credit');
 
+                if(fvLeaveCondition.getElements('reset_month') && fvLeaveCondition.getElements('reset_day')){
+                    fvLeaveCondition.addField('reset_month',fv_validator())
+                    fvLeaveCondition.addField('reset_day',fv_validator())
+                }
+
+                if(fvLeaveCondition.getElements('carry_over_month') && fvLeaveCondition.getElements('carry_over_day')){
+                    fvLeaveCondition.removeField('carry_over_month')
+                    fvLeaveCondition.removeField('carry_over_day')
+                }
+
                 if(_this ==1){
                     fvLeaveCondition.addField('carry_over_month',fv_validator());
                     fvLeaveCondition.addField('carry_over_day',fv_validator());
 
-                    if(fvLeaveCondition.getElements('reset_month') && fvLeaveCondition.getElements('reset_day')){
-                        fvLeaveCondition.addField('reset_month',fv_validator())
-                        fvLeaveCondition.addField('reset_day',fv_validator())
-                    }
                     _divCarryOver.removeClass('d-none');
                     _divResetCredit.addClass('d-none');
 
-                }else{
+                }else if(_this ==2){
                     fvLeaveCondition.addField('reset_month',fv_validator())
                     fvLeaveCondition.addField('reset_day',fv_validator())
 
-                    if(fvLeaveCondition.getElements('carry_over_month') && fvLeaveCondition.getElements('carry_over_day')){
-                        fvLeaveCondition.removeField('carry_over_month')
-                        fvLeaveCondition.removeField('carry_over_day')
-                    }
-
                     _divCarryOver.addClass('d-none');
                     _divResetCredit.removeClass('d-none');
+                }else{
+                    _divCarryOver.addClass('d-none');
+                    _divResetCredit.addClass('d-none');
                 }
             })
 

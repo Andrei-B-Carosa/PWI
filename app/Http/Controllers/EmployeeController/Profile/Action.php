@@ -4,12 +4,14 @@ namespace App\Http\Controllers\EmployeeController\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\EmployeeAccount;
 use App\Models\HrisEmployeePosition;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class Action extends Controller
 {
@@ -125,6 +127,27 @@ class Action extends Controller
     {
         try {
             DB::beginTransaction();
+
+            $user_id = Auth::user()->emp_id;
+            $query = EmployeeAccount::where([['emp_id',$user_id],['is_active',1]])->first();
+
+            if($rq->column == 'password'){
+                if($rq->newpassword !== $rq->confirmpassword){
+                    return [ 'status' => 'success','message'=>'Passwords do not match', 'payload' => ''];
+                }
+                if (!Hash::check($rq->currentpassword, $query->password)) {
+                    return [ 'status' => 'error','message'=>'Current password do not match', 'payload' => ''];
+                }
+                $values = Hash::make($rq->newpassword);
+            }elseif ($rq->column == 'c_email') {
+                $values = $rq->emailaddress;
+            } else {
+                return [ 'status' => 'error', 'message' => 'Invalid column' ];
+            }
+            // andrei@2024A
+            $query->{$rq->column} = $values;
+            $query->updated_by = $user_id;
+            $query->save();
 
             DB::commit();
             return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];

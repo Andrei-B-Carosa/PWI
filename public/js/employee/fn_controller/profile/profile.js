@@ -2,7 +2,8 @@
 import { data_bs_components } from "../../../global.js";
 import { Alert } from "../../../global/alert.js";
 import { RequestHandler } from "../../../global/request.js";
-// import { fvAccountSecurity, fvEmployeeDetails, fvUploadDocument } from "../../fv_controller/201_employee/fv_employee_details.js";
+// import { fvAccountSecurity, fvEmployeeDetails, fvUploadDocument } from "../../fv_controller/profile/fv_profile.js";
+import { fvAccountSecurity } from "../../fv_controller/profile/fv_profile.js";
 
 export var EmployeeProfileController =  function (page,param) {
 
@@ -147,9 +148,9 @@ export var EmployeeProfileController =  function (page,param) {
             c();
         });
 
-        $(_page).find('#kt_signin_change_password, #kt_signin_change_email').attr('action','/hris/admin/201_employee/employee_details/update');
-        $(`#card${tab}`).find('#kt_signin_email_button, #kt_signin_password_button').remove();
-        // fvAccountSecurity(false,tab,param);
+        $(_page).find('#kt_signin_change_password, #kt_signin_change_email').attr('action','/hris/employee/profile/update');
+        $(`#card${tab}`).find('#kt_signin_email_button').remove();
+        fvAccountSecurity(false,tab);
     }
 
     $(async function () {

@@ -229,16 +229,21 @@ Route::group(['prefix'=>'hris/admin'], function() {
     Route::group(['prefix'=>'approvals'], function() {
         Route::controller(OvertimeRequisition::class)->prefix('overtime_requisition')->group(function() {
             Route::post('/dt', 'dt');
+            Route::post('/view_history','view_history');
             Route::post('/update', 'update');
         });
 
         Route::controller(OfficialBusiness::class)->prefix('official_business')->group(function() {
             Route::post('/dt', 'dt');
+            Route::post('/view_history','view_history');
+
             Route::post('/update', 'update');
         });
 
         Route::controller(ApplicationForLeave::class)->prefix('application_for_leave')->group(function() {
             Route::post('/dt', 'dt');
+            Route::post('/view_history','view_history');
+
             Route::post('/update', 'update');
         });
     });
