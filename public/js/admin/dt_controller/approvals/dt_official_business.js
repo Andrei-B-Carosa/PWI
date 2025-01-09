@@ -78,7 +78,7 @@ export var dtOfficialBusiness = function (param=false) {
                     render: function (data, type, row) {
                         let status = {
                             1: ["success", "Approved"],
-                            2: ["danger", "Disapproved"],
+                            2: ["danger", "Rejected"],
                             null:["secondary","Pending"]
                         };
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;

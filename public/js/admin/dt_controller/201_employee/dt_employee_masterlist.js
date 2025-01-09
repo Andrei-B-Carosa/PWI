@@ -172,57 +172,6 @@ export var dtEmployeeMasterlist = function (param=false) {
                 }
             })
 
-            $(`#${_table}_table`).on('click','.view-details',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
-
-                let _this = $(this);
-                let url   =_this.attr('rq-url');
-                let id    =_this.attr('data-id');
-                let modal_id = '#modal_add_approver';
-                let form = $('#form_add_approver');
-
-                let formData = new FormData;
-
-                formData.append('id',id);
-                _request.post(_link+'info',formData)
-                .then((res) => {
-                    let payload = JSON.parse(window.atob(res.payload));
-
-                    trigger_select('select[name="company_id"]',payload.company_id);
-                    form.find('select[name="company_id"]').attr('disabled',true);
-
-                    trigger_select('select[name="company_location_id"]',payload.company_location_id);
-                    form.find('select[name="company_location_id"]').attr('disabled',true);
-
-                    trigger_select('select[name="department_id"]',payload.department_id);
-                    form.find('select[name="department_id"]').attr('disabled',true);
-
-                    trigger_select('select[name="section_id"]',payload.section_id);
-                    form.find('select[name="section_id"]').attr('disabled',true);
-
-                    trigger_select('select[name="approver_id"]',payload.approver_id);
-                    form.find('select[name="approver_id"]').attr('disabled',true);
-
-                    form.find('select[name="approver_level"]').val(payload.approver_level).trigger('change');
-                    form.find('select[name="is_active"]').val(payload.is_active).trigger('change');
-
-                    form.find('input[name="is_final_approver"]').prop('checked', payload.is_final_approver??false).trigger('change');
-                    form.find('input[name="is_required"]').prop('checked', payload.is_required??false).trigger('change');
-
-                    $(modal_id).find('button.submit').attr('data-id',id);
-                    $(modal_id).find('#form_add_approver').attr('action','/hris/admin/settings/approver_settings/update');
-                })
-                .catch((error) => {
-                    console.log(error);
-                    Alert.alert('error', "Something went wrong. Try again later", false);
-                })
-                .finally((error) => {
-                    modal_state(modal_id,'show');
-                });
-
-            })
-
             $(`#${_table}_table`).on('click','.archive',function(e){
                 e.preventDefault()
                 e.stopImmediatePropagation()
@@ -230,30 +179,41 @@ export var dtEmployeeMasterlist = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.confirm('question','Archive this employee record ?',{
-                    onConfirm: function() {
-                        formData.append('id',id);
-                        formData.append('is_active',2);
-                        _request.post('/'+_link+'archive',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            if(res.payload ==0){
-                                initTable();
-                            }else{
-                                $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                _request.post('/'+_link+'emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.confirm('question','Do you want to archive the employee record <br> of <b>"'+payload.name+'"</b> ?',{
+                            onConfirm: function() {
+                                formData.append('is_active',2);
+                                _request.post('/'+_link+'archive',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.payload ==0){
+                                        initTable();
+                                    }else{
+                                        $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                                    }
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
+
+                                });
                             }
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
-
                         });
                     }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    Alert.alert('error', "Something went wrong. Try again later", false);
+                })
+                .finally((error) => {
+                    //code here
                 });
-
-
             })
 
             $(`#${_table}_table`).on('click','.delete',function(e){
@@ -263,35 +223,46 @@ export var dtEmployeeMasterlist = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.confirm('question','Delete this record ?',{
-                    onConfirm: function() {
-                        formData.append('id',id);
-                        _request.post('/'+_link+'delete',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            if(res.payload ==0){
-                                initTable();
-                            }else{
-                                $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                _request.post('/'+_link+'emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+
+                        Alert.confirm('question','Do you want to delete the employee record <br> of <b>"'+payload.name+'"</b> ?',{
+                            onConfirm: function() {
+                                _request.post('/'+_link+'delete',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.payload ==0){
+                                        initTable();
+                                    }else{
+                                        $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error)
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
+                                    //code here
+                                });
                             }
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
-
                         });
                     }
+
+                })
+                .catch((error) => {
+                    console.log(error)
+                    Alert.alert('error', "Something went wrong. Try again later", false);
+                })
+                .finally((error) => {
+                    //code here
                 });
-
-
             })
-
         })
-
     }
-
     return {
         init: function () {
             initTable();

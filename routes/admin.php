@@ -38,7 +38,7 @@ Route::group(['prefix'=>'hris/admin'], function() {
         return view('login.admin');
     })->name('login.admin');
 
-    Route::middleware('auth')->controller(Page::class)->group(function () {
+    Route::middleware(['auth','is.admin'])->controller(Page::class)->group(function () {
 
         Route::get('/', 'system_file');
         Route::post('/setup-page', 'setup_page');
@@ -187,6 +187,7 @@ Route::group(['prefix'=>'hris/admin'], function() {
                 Route::post('/check_final_approver', 'check_final_approver');
                 Route::post('/check_approver', 'check_approver');
                 Route::post('/check_approver_level', 'check_approver_level');
+                Route::post('/emp_details', 'emp_details');
             });
 
             Route::controller(GroupMember::class)->prefix('member')->group(function() {
@@ -196,6 +197,7 @@ Route::group(['prefix'=>'hris/admin'], function() {
                 Route::post('/delete', 'delete');
 
                 Route::post('/employee_list', 'employee_list');
+                Route::post('/emp_details', 'emp_details');
             });
 
         });
@@ -209,6 +211,7 @@ Route::group(['prefix'=>'hris/admin'], function() {
             Route::post('/archive', 'archive');
             Route::post('/update', 'update');
             Route::post('/delete', 'delete');
+            Route::post('/emp_details', 'emp_details');
         });
         Route::controller(EmployeeDetails::class)->prefix('employee_details')->group(function() {
             Route::post('/form', 'form');

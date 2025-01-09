@@ -36,20 +36,18 @@ export var dtLeaveManagement = function (param) {
                     searchable:false,
                     visible:false,
                 },
-
-                // {
-                //     data: "company_name", name: "company_name", title: "Company",
-                //     sortable:false,
-                //     searchable:false,
-                //     visible:false,
-                // },
+                {
+                    data: "fiscal_year", name: "fiscal_year", title: "Fiscal Year",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
                 {
                     data: "leave_name", name: "leave_name", title: "Type of Leave",
                     render: function (data, type, row) {
                         return `
                                 <div class="d-flex flex-column">
                                     <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${data} (${row.leave_code})</a>
-                                    <span class="text-muted">${row.credit_type}</span>
                                 </div>
                             `;
                     },
@@ -58,7 +56,7 @@ export var dtLeaveManagement = function (param) {
                     data: "credit_type", name: "credit_type", title: "Credit Type",
                     sortable:false,
                     searchable:false,
-                    visible:false,
+                    className:'text-muted'
                 },
                 {
                     data: "credit_type_id", name: "credit_type_id", title: "Credit Type ID",
@@ -66,16 +64,7 @@ export var dtLeaveManagement = function (param) {
                     searchable:false,
                     visible:false,
                 },
-                {
-                    data: "fiscal_year", name: "fiscal_year", title: "Credit Type",
-                    sortable:false,
-                    searchable:false,
-                    render(data,type,row)
-                    {
-                        return data ?? '--';
 
-                    }
-                },
                 {
                     data: "status", name: "status", title: "Status",
                     sortable:false,
@@ -87,6 +76,12 @@ export var dtLeaveManagement = function (param) {
                         };
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
                     },
+                },
+                {
+                    data: "last_updated_at", name: "last_updated_at", title: "Last Updated At",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
                 },
                 {
                     data: "last_updated_by", name: "last_updated_by", title: "Last Updated By",
@@ -110,7 +105,7 @@ export var dtLeaveManagement = function (param) {
                                     <span class="text-gray-800 text-hover-primary mb-1">
                                         ${data}
                                     </span>
-                                    <span class="text-muted fs-8">Last Updated</span>
+                                    <span class="text-muted fs-8">${row.last_updated_at}</span>
                                 </div>
                             </div>
                         `

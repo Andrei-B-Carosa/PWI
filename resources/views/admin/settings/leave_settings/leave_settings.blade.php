@@ -144,7 +144,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="fv-row mb-8 fv-plugins-icon-container">
+                            {{-- <div class="fv-row mb-8 fv-plugins-icon-container">
                                 <label class="required fs-6 fw-semibold form-label mb-2">Company:</label>
                                 <select name="company_id" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity"
                                         class="form-select form-select-solid fw-bold">
@@ -159,7 +159,7 @@
                                     <option></option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
-                            </div>
+                            </div> --}}
                             <div class="fv-row mb-8 fv-plugins-icon-container">
                                 <label class="required fs-6 fw-semibold form-label mb-2">Gender Type:</label>
                                 <select name="gender_type" data-control="select2" data-placeholder="Select an option" data-minimum-results-for-search="Infinity"

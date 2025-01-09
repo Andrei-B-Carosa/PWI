@@ -22,16 +22,20 @@ class LeaveManagement extends Controller
 
         $data->transform(function ($item, $key) {
             $last_updated_by = null;
+            $last_updated_at = null;
             if($item->updated_by != null){
                 $last_updated_by = $item->updated_by_emp->fullname();
+                $last_updated_at = Carbon::parse($item->updated_at)->format('m-d-y h:iA');
             }elseif($item->created_by !=null){
                 $last_updated_by = $item->created_by_emp->fullname();
+                $last_updated_at = Carbon::parse($item->created_at)->format('m-d-y h:iA');
             }
 
             $leave_type = $item->leave_type;
             $item->count = $key + 1;
 
             $item->last_updated_by = $last_updated_by;
+            $item->last_updated_at = $last_updated_at;
             $item->company_name = $leave_type->company->name;
             $item->leave_name = $leave_type->name;
             $item->leave_code = $leave_type->code;

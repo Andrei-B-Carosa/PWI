@@ -36,19 +36,18 @@ export var dtLeaveType = function (param) {
                     searchable:false,
                     visible:false,
                 },
-                {
-                    data: "company_name", name: "company_name", title: "Company",
-                    sortable:false,
-                    searchable:false,
-                    visible:false,
-                },
+                // {
+                //     data: "company_name", name: "company_name", title: "Company",
+                //     sortable:false,
+                //     searchable:false,
+                //     visible:false,
+                // },
                 {
                     data: "name", name: "name", title: "Type of Leave",
                     render: function (data, type, row) {
                         return `
                                 <div class="d-flex flex-column">
                                     <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${data} (${row.code})</a>
-                                    <span class="text-muted">${row.company_name}</span>
                                 </div>
                             `;
                     },
@@ -89,6 +88,13 @@ export var dtLeaveType = function (param) {
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
                     },
                 },
+
+                {
+                    data: "last_updated_at", name: "last_updated_at", title: "Last Updated At",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
                 {
                     data: "last_updated_by", name: "last_updated_by", title: "Last Updated By",
                     sortable:false,
@@ -111,7 +117,7 @@ export var dtLeaveType = function (param) {
                                     <span class="text-gray-800 text-hover-primary mb-1">
                                         ${data}
                                     </span>
-                                    <span class="text-muted fs-8">Last Updated</span>
+                                    <span class="text-muted fs-8">${row.last_updated_at}</span>
                                 </div>
                             </div>
                         `
@@ -208,8 +214,8 @@ export var dtLeaveType = function (param) {
                     form.find('input[name="name"]').val(payload.name);
                     form.find('input[name="code"]').val(payload.code);
 
-                    trigger_select('select[name="company_id"]',payload.company_id);
-                    trigger_select('select[name="company_location_id"]',payload.company_location_id);
+                    // trigger_select('select[name="company_id"]',payload.company_id);
+                    // trigger_select('select[name="company_location_id"]',payload.company_location_id);
 
                     form.find('select[name="gender_type"]').val(payload.gender_type).trigger('change');
                     form.find('select[name="is_active"]').val(payload.is_active).trigger('change');

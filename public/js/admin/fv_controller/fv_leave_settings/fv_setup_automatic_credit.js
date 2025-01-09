@@ -243,7 +243,7 @@ export function fvLeaveSetup(_table=false,param=false){
                                 _request.post(url,_formData).then((res) => {
                                     Alert.toast(res.status,res.message);
                                     if(res.status == 'success'){
-
+                                        $(card).find('.cancel').click();
                                     }
                                 })
                                 .catch((error) => {

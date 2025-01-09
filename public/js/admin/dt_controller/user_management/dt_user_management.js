@@ -329,7 +329,7 @@ export var dtPermission = function (param) {
                     searchable:false,
                 },
                 {
-                    data: "name", name: "name", title: "Department",
+                    data: "name", name: "name", title: "Module",
                     sortable:false,
                 },
                 {

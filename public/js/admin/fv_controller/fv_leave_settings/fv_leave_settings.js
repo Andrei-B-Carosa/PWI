@@ -44,8 +44,8 @@ export function fvLeaveType(_table=false,param=false){
                             }
                         },
                         code:fv_validator(),
-                        company_id:fv_validator(),
-                        company_location_id:fv_validator(),
+                        // company_id:fv_validator(),
+                        // company_location_id:fv_validator(),
                         gender_type:fv_validator(),
                     },
                     plugins: {

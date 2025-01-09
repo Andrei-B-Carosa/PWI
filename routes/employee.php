@@ -19,7 +19,7 @@ use App\Services\WebRoute;
 Route::group(['prefix'=>'hris/employee'], function() {
 
     //EMPLOYEE PAGE
-    Route::middleware('auth')->controller(Page::class)->group(function () {
+    Route::middleware(['auth','is.employee'])->controller(Page::class)->group(function () {
 
         Route::get('/', 'system_file');
         Route::post('/setup-page', 'setup_page');

@@ -19,19 +19,25 @@ class LeaveType extends Controller
         $emp_id = Auth::user()->emp_id;
         $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
 
-        $data = HrisLeaveType::with('company')->where('is_deleted',null)->orderBy('id', 'ASC') ->get();
+        $data = HrisLeaveType::with('company')->where('is_deleted',null)->orderBy('id', 'DESC') ->get();
 
         $data->transform(function ($item, $key) {
             $last_updated_by = null;
+            $last_updated_at = null;
+
             if($item->updated_by != null){
                 $last_updated_by = $item->updated_by_emp->fullname();
+                $last_updated_at = Carbon::parse($item->updated_at)->format('m-d-y h:iA');
             }elseif($item->created_by !=null){
                 $last_updated_by = $item->created_by_emp->fullname();
+                $last_updated_at = Carbon::parse($item->created_at)->format('m-d-y h:iA');
             }
+
             $item->count = $key + 1;
             $item->encrypted_id = Crypt::encrypt($item->id);
             $item->last_updated_by = $last_updated_by;
-            $item->company_name = $item->company->name;
+            $item->last_updated_at = $last_updated_at;
+            // $item->company_name = $item->company->name;
             return $item;
         });
 
@@ -55,8 +61,8 @@ class LeaveType extends Controller
                 'name' =>$query->name,
                 'description' =>$query->description,
                 'code' =>$query->code,
-                'company_id' =>$query->company->name,
-                'company_location_id' =>$query->company_location->name,
+                // 'company_id' =>$query->company->name,
+                // 'company_location_id' =>$query->company_location->name,
                 'is_active' =>$query->is_active,
                 'gender_type' =>$query->gender_type,
             ];
@@ -77,8 +83,8 @@ class LeaveType extends Controller
                 'name' =>ucwords(strtolower($rq->name)),
                 'description' =>$rq->description,
                 'code' =>$rq->code,
-                'company_id' =>Crypt::decrypt($rq->company_id),
-                'company_location_id' =>Crypt::decrypt($rq->company_location_id),
+                // 'company_id' =>Crypt::decrypt($rq->company_id),
+                // 'company_location_id' =>Crypt::decrypt($rq->company_location_id),
                 'is_active' =>$rq->is_active,
                 'gender_type' =>$rq->gender_type,
             ];

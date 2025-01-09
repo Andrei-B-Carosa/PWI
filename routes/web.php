@@ -6,6 +6,7 @@ use App\Http\Controllers\AccessController\EmployeeLogin as EmployeeLogin;
 use App\Http\Controllers\ApproverController\LeaveRequest;
 use App\Http\Controllers\ApproverController\OfficialBusinessRequest;
 use App\Http\Controllers\ApproverController\OvertimeRequest;
+use App\Services\Reusable\PDFSignature;
 
 Route::get('/', function(){
     return redirect()->route('employee.form.login');

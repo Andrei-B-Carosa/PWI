@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\EmployeeController;
 
+use App\Http\Controllers\AccessController\EmployeeLogin;
 use App\Http\Controllers\Controller;
 use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeePosition;
@@ -26,20 +27,20 @@ class PageController extends Controller
                 $default = session('default');
                 return redirect("hris/$role/$default");
             }else{
-                return redirect("hris/admin/login");
+                (new EmployeeLogin)->logout($rq);
             }
         }
 
         if(!$user_role->is_active || !$user_role)
         {
-            //throw error
+            (new EmployeeLogin)->logout($rq);
         }
 
         $query = HrisRoleAccess::with('system_file.file_layer')
         ->where([['is_active',1],['role_id',$user_role->role_id]])->orderBy('file_order')->get();
         if(!$query)
         {
-            //throw error
+            (new EmployeeLogin)->logout($rq);
         }
 
         $result = [];
@@ -110,4 +111,5 @@ class PageController extends Controller
             break;
         };
     }
+
 }

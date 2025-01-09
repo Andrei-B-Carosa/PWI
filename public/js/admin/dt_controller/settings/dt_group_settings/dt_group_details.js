@@ -229,29 +229,33 @@ export var dtApproverList = function (param) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.confirm('question','Delete this record ?',{
-                    onConfirm: function() {
-                        formData.append('id',id);
-                        _request.post('/hris/admin/settings/group_details/approver/delete',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            if(res.payload ==0){
-                                initTable();
-                            }else{
-                                $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                _request.post('/hris/admin/settings/group_details/approver/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.confirm('question','Do you want to remove approver <br><b>'+payload.name+'</b> ?',{
+                            onConfirm: function() {
+                                _request.post('/hris/admin/settings/group_details/approver/delete',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.payload ==0){
+                                        initTable();
+                                    }else{
+                                        $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                                    }
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
+
+                                });
                             }
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
-
                         });
                     }
-                });
-
-
+                })
             })
 
         })
@@ -371,29 +375,38 @@ export var dtGroupMember = function (param) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
+                formData.append('group_id',param);
 
-                Alert.confirm('question','Remove this member ?',{
-                    onConfirm: function() {
-                        formData.append('id',id);
-                        formData.append('group_id',param);
-                        formData.append('is_active',2);
-                        _request.post('/hris/admin/settings/group_details/member/delete',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            if(res.payload ==0){
-                                initTable();
-                            }else{
-                                $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                _request.post('/hris/admin/settings/group_details/member/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.confirm('question','Remove member <b>'+payload.name +'</b> ?',{
+                            onConfirm: function() {
+                                formData.append('is_active',2);
+                                _request.post('/hris/admin/settings/group_details/member/delete',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.payload ==0){
+                                        initTable();
+                                    }else{
+                                        $(`#${_table}_table`).DataTable().ajax.reload(null, false);
+                                    }
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
+
+                                });
                             }
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
-
                         });
                     }
+
                 });
+
+
             })
 
             _tab.off('click', '.add-member').on('click','.add-member',function(e){

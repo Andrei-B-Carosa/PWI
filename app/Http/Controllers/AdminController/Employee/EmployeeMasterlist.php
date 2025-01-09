@@ -143,4 +143,31 @@ class EmployeeMasterlist extends Controller
             ]);
         }
     }
+
+    public function emp_details(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $id =  Crypt::decrypt($rq->id);
+            $query = Employee::find($id);
+
+            $payload = [
+                'name'=>$query->fullname(),
+                'position'=>$query->emp_details->position->name,
+                'position'=>$query->emp_details->department->name,
+            ];
+            return response()->json([
+                'status' => 'success',
+                'message'=>'success',
+                'payload' => base64_encode(json_encode($payload))
+            ]);
+
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

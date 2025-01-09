@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AdminController;
 
+use App\Http\Controllers\AccessController\AdminLogin;
 use App\Http\Controllers\Controller;
 use App\Models\HrisRoleAccess;
 use App\Models\HrisSystemFile;
@@ -22,20 +23,20 @@ class PageController extends Controller
                 $default = session('default');
                 return redirect("hris/$role/$default");
             }else{
-                return redirect("hris/employee/login");
+                (new AdminLogin)->logout($rq);
             }
         }
 
         if(!$user_role->is_active || !$user_role)
         {
-            //throw error
+            (new AdminLogin)->logout($rq);
         }
 
         $query = HrisRoleAccess::with('system_file.file_layer')
         ->where([['is_active',1],['role_id',$user_role->role_id]])->orderBy('file_order')->get();
         if(!$query)
         {
-            //throw error
+            (new AdminLogin)->logout($rq);
         }
 
         $result = [];
@@ -70,44 +71,42 @@ class PageController extends Controller
     public function setup_page(Request $rq)
     {
         $page = new Page;
-        $role    = 'admin';
-        $rq->session()->put($role.'_page',$rq->page);
-        $view = $rq->session()->get($role.'_page','dashboard');
+        $role = 'admin';
 
-        switch($view){
+        $rq->session()->put($role . '_page', $rq->page);
+        $view = $rq->session()->get($role . '_page', 'dashboard');
 
-            case 'automatic_credit':
-                return response([ 'page' => $page->automatic_credit($rq)], 200);
-            break;
+        $pages = [
+            'automatic_credit' => fn() => $page->automatic_credit($rq),
+            'manual_credit' => fn() => $page->manual_credit($rq),
+            'employee_details' => fn() => $page->employee_details($rq),
+            'group_details' => fn() => $page->group_details($rq),
+        ];
 
-            case 'manual_credit':
-                return response([ 'page' => $page->manual_credit($rq)], 200);
-            break;
+        if (array_key_exists($view, $pages)) {
+            return response(['page' => $pages[$view]()], 200);
+        }
 
-            case 'employee_details':
-                return response([ 'page' => $page->employee_details($rq)], 200);
-            break;
-
-            case 'group_details':
-                return response([ 'page' => $page->group_details($rq)], 200);
-            break;
-
-            default :
-                $row = HrisSystemFile::with(["file_layer" => function($q) use($view) {
+        $row = HrisSystemFile::with(["file_layer" => function ($q) use ($view) {
+            $q->where([["status", 1], ["href", $view]]);
+        }])
+        ->where(function ($query) use ($view) {
+            $query->where([["status", 1], ["href", $view]])
+                ->orWhereHas("file_layer", function ($q) use ($view) {
                     $q->where([["status", 1], ["href", $view]]);
-                }])
-                ->where(function($query) use($view) {
-                    $query->where([["status", 1], ["href", $view]])
-                    ->orWhereHas("file_layer", function ($q) use($view) {
-                        $q->where([["status", 1], ["href", $view]]);
-                    });
-                })
-                ->first();
-                if (!$row) { return view("$role.not_found"); }
-                $folders = !$row->file_layer->isEmpty()? $row->folder.'.'.$row->file_layer[0]->folder :$row->folder;
-                $file    = $row->file_layer[0]->href??$row->href;
-                return response([ 'page' => view("$role.$folders.$file")->render() ],200);
-            break;
-        };
+                });
+        })
+        ->first();
+
+        if (!$row || !$row->file_layer) {
+            return view("$role.not_found");
+        }
+
+        $folders = !$row->file_layer->isEmpty()
+            ? $row->folder . '.' . $row->file_layer[0]->folder
+            : $row->folder;
+        $file = $row->file_layer[0]->href ?? $row->href;
+
+        return response(['page' => view("$role.$folders.$file")->render()], 200);
     }
 }
