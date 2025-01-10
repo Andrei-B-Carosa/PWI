@@ -15,11 +15,18 @@ return new class extends Migration
             $table->id();
             $table->integer('emp_id');
             $table->date('ob_filing_date');
-            $table->time('ob_time_out');
-            $table->time('ob_time_in');
-            $table->longText('destination');
+
+            $table->time('estimated_ob_time_out')->nullable();
+            $table->time('estimated_ob_time_in')->nullable();
+
+            $table->time('actual_ob_time_out')->nullable();
+            $table->time('actual_ob_time_in')->nullable();
+            $table->integer('guard_id')->nullable();
+            $table->longText('guard_remarks')->nullable();
+
+            $table->longText('destination')->nullable();
             $table->integer('contact_person_id')->nullable();
-            $table->longText('purpose');
+            $table->longText('purpose')->nullable();
 
             $table->tinyInteger('is_approved')->nullable();
 

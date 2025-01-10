@@ -67,8 +67,8 @@ class OfficialBusiness extends Controller
 
             $item->count = $key + 1;
             $item->ob_filing_date = Carbon::parse($item->ob_filing_date)->format('m/d/Y');
-            $item->ob_time_out = Carbon::parse($item->ob_time_out)->format('h:i A');
-            $item->ob_time_in = Carbon::parse($item->ob_time_in)->format('h:i A');
+            $item->ob_time_out = Carbon::parse($item->estimated_ob_time_out)->format('h:i A');
+            $item->ob_time_in = Carbon::parse($item->estimated_ob_time_in)->format('h:i A');
 
             // $item->contact_person_name = $contact_person_name;
             // $item->contact_person_number = $contact_person_number;
@@ -109,8 +109,8 @@ class OfficialBusiness extends Controller
 
             $attribute = ['id'=>$id];
             $values = [
-                'ob_time_out' => $obTimeOut,
-                'ob_time_in' => $obTimeIn,
+                'estimated_ob_time_out' => $obTimeOut,
+                'estimated_ob_time_in' => $obTimeIn,
                 'destination' => $rq->destination,
                 'contact_person_id' => $obContactPerson,
                 'purpose' => $rq->purpose,
@@ -161,8 +161,8 @@ class OfficialBusiness extends Controller
 
             $payload = [
                 'ob_filing_date' =>Carbon::parse($query->ob_filing_date)->format('m-d-Y'),
-                'ob_time_out' =>Carbon::parse($query->ob_time_out)->format('H:i'),
-                'ob_time_in' =>Carbon::parse($query->ob_time_in)->format('H:i'),
+                'ob_time_out' =>Carbon::parse($query->estimated_ob_time_out)->format('H:i'),
+                'ob_time_in' =>Carbon::parse($query->estimated_ob_time_in)->format('H:i'),
                 'destination' =>$query->destination,
                 'purpose' =>$query->purpose,
                 'contact_person_id' =>optional($query->emp_contact_person)->fullname() ?? null,
@@ -233,11 +233,11 @@ class OfficialBusiness extends Controller
             ->where([['is_deleted', null],['ob_filing_date', $obFilingDate]])
             ->where(function ($query) use ($obTimeOut, $obTimeIn) {
                 // Check for overlapping time ranges
-                $query->whereBetween('ob_time_out', [$obTimeOut, $obTimeIn])
-                      ->orWhereBetween('ob_time_in', [$obTimeOut, $obTimeIn])
+                $query->whereBetween('estimated_ob_time_out', [$obTimeOut, $obTimeIn])
+                      ->orWhereBetween('estimated_ob_time_in', [$obTimeOut, $obTimeIn])
                       ->orWhere(function ($subQuery) use ($obTimeOut, $obTimeIn) {
-                          $subQuery->where('ob_time_out', '<', $obTimeIn)
-                                   ->where('ob_time_in', '>', $obTimeOut);
+                          $subQuery->where('estimated_ob_time_out', '<', $obTimeIn)
+                                   ->where('estimated_ob_time_in', '>', $obTimeOut);
                       });
             })
             ->when($excluded_id, function ($query) use ($excluded_id) {

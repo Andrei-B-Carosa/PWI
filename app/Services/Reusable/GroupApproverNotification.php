@@ -157,7 +157,8 @@ class GroupApproverNotification
         $isResubmit = $isResubmit?'This request is resubmitted':'';
         $html = '
         <p style="margin-bottom:20px; color:#5E6278">
-            '.$query->employee->fullname().' is requesting for your authorization to render overtime, below are the details.'.$isResubmit.'
+            '.$query->employee->fullname().' in '.$query->employee_position->department->code.' ('.$query->employee_position->position->name.')
+            is requesting for your authorization to render overtime, below are the details.'.$isResubmit.'
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
@@ -185,7 +186,8 @@ class GroupApproverNotification
         $isResubmit = $isResubmit?'This request is resubmitted':'';
         $html = '
         <p style="margin-bottom:20px; color:#5E6278">
-            '.$query->employee->fullname().' is requesting for your authorization to leave, below are the details. '.$isResubmit.'
+            '.$query->employee->fullname().' in '.$query->employee_position->department->code.' ('.$query->employee_position->position->name.')
+            is requesting for your authorization to leave, below are the details. '.$isResubmit.'
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
@@ -212,7 +214,8 @@ class GroupApproverNotification
         $isResubmit = $isResubmit?'This request is resubmitted':'';
         $html = '
         <p style="margin-bottom:20px; color:#5E6278">
-            '.$query->employee->fullname().' is requesting for official business, below are the details.'.$isResubmit.'
+            '.$query->employee->fullname().' in '.$query->employee_position->department->code.' ('.$query->employee_position->position->name.')
+            is requesting for official business, below are the details.'.$isResubmit.'
         </p>
         <div style="margin-bottom: 10px">
             <div style="padding-bottom:9px">
@@ -222,7 +225,7 @@ class GroupApproverNotification
                 </div>
                 <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500;margin-bottom:8px">
                     <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Time Out - Time In :</div>
-                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->ob_time_out)->format('h:ia').' to '.Carbon::parse($query->ob_time_in)->format('h:ia').'</div>
+                    <div style="font-family:Arial,Helvetica,sans-serif">'.Carbon::parse($query->estimated_ob_time_out)->format('h:ia').' to '.Carbon::parse($query->estimated_ob_time_in)->format('h:ia').'</div>
                 </div>
                 <div style="justify-content: space-between; color:#5E6278; font-size: 14px; font-weight:500; margin-bottom:8px">
                     <div style="font-family:Arial,Helvetica,sans-serif; font-weight:bold">Contact Person :</div>

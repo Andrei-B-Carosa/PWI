@@ -146,20 +146,22 @@ class OvertimeRequisition extends Controller
                 'created_by'=>$user_id,
             ]);
 
+            $isNotified = true;
             if($approvingOfficer->is_final_approver != 1 && $rq->is_approved != 2){
                 $isNotified = (new GroupApproverNotification)
                 ->sendApprovalNotification($overtimeRequest,1,'approver.ot_request',false);
-                if($isNotified){
-                    DB::commit();
-                    return response()->json(['status' => 'success','message'=>'Overtime Request is updated']);
-                }else{
-                    DB::rollback();
-                    return response()->json([
-                        'status' => 'error',
-                        'message'=>'Something went wrong, try again later',
-                        // 'message' => $e->getMessage(),
-                    ]);
-                }
+            }
+
+            if($isNotified){
+                DB::commit();
+                return response()->json(['status' => 'success','message'=>'Overtime Request is updated']);
+            }else{
+                DB::rollback();
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    // 'message' => $e->getMessage(),
+                ]);
             }
         }catch(Exception $e){
             DB::rollback();
@@ -208,9 +210,15 @@ class OvertimeRequisition extends Controller
                         $is_approved = 'rejected';
                     }
 
+                    if($data->emp_id == $user_id){
+                        $action = $data->employee->fullname().' (You) '.$action;
+                    }else{
+                        $action = $data->employee->fullname().$action;
+                    }
+
                     $history[]=[
                         'is_approved' => $is_approved,
-                        'action' => $data->employee->fullname().' '.$action,
+                        'action' =>$action,
                         'approver_remarks' =>$approver_remarks,
                         'approver_level' =>$approver_level,
                         'is_final_approver' =>$is_final_approver,

@@ -7,10 +7,10 @@ import {modal_state,createBlockUI,data_bs_components} from "../../../global.js"
 import {trigger_select} from "../../../global/select.js"
 
 
-export var dtOverTime = function (param=false) {
+export var dtOfficialBusinessForm = function (param=false) {
 
-    const _page = $('.page-overtime-request');
-    const _table = 'overtime_request';
+    const _page = $('.page-official-business');
+    const _table = 'official_business';
     // const _tab = $(`.${_table}`);
     const _request = new RequestHandler;
     const dataTableHelper = new DataTableHelper(`${_table}_table`,`${_table}_wrapper`);
@@ -18,32 +18,57 @@ export var dtOverTime = function (param=false) {
     function initTable(){
 
         dataTableHelper.initTable(
-            'hris/employee/request/overtime/dt',
+            'hris/employee/personnel_monitoring/official_business_form/dt',
             {
                 filter_year:$('select[name="filter_year"]').val(),
                 filter_month:$('select[name="filter_month"]').val(),
                 filter_status:$('input[name="filter_status"]:checked').val(),
+                filter_group:$('select[name="filter_group"]').val(),
+
             },
             [
                 {
                     data: "count",
                     name: "count",
-                    title: "No.",
+                    title: "#",
                     responsivePriority: -3,
                     searchable:false,
                 },
                 {
-                    data: "overtime_date", name: "overtime_date", title: "Filing Date",
+                    data: "requestor", name: "requestor", title: "Employee",
+                    sortable:false,
+                    className:'',
+                    render(data,type,row)
+                    {
+                        return `<div class="d-flex align-items-center">
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-800 text-hover-primary mb-1">
+                                        ${data}
+                                    </span>
+                                    <span class="text-muted fs-7">${row.group_name}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    data: "group_name", name: "group_name", title: "Group Name",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
+                    data: "ob_filing_date", name: "ob_filing_date", title: "Filing Date",
                     sortable:false,
                     searchable:false,
                 },
                 {
-                    data: "overtime_from", name: "overtime_from", title: "From",
+                    data: "ob_time_out", name: "ob_time_out", title: "Time Out",
                     sortable:false,
                     searchable:false,
                 },
                 {
-                    data: "overtime_to", name: "overtime_to", title: "To",
+                    data: "ob_time_in", name: "ob_time_in", title: "Time In",
                     sortable:false,
                     searchable:false,
                 },
@@ -51,20 +76,31 @@ export var dtOverTime = function (param=false) {
                     data: "reason", name: "reason", title: "Reason",
                     sortable:false,
                     searchable:false,
+                    render:function(data,type,row){
+                        return `<span class="cursor-pointer" data-bs-toggle="tooltip" title="${row.reason}">
+                                    ${row.reason_short ?? data}
+                             </span>
+                            <div class="fs-7 text-muted">Destination : ${row.destination ?? '--'}</div>
+                             `;
+                    }
+                },
+                {
+                    data: "destination", name: "destination", title: "Destination",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
+                    data: "reason_short", name: "reason_short", title: "Reason Short",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
                 },
                 {
                     data: "is_approved", name: "is_approved", title: "Status",
                     sortable:false,
                     searchable:false,
-                    className:'',
-                    render: function (data, type, row) {
-                        let status = {
-                            1: ["success", "Approved"],
-                            2: ["danger", "Disapproved"],
-                            null:["secondary","Pending"]
-                        };
-                        return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
-                    },
+                    visible:false,
                 },
                 {
                     data: "approver_level", name: "approver_level", title: "Approver Level",
@@ -72,17 +108,23 @@ export var dtOverTime = function (param=false) {
                     searchable:false,
                     visible:false,
                 },
-                // {
-                //     data: "approver_type", name: "approver_type", title: "Approver Type",
-                //     sortable:false,
-                //     searchable:false,
-                //     visible:false,
-                // },
                 {
-                    data: "approved_by", name: "approved_by", title: "Last Approver",
+                    data: "is_current_approver", name: "is_current_approver", title: "Is Current Approver",
                     sortable:false,
                     searchable:false,
-                    className:'',
+                    visible:false,
+                },
+                {
+                    data: "approver_type", name: "approver_type", title: "Approver Type",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
+                    data: "approved_by", name: "approved_by", title: "Approver",
+                    sortable:false,
+                    searchable:false,
+                    className:'text-start',
                     render(data,type,row)
                     {
                         if(!data){
@@ -99,6 +141,25 @@ export var dtOverTime = function (param=false) {
                         `
                     }
                 },
+
+                {
+                    data: "approver_status", name: "approver_status", title: "Status",
+                    sortable:false,
+                    searchable:false,
+                    className:'',
+                    render: function (data, type, row) {
+                        let status = {
+                            1: ["success", "Approved"],
+                            2: ["danger", "Disapproved"],
+                            null:["secondary","Pending"]
+                        };
+                        if(status[data]){
+                            return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
+                        }else{
+                            return `<span class="text-muted fs-6">${data}</span>`;
+                        }
+                    },
+                },
                 {
                     data: "approver_remarks", name: "approver_remarks", title: "Remarks",
                     sortable:false,
@@ -106,7 +167,7 @@ export var dtOverTime = function (param=false) {
                     render(data,type,row)
                     {
                         if(!data){
-                            return '--';
+                            return '<span class="text-muted">--</span>';
                         }
 
                         return data;
@@ -115,52 +176,29 @@ export var dtOverTime = function (param=false) {
                 {
                     data: "encrypted_id",
                     name: "encrypted_id",
-                    title: "Action",
+                    title: "Actions",
                     sortable:false,
-                    className: "text-center",
+                    className: "text-end min-w-100px",
                     responsivePriority: -1,
                     render: function (data, type, row) {
-
-                        if(row.is_approved == 1 || row.is_approved === null){
-                            return `
-                                <a href="javascript:;" class="btn btn-icon btn-icon btn-info btn-sm hover-elevate-up history" data-id="${data}"
-                                data-bs-toggle="tooltip" title="View Approval History" id="">
-                                    <i class="ki-duotone ki-burger-menu-5 fs-2"></i>
+                        return `
+                            ${
+                                row.is_approved==1 ?`
+                                <a href="javascript:;" class="btn btn-icon btn-light-primary btn-sm me-1 hover-elevate-up view-details"
+                                   data-bs-toggle="tooltip" title="Edit Form" data-id="${data}">
+                                    <i class="ki-duotone ki-pencil fs-2x">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
                                 </a>
-                            `;
-                        }
-
-                        return `<div class="d-flex justify-content-center flex-shrink-0">
-                            <a href="#" class="btn btn-icon btn-light-primary btn-sm me-1 hover-elevate-up"
-                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" title="More Actions">
-                                <i class="ki-duotone ki-pencil fs-2x">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
-                            </a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4" data-kt-menu="true">
-                                <div class="menu-item px-3 text-start">
-                                    <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
-                                        More Actions
-                                    </div>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="javascript:;" data-id="${data}" class="menu-link px-3 view-details">
-                                        Edit Details
-                                    </a>
-                                </div>
-                            </div>
-
-                            <a href="javascript:;" class="btn btn-icon btn-icon btn-light-danger btn-sm me-1 hover-elevate-up delete" data-id="${data}"
-                             data-bs-toggle="tooltip" title="Delete this record">
-                                <i class="ki-duotone ki-trash fs-2x">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
+                                `
+                                :``
+                            }
+                            <a href="javascript:;" class="btn btn-icon btn-icon btn-info btn-sm hover-elevate-up history" data-id="${data}"
+                                data-bs-toggle="tooltip" title="View Approval History">
+                                    <i class="ki-duotone ki-burger-menu-5 fs-2"></i>
                             </a>
                         </div>`;
                     },
@@ -211,19 +249,30 @@ export var dtOverTime = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
 
-                let modal_id = '#modal_request_overtime';
-                let form = $('#form_request_overtime');
+                let modal_id = '#modal_request_ob';
+                let form = $('#form_request_ob');
 
                 let formData = new FormData;
                 formData.append('id',id);
-                _request.post('/hris/employee/request/overtime/info',formData)
+                _request.post('/hris/employee/personnel_monitoring/official_business_form/info',formData)
                 .then((res) => {
                     let payload = JSON.parse(window.atob(res.payload));
-                    $('input[name="overtime_date"]').val(payload.overtime_date);
-                    $('input[name="overtime_from"]')[0]._flatpickr.setDate(payload.overtime_from, true);
-                    $('input[name="overtime_to"]')[0]._flatpickr.setDate(payload.overtime_to, true);
-                    $('textarea[name="reason"]').val(payload.reason);
-                    $(modal_id).find('button.submit').attr('data-id',id);
+                    if(payload.ob_time_out){
+                        $('input[name="actual_ob_time_out"]')[0]._flatpickr.setDate(payload.ob_time_out, true)
+                        $('input[name="actual_ob_time_out"]').attr('disabled',true);
+                    }
+                    if(payload.ob_time_in){
+                        $('input[name="actual_ob_time_in"]')[0]._flatpickr.setDate(payload.ob_time_in, true)
+                        $('input[name="actual_ob_time_in"]').attr('disabled',true);
+                    }
+                    if(payload.ob_time_out && payload.ob_time_in){
+                        $('textarea[name="guard_remarks"]').attr('disabled',true);
+                        $(modal_id).find('button.submit').addClass('d-none');
+                        $(modal_id).find('button.cancel').text('Close Form').removeClass('btn-light').addClass('btn-primary');
+                    }else{
+                        $(modal_id).find('button.submit').attr('data-id',id);
+                    }
+                    $('textarea[name="guard_remarks"]').val(payload.guard_remarks);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -235,41 +284,8 @@ export var dtOverTime = function (param=false) {
 
             })
 
-            $(`#${_table}_table`).on('click','.delete',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
-
-                let _this = $(this);
-                let id    =_this.attr('data-id');
-                let formData = new FormData;
-
-                Alert.confirm('question','Do you want to delete this overtime request ?',{
-                    onConfirm: function() {
-                        formData.append('id',id);
-                        _request.post('/hris/employee/request/overtime/delete',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            console.log(res.payload ==0)
-                            if(res.payload ==0){
-                                dtOverTime().init();
-                            }else{
-                                $(`#${_table}_table`).DataTable().ajax.reload(null, false);
-                            }
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
-
-                        });
-                    }
-                });
-
-
-            })
-
             $(`#${_table}_table`).on('click','.history',function(e){
-                e.preventDefault();
+                e.preventDefault()
                 e.stopImmediatePropagation();
 
                 let _this = $(this);
@@ -277,16 +293,16 @@ export var dtOverTime = function (param=false) {
                 let formData = new FormData;
 
                 formData.append('id',id);
-                _request.post('/hris/employee/request/overtime/view_history',formData)
+                _request.post('/hris/employee/approvals/official_business/view_history',formData)
                 .then((res) => {
                     if(res.status =='success'){
                         let payload = JSON.parse(window.atob(res.payload));
                         let html = '';
 
                         let drawerWidth = payload.length ==1 ? ``: `{default:'300px', 'lg': '500px'}`;
-                        $('#kt_activities_request').attr("data-kt-drawer-width",drawerWidth);
+                        $('#kt_activities').attr("data-kt-drawer-width",drawerWidth);
 
-                        const drawerElement = document.querySelector("#kt_activities_request");
+                        const drawerElement = document.querySelector("#kt_activities");
                         const _drawer = KTDrawer.getInstance(drawerElement);
                         _drawer.update();
 

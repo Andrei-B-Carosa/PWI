@@ -7,6 +7,7 @@ use App\Http\Controllers\EmployeeController\Approvals\OvertimeRequisition as  Ap
 use App\Http\Controllers\EmployeeController\Home as HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController\PageController as Page;
+use App\Http\Controllers\EmployeeController\PersonnelMonitoring\OfficialBusinessForm as OBForm;
 use App\Http\Controllers\EmployeeController\Profile\Action as ProfileAction;
 use App\Http\Controllers\EmployeeController\Profile\Tab as ProfileTab;
 use App\Http\Controllers\EmployeeController\Request\Leave;
@@ -124,6 +125,17 @@ Route::group(['prefix'=>'hris/employee'], function() {
     Route::group(['prefix'=>'profile'], function() {
         Route::post('/form', [ProfileTab::class, 'form']);
         Route::post('/update', [ProfileAction::class, 'update']);
+    });
+
+    Route::group(['prefix'=>'personnel_monitoring'], function() {
+        Route::controller(OBForm::class)->prefix('official_business_form')->group(function() {
+            Route::post('/dt', 'dt');
+            Route::post('/update', 'update');
+
+            Route::post('/info', 'info');
+            Route::post('/validate_request', 'validate_request');
+            Route::post('/view_history', 'view_history');
+        });
     });
 
     Route::group(['prefix'=>'select'],function(){

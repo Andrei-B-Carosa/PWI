@@ -32,7 +32,7 @@
                                 <div class="fw-bold d-flex align-items-center fs-5">
                                     {{ Auth::user()->employee->fullname() }}
                                     <span class="badge badge-success fw-bold fs-8 px-2 py-1 ms-2">
-                                        {{ Auth::user()->user_roles->role->name }}
+                                        Employee
                                     </span>
                                 </div>
 
@@ -147,7 +147,7 @@
 
                 @foreach ($result as $data)
                     @if(count($data['file_layer']) == 0)
-                        <div class="menu-item navbar me-0 me-lg-2" id="{{$data['href']}}" data-page="{{$data['href']}}" data-link="dispatcher/{{$data['href']}}">
+                        <div class="menu-item navbar me-0 me-lg-3" id="{{$data['href']}}" data-page="{{$data['href']}}" data-link="employee/{{$data['href']}}">
                             <span class="menu-link py-3">
                                 <span class="menu-title">{{ $data['name'] }}</span>
                             </span>
@@ -161,10 +161,10 @@
                                 <span class="menu-arrow d-lg-none"></span>
                             </span>
 
-                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-200px">
+                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-0 py-lg-4 w-lg-200px">
                                 @foreach ($data['file_layer'] as $layer)
                                     <div class="menu-item">
-                                        <a class="menu-link navbar py-3 sub-menu" id="{{$layer['href']}}" data-page="{{$layer['href']}}" data-link="dispatcher/{{$layer['href']}}" href="javascript:;">
+                                        <a class="menu-link navbar py-3 sub-menu" id="{{$layer['href']}}" data-page="{{$layer['href']}}" data-link="employee/{{$layer['href']}}" href="javascript:;">
                                             <span class="menu-bullet">
                                                 <span class="bullet bullet-dot"></span>
                                             </span>

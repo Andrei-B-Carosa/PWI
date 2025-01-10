@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\EmployeeController\Approvals;
+namespace App\Http\Controllers\EmployeeController\PersonnelMonitoring;
 
 use App\Http\Controllers\Controller;
 use App\Models\HrisApprovalHistory;
-use App\Models\HrisApprovingOfficer;
-use App\Models\HrisEmployeeLeaveRequest;
 use App\Models\HrisEmployeeOfficialBusinessRequest;
 use App\Models\HrisEmployeePosition;
 use App\Models\HrisGroupApprover;
 use App\Services\Reusable\DTServerSide;
-use App\Services\Reusable\GroupApproverNotification;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,7 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
-class OfficialBusiness extends Controller
+
+class OfficialBusinessForm extends Controller
 {
     public function dt(Request $rq)
     {
@@ -29,7 +27,6 @@ class OfficialBusiness extends Controller
 
         $emp_id = Auth::user()->emp_id;
 
-        // $ApproverIds = HrisGroupApprover::where([['is_active',1],['is_deleted',null]])->pluck('emp_id');
         $ApproversGroupIds = HrisGroupApprover::where([['emp_id',$emp_id],['is_active',1]])->pluck('group_id');
         $isGuard = HrisEmployeePosition::where([['emp_id',Auth::user()->emp_id],['is_active',1]])
         ->whereHas('position', function ($q) {
@@ -92,7 +89,6 @@ class OfficialBusiness extends Controller
             $item->requestor = $item->employee->fullname();
             $item->group_name = $item->group_member->group->name;
 
-            $item->is_current_approver = self::isApprovingOpen($emp_id,$item->id,$item->group_member->group_id);
             $item->approver_status = $approver_status;
             $item->approver_type = $approver_type;
 
@@ -119,6 +115,24 @@ class OfficialBusiness extends Controller
         ]);
     }
 
+    public function info(Request $rq)
+    {
+        try{
+            $id = Crypt::decrypt($rq->id);
+            $query = HrisEmployeeOfficialBusinessRequest::find($id);
+
+            $payload = [
+                'ob_time_out' =>$query->actual_ob_time_out?Carbon::parse($query->actual_ob_time_out)->format('H:i'):null,
+                'ob_time_in' =>$query->actual_ob_time_in?Carbon::parse($query->actual_ob_time_in)->format('H:i'):null,
+                'guard_remarks' =>$query->guard_remarks,
+            ];
+
+            return response()->json(['status' => 'success','message'=>'success', 'payload'=>base64_encode(json_encode($payload))]);
+        }catch(Exception $e){
+            return response()->json(['status'=>400,'message' =>$e->getMessage()]);
+        }
+    }
+
     public function update(Request $rq)
     {
         try{
@@ -131,50 +145,21 @@ class OfficialBusiness extends Controller
                 return response()->json(['status' => 'error','message'=>'Missing ID in Request']);
             }
 
+            $obTimeOut = $rq->actual_ob_time_out?Carbon::createFromFormat('H:i', $rq->actual_ob_time_out)->format('H:i') :null;
+            $obTimeIn = $rq->actual_ob_time_in?Carbon::createFromFormat('H:i', $rq->actual_ob_time_in)->format('H:i'):null;
+
             $obRequest = HrisEmployeeOfficialBusinessRequest::with('employee_position')->find($id);
-            if(!$obRequest)
-            {
-                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
+            if($obRequest->actual_ob_time_out){
+                $obTimeOut = $obRequest->actual_ob_time_out;
             }
+            $obRequest->guard_id = $user_id;
+            $obRequest->guard_remarks = $rq->guard_remarks;
+            $obRequest->actual_ob_time_in = $obTimeIn;
+            $obRequest->actual_ob_time_out = $obTimeOut;
+            $obRequest->save();
 
-            $approvingOfficer = HrisGroupApprover::where([
-                ['emp_id',$user_id],
-                ['group_id',$obRequest->group_member->group_id],
-                ['is_active',1]
-            ])->first();
-            if(!$approvingOfficer)
-            {
-                return response()->json(['status' => 'error','message'=>'You are not eligible for approving request']);
-            }
-
-            HrisApprovalHistory::create([
-                'entity_id'=>$id,
-                'entity_table'=>3,
-                'emp_id'=>$user_id,
-                'is_approved'=>$rq->is_approved,
-                'approver_level'=>$approvingOfficer->approver_level,
-                'is_final_approver'=>$approvingOfficer->is_final_approver,
-                'approver_remarks'=>$rq->approver_remarks,
-                'created_by'=>$user_id,
-            ]);
-
-            $isNotified = true;
-            if($approvingOfficer->is_final_approver != 1 && $rq->is_approved != 2){
-                $isNotified = (new GroupApproverNotification)
-                ->sendApprovalNotification($obRequest,3,'approver.ob_request',false);
-            }
-
-            if($isNotified){
-                DB::commit();
-                return response()->json(['status' => 'success','message'=>'OB Request is updated']);
-            }else{
-                DB::rollback();
-                return response()->json([
-                    'status' => 'error',
-                    'message'=>'Something went wrong, try again later',
-                    // 'message' => $e->getMessage(),
-                ]);
-            }
+            DB::commit();
+            return response()->json(['status' => 'success','message'=>'OB Request is updated']);
         }catch(Exception $e){
             DB::rollback();
             return response()->json([
@@ -212,7 +197,7 @@ class OfficialBusiness extends Controller
             if($obRequestHistory->isNotEmpty())
             {
                 foreach($obRequestHistory as $data){
-                    $action = ' <span class="text-success fw-bold">Approved</span>'.' the ob request';
+                    $action = '<span class="text-success fw-bold">Approved</span>'.' the ob request';
                     $is_approved = 'approved';
                     $approver_remarks =$data->approver_remarks;
                     $approver_level =$data->approver_level;
@@ -222,15 +207,9 @@ class OfficialBusiness extends Controller
                         $is_approved = 'rejected';
                     }
 
-                    if($data->emp_id == $user_id){
-                        $action = $data->employee->fullname().' (You) '.$action;
-                    }else{
-                        $action = $data->employee->fullname().$action;
-                    }
-
                     $history[]=[
                         'is_approved' => $is_approved,
-                        'action' => $action,
+                        'action' => $data->employee->fullname().' '.$action,
                         'approver_remarks' =>$approver_remarks,
                         'approver_level' =>$approver_level,
                         'is_final_approver' =>$is_final_approver,
@@ -248,123 +227,5 @@ class OfficialBusiness extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    public function isApprovingOpen($user_id,$ob_id,$group_id)
-    {
-        try{
-            //check if there is already approving history of the employee and if approve return false
-            $approvingHistory = self::checkIfAlreadyApproved($user_id,$ob_id);
-            if ($approvingHistory) {
-                return false;
-            }
-
-            //check if final approver already approve
-            $checkFinalApprover = self::checkFinalApprover($ob_id);
-            if ($checkFinalApprover) {
-                return false;
-            }
-
-            // Check if we found a valid approver
-            $currentApprover = self::checkCurrentApprover($ob_id,$group_id);
-            if (!$currentApprover) {
-                return false;
-            }
-
-            // Check if there are any required lower levels pending approval
-            $requiredLowerLevels = self::checkRequiredLowerLevels($ob_id,$group_id,$currentApprover,$user_id);
-            if ($requiredLowerLevels) {
-                return false;
-            }
-
-            // Allow approval if the current approver is the logged-in user or optional
-            return $currentApprover->emp_id == $user_id || $currentApprover->is_required == null;
-
-        }catch(Exception $e)
-        {
-            return false;
-        }
-    }
-
-    public function checkFinalApprover($ob_id)
-    {
-        return HrisApprovalHistory::where([
-            ['entity_id', $ob_id],
-            ['entity_table', 3],
-            ['is_approved', 1],
-            ['is_final_approver', 1],
-        ])->exists();
-    }
-
-    public function checkIfAlreadyApproved($user_id,$ob_id)
-    {
-        //check if there is already approving history of the employee and if approve return false
-        return  HrisApprovalHistory::where([
-            ['entity_id', $ob_id],
-            ['emp_id', $user_id],
-            ['entity_table', 3],
-            ['is_approved', 1],
-        ])->exists();
-    }
-
-    public function checkCurrentApprover($ob_id,$group_id)
-    {
-        return HrisGroupApprover::where([['is_active', 1],['group_id',$group_id]])
-        ->whereDoesntHave('approving_history', function ($query) use ($ob_id) {
-            $query->where([
-                ['entity_id', $ob_id],
-                ['entity_table', 3],
-                ['is_approved', 1], // Exclude approvers who have already approved
-            ]);
-        })
-        ->orderBy('is_final_approver', 'ASC') // Non-final approvers first
-        ->orderBy('approver_level', 'DESC') // Process highest levels first
-        ->first();
-
-    }
-
-    public function checkRequiredLowerLevels($ob_id,$group_id,$currentApprover,$user_id)
-    {
-        if($currentApprover->is_required){
-            return false;
-        }
-
-        $lowestApprover = HrisGroupApprover::where([['group_id',$group_id],['is_active',1]])
-        ->orderBy('is_final_approver', 'ASC')->orderBy('approver_level', 'DESC')->first();
-
-        $userApproverLevel = HrisGroupApprover::where([['group_id',$group_id],['emp_id',$user_id],['is_active',1]])->first();
-        if($userApproverLevel->approver_level == $lowestApprover->approver_level)
-        {
-            return false;
-        }
-
-        $pendingApprover = HrisGroupApprover::where([
-            ['is_active', 1],
-            ['group_id', $group_id],
-            ['id','!=', $currentApprover->id],
-            ['is_required', 1],
-        ])
-        ->whereDoesntHave('approving_history', function ($query) use ($ob_id) {
-            $query->where([
-                ['entity_id', $ob_id],
-                ['entity_table', 3],
-                ['is_approved', 1], // Check for approvals
-            ]);
-        })
-        ->orderBy('is_final_approver', 'ASC')
-        ->orderBy('approver_level', 'DESC')
-        ->first();
-
-        // If there's no pending required lower approver, return false
-        if (!$pendingApprover) {
-            return false;
-        }
-
-        // If the pending approver is the current user, they can approve
-        if($pendingApprover->emp_id == $user_id){
-            return false;
-        }
-
-        return true;
     }
 }

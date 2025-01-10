@@ -181,20 +181,22 @@ class OvertimeRequest extends Controller
                 'created_by'=>$data->emp_id,
             ]);
 
+            $isNotified = true;
             if($approver->is_final_approver != 1 && $rq->is_approved != 2){
                 $isNotified = (new GroupApproverNotification)
                 ->sendApprovalNotification($overtimeRequest,1,'approver.ot_request',false);
-                if($isNotified){
-                    DB::commit();
-                    return response()->json(['status' => 'success','message'=>'Overtime Request is updated']);
-                }else{
-                    DB::rollback();
-                    return response()->json([
-                        'status' => 'error',
-                        'message'=>'Something went wrong, try again later',
-                        // 'message' => $e->getMessage(),
-                    ]);
-                }
+            }
+            
+            if($isNotified){
+                DB::commit();
+                return response()->json(['status' => 'success','message'=>'Overtime Request is updated']);
+            }else{
+                DB::rollback();
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    // 'message' => $e->getMessage(),
+                ]);
             }
             DB::commit();
             return response()->json([

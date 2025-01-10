@@ -9,6 +9,7 @@ import { OverTimeRequisitionController } from './fn_controller/approvals/overtim
 import { ApplicationForLeaveController } from './fn_controller/approvals/application_for_leave.js';
 import { OfficialBusinessController } from './fn_controller/approvals/official_business.js';
 import { EmployeeProfileController } from './fn_controller/profile/profile.js';
+import { OfficialBusinessFormController } from './fn_controller/personnel_monitoring/ob_form.js';
 
 async function init_page() {
     let pathname = window.location.pathname;
@@ -58,6 +59,7 @@ const _handlers = {
     application_for_leave:(page,param) =>ApplicationForLeaveController(page,param).init(),
     official_business: (page, param) => OfficialBusinessController(page, param).init(),
     profile:(page,param) =>EmployeeProfileController(page,param),
+    official_business_form:(page,param) =>OfficialBusinessFormController(page,param),
 };
 
 jQuery(document).ready(function() {

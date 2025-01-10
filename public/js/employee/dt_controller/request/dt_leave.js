@@ -33,13 +33,13 @@ export var dtLeaveRequest = function (param=false) {
                     searchable:false,
                 },
                 {
-                    data: "leave_type", name: "leave_type", title: "Leave Type",
-                    sortable:false,
-                },
-                {
                     data: "leave_filing_date", name: "leave_filing_date", title: "Filing Date",
                     sortable:false,
                     searchable:false,
+                },
+                {
+                    data: "leave_type", name: "leave_type", title: "Leave Type",
+                    sortable:false,
                 },
                 {
                     data: "leave_date_from", name: "leave_date_from", title: "From",

@@ -134,6 +134,21 @@ class HrisSystemFileSeeder extends Seeder
             //     'created_at' => now(),
             //     'updated_at' => now(),
             // ],
+            [
+                'name' => 'Personnel Monitoring',
+                'href' => 'personnel_monitoring',
+                'icon' => null,
+                'sub_menu' => 1,
+                'folder' => 'personnel_monitoring',
+                'status' => 1,
+                'is_deleted' => 0,
+                'deleted_by' => null,
+                'deleted_at' => null,
+                'created_by' => 1,
+                'updated_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

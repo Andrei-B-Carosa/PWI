@@ -34,7 +34,7 @@ export var dtObRequest = function (param=false) {
                     searchable:false,
                 },
                 {
-                    data: "ob_filing_date", name: "ob_filing_date", title: "OB Filing Date",
+                    data: "ob_filing_date", name: "ob_filing_date", title: "Filing Date",
                     sortable:false,
                     searchable:false,
                 },

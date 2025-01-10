@@ -131,6 +131,19 @@ class HrisRoleAccess extends Seeder
             //     'created_at' => now(),
             //     'updated_at' => now(),
             // ],
+            // [
+            //     'role_id' => 2,
+            //     'file_id' => 9,
+            //     'is_active' => 1,
+            //     'file_order' => 5,
+            //     'is_deleted' => null,
+            //     'deleted_by' => null,
+            //     'deleted_at' => null,
+            //     'created_by' => 1,
+            //     'updated_by' => 1,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ],
         ]);
     }
 }

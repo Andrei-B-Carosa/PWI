@@ -52,17 +52,17 @@ class PageController extends Controller
         ->exists();
         foreach($query as $data)
         {
-            if($data->file_id == 7 && (!$is_approver && !$is_guard)){
+            if($data->file_id == 7 && !$is_approver){
+                continue;
+            }
+
+            if($data->file_id == 9 && !$is_guard){
                 continue;
             }
 
             $file_layer = [];
             foreach($data->system_file->file_layer as $row)
             {
-                if($data->file_id == 7 && $is_guard && $row->id !=12){
-                    continue;
-                }
-
                 $file_layer[]=[
                     'name'=>$row->name,
                     'href'=>$row->href,
@@ -88,16 +88,13 @@ class PageController extends Controller
         $rq->session()->put($role . '_page', $rq->page);
         $view = $rq->session()->get($role . '_page', 'home');
 
-        // $pages = [
-        //     'automatic_credit' => fn() => $page->automatic_credit($rq),
-        //     'manual_credit' => fn() => $page->manual_credit($rq),
-        //     'employee_details' => fn() => $page->employee_details($rq),
-        //     'group_details' => fn() => $page->group_details($rq),
-        // ];
+        $pages = [
+            // 'automatic_credit' => fn() => $page->automatic_credit($rq),
+        ];
 
-        // if (array_key_exists($view, $pages)) {
-        //     return response(['page' => $pages[$view]()], 200);
-        // }
+        if (array_key_exists($view, $pages)) {
+            return response(['page' => $pages[$view]()], 200);
+        }
 
         $row = HrisSystemFile::with(["file_layer" => function ($q) use ($view) {
             $q->where([["status", 1], ["href", $view]]);
