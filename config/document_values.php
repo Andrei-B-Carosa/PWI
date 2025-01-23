@@ -12,4 +12,12 @@ return [
         9=>"Diploma (Master's Degree)",
         10=>"Diploma (Doctor of Philosophy (Ph.D.))",
     ],
+
+    'school_document'=>[
+        1 => 'Elementary',
+        2 => 'Secondary',
+        3=>'Vocational/Trade Course',
+        4=>'College',
+        5=>'Graduate Studies'
+    ],
 ];

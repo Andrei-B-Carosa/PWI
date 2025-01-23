@@ -22,6 +22,9 @@ return new class extends Migration
             $table->year('year_graduate')->nullable();
             $table->string('honors')->nullable();
             $table->tinyInteger('is_current')->nullable();
+            $table->string('supporting_document')->nullable();
+            $table->tinyInteger('units')->nullable();
+
 
             $table->tinyInteger('is_deleted')->nullable();
             $table->integer('deleted_by')->nullable();

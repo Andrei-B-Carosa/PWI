@@ -28,20 +28,30 @@
                                 @if($data['is_approved'] == null)
                                     <span class="badge badge-secondary me-2">Pending</span>
                                 @elseif($data['is_approved']== 1)
-                                    <span class="badge badge-light-success me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+                                    <span class="badge badge-light-success me-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
                                     title="Officer :{{ $data['approver'] }} <br> Remarks :{{ $data['approver_remarks'] }}">Approved</span>
                                 @elseif($data['is_approved'] == 2)
-                                    <span class="badge badge-light-danger" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+                                    <span class="badge badge-light-danger cursor-pointer" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
                                     title="Officer :{{ $data['approver'] }} <br> Remarks :{{ $data['approver_remarks'] }}"
                                     >Rejected</span>
                                 @endif
+
                                 @if($isCurrentApprover && $data['is_approved'] == null)
-                                    <span class="badge badge-info me-2" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+                                    <span class="badge badge-info me-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
                                     title="@if($data['is_required']== 1) Your approval is required before it can proceed to next approver
-                                            @else Your approval is optional and the next approver can approve the request @endif">{{ $data['is_required'] == 1?'Approval Required':'Approval is Optional' }}</span>
+                                            @else Your approval is optional and the next approver can approve/reject the request @endif">
+                                    {{ $data['is_required'] == 1?'Approval Required':'Approval is Optional' }}
+                                </span>
                                 @endif
                                 @if(!$isCurrentApprover && $data['is_approved'] == null)
                                     <span class="badge badge-info me-2">Waiting for eligible approver</span>
+                                @endif
+
+                                @if(isset($data['link_status']) && $data['link_status'] == 2)
+                                    <span class="badge badge-info me-2 cursor-pointer" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+                                        title="Link is already used to approved/reject this request. You can only view this until the link is expired.">
+                                        Viewing only
+                                    </span>
                                 @endif
                             </div>
                             <div class="mb-6">

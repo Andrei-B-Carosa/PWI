@@ -2,7 +2,7 @@
 
 <div class="mb-3">
     @if ($label ?? false)
-        <label for="{{ $id ?? $name }}" class="form-label fw-bold">{{ $label }}</label>
+        <label for="{{ $id ?? $name }}" class="form-label">{{ $label }}</label>
     @endif
     <select
         name="{{ $name }}"

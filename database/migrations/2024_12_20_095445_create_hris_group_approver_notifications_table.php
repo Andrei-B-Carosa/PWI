@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->dateTime('link_expired_at')->nullable();
             $table->tinyInteger('link_status')->nullable();
-
+            $table->string('approver_remarks')->nullable();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

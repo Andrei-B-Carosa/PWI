@@ -6,6 +6,13 @@ use App\Http\Controllers\AdminController\Approvals\OvertimeRequisition;
 use App\Http\Controllers\AdminController\Employee\EmployeeDetails;
 use App\Http\Controllers\AdminController\Employee\EmployeeMasterlist;
 use App\Http\Controllers\AdminController\Employee\EmployeeRegistration;
+use App\Http\Controllers\AdminController\Employee\PersonalData\DocumentAttachments;
+use App\Http\Controllers\AdminController\Employee\PersonalData\EducationalBackground;
+use App\Http\Controllers\AdminController\Employee\PersonalData\FamilyBackground;
+use App\Http\Controllers\AdminController\Employee\PersonalData\PersonalInformation;
+use App\Http\Controllers\AdminController\Employee\PersonalData\References;
+use App\Http\Controllers\AdminController\Employee\PersonalData\Tab as PersonalDataTab;
+use App\Http\Controllers\AdminController\Employee\PersonalData\WorkExperience;
 use App\Http\Controllers\AdminController\Settings\FileMaintenance\Classification;
 use App\Http\Controllers\AdminController\Settings\FileMaintenance\Company;
 use App\Http\Controllers\AdminController\Settings\FileMaintenance\CompanyLocation;
@@ -213,10 +220,54 @@ Route::group(['prefix'=>'hris/admin'], function() {
             Route::post('/delete', 'delete');
             Route::post('/emp_details', 'emp_details');
         });
-        Route::controller(EmployeeDetails::class)->prefix('employee_details')->group(function() {
-            Route::post('/form', 'form');
-            Route::post('/update', 'update');
-            Route::post('/delete', 'delete');
+
+        Route::group(['prefix'=>'employee_details'], function() {
+
+            Route::controller(EmployeeDetails::class)->group(function() {
+                Route::post('/tab', 'tab');
+                Route::post('/form', 'form');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
+            });
+
+
+            Route::group(['prefix'=>'personal_data'], function() {
+
+                Route::controller(PersonalDataTab::class)->group(function() {
+                    Route::post('/tab', 'tab');
+                });
+
+                Route::controller(PersonalInformation::class)->group(function() {
+
+                });
+
+                Route::controller(FamilyBackground::class)->group(function() {
+
+                });
+
+                Route::controller(EducationalBackground::class)->prefix('educational_background')->group(function() {
+                    Route::post('/dt', 'dt');
+                    Route::post('/update', 'update');
+                    Route::post('/delete-education', 'delete-education');
+                    Route::post('/delete-document', 'delete-document');
+
+
+                    Route::post('/info', 'info');
+                });
+
+                Route::controller(WorkExperience::class)->group(function() {
+
+                });
+
+                Route::controller(DocumentAttachments::class)->group(function() {
+
+                });
+
+                Route::controller(References::class)->group(function() {
+
+                });
+            });
+
         });
 
         Route::controller(EmployeeRegistration::class)->prefix('employee_registration')->group(function() {

@@ -94,7 +94,7 @@ class Page
             $id = Crypt::decrypt($rq->id);
             $data = Employee::find($id);
             $isRegisterEmployee = false;
-            return view('admin.201_employee.employee_details', ['data'=>$data,'isRegisterEmployee'=>$isRegisterEmployee])->render();
+            return view('admin.201_employee.employee_details.employee_details', ['data'=>$data,'isRegisterEmployee'=>$isRegisterEmployee])->render();
         } catch(Exception $e) {
             return response()->json([
                 'status' => 400,

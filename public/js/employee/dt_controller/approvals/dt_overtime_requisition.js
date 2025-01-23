@@ -239,36 +239,36 @@ export var dtOvertimeRequisition = function (param=false) {
                 }
             })
 
-            $(`#${_table}_table`).on('click','.view-details',function(e){
-                e.preventDefault()
-                e.stopImmediatePropagation()
+            // $(`#${_table}_table`).on('click','.view-details',function(e){
+            //     e.preventDefault()
+            //     e.stopImmediatePropagation()
 
-                let _this = $(this);
-                let id    =_this.attr('data-id');
+            //     let _this = $(this);
+            //     let id    =_this.attr('data-id');
 
-                let modal_id = '#modal_request_overtime';
-                let form = $('#form_request_overtime');
+            //     let modal_id = '#modal_request_overtime';
+            //     let form = $('#form_request_overtime');
 
-                let formData = new FormData;
-                formData.append('id',id);
-                _request.post('/hris/employee/request/overtime/info',formData)
-                .then((res) => {
-                    let payload = JSON.parse(window.atob(res.payload));
-                    $('input[name="overtime_date"]').val(payload.overtime_date);
-                    $('input[name="overtime_from"]')[0]._flatpickr.setDate(payload.overtime_from, true);
-                    $('input[name="overtime_to"]')[0]._flatpickr.setDate(payload.overtime_to, true);
-                    $('textarea[name="reason"]').val(payload.reason);
-                    $(modal_id).find('button.submit').attr('data-id',id);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    Alert.alert('error', "Something went wrong. Try again later", false);
-                })
-                .finally((error) => {
-                    modal_state(modal_id,'show');
-                });
+            //     let formData = new FormData;
+            //     formData.append('id',id);
+            //     _request.post('/hris/employee/request/overtime/info',formData)
+            //     .then((res) => {
+            //         let payload = JSON.parse(window.atob(res.payload));
+            //         $('input[name="overtime_date"]').val(payload.overtime_date);
+            //         $('input[name="overtime_from"]')[0]._flatpickr.setDate(payload.overtime_from, true);
+            //         $('input[name="overtime_to"]')[0]._flatpickr.setDate(payload.overtime_to, true);
+            //         $('textarea[name="reason"]').val(payload.reason);
+            //         $(modal_id).find('button.submit').attr('data-id',id);
+            //     })
+            //     .catch((error) => {
+            //         console.log(error);
+            //         Alert.alert('error', "Something went wrong. Try again later", false);
+            //     })
+            //     .finally((error) => {
+            //         modal_state(modal_id,'show');
+            //     });
 
-            })
+            // })
 
             $(`#${_table}_table`).on('click','.approve',function(e){
                 e.preventDefault()
@@ -277,24 +277,30 @@ export var dtOvertimeRequisition = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.input('question','Do you want to approve this request ?',{
-                    isRequired: false,
-                    inputPlaceholder: "Put your reason",
-                    onConfirm: function(approver_remarks='') {
-                        formData.append('id',id);
-                        formData.append('approver_remarks',approver_remarks);
-                        formData.append('is_approved',1);
-                        _request.post('/hris/employee/approvals/overtime_requisition/update',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            initTable();
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
+                _request.post('/hris/employee/approvals/overtime_requisition/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.input('question','Do you want to approve <br><b>'+payload.name+'</b> request ?',{
+                            isRequired: false,
+                            inputPlaceholder: "Put your reason",
+                            onConfirm: function(approver_remarks='') {
+                                formData.append('approver_remarks',approver_remarks);
+                                formData.append('is_approved',1);
+                                _request.post('/hris/employee/approvals/overtime_requisition/update',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    initTable();
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
 
+                                });
+                            }
                         });
                     }
                 });
@@ -307,29 +313,33 @@ export var dtOvertimeRequisition = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.input('question','Do you want to disapprove this request ?',{
-                    isRequired: true,
-                    inputPlaceholder: "Put your reason",
-                    onConfirm: function(approver_remarks) {
-                        formData.append('id',id);
-                        formData.append('approver_remarks',approver_remarks);
-                        formData.append('is_approved',2);
-                        _request.post('/hris/employee/approvals/overtime_requisition/update',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            initTable();
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
+                _request.post('/hris/employee/approvals/overtime_requisition/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.input('question','Do you want to disapprove <br><b>'+payload.name+'</b> request ?',{
+                            isRequired: true,
+                            inputPlaceholder: "Put your reason",
+                            onConfirm: function(approver_remarks) {
+                                formData.append('approver_remarks',approver_remarks);
+                                formData.append('is_approved',2);
+                                _request.post('/hris/employee/approvals/overtime_requisition/update',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    initTable();
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
 
+                                });
+                            }
                         });
                     }
                 });
-
-
             })
 
             $(`#${_table}_table`).on('click','.history',function(e){

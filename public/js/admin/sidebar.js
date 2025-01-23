@@ -8,7 +8,7 @@ import { ManualCreditController } from './fn_controller/settings/leave_setting/s
 import { FileMaintenanceController } from './fn_controller/settings/file_maintenance.js';
 import { EmployeeMasterlistController } from './fn_controller/201_employee/employee_masterlist.js';
 import { Alert } from '../global/alert.js';
-import { EmployeeDetailsController } from './fn_controller/201_employee/employee_details.js';
+import { EmployeeDetailsController } from './fn_controller/201_employee/employee_details/employee_details.js';
 import { OverTimeRequisitionController } from './fn_controller/approval/overtime_requisition.js';
 import { GroupSettingsController } from './fn_controller/settings/group_settings/group_settings.js';
 import { GroupDetailsController } from './fn_controller/settings/group_settings/group_details.js';

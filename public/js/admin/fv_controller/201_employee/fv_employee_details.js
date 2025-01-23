@@ -2,8 +2,6 @@
 import {Alert} from "../../../global/alert.js"
 import {RequestHandler} from "../../../global/request.js"
 import {modal_state,fv_validator} from "../../../global.js"
-import { dtLeaveType } from "../../dt_controller/settings/dt_leave_settings/dt_leave.type.js";
-import { dtLeaveManagement } from "../../dt_controller/settings/dt_leave_settings/dt_leave_management.js";
 
 export function fvEmployeeDetails(_table=false,form_id,param){
 
@@ -142,6 +140,150 @@ export function fvEmployeeDetails(_table=false,form_id,param){
 
     KTUtil.onDOMContentLoaded(function () {
         init_fvEmployeeDetails.init();
+    });
+
+}
+
+export function fvEducationalBackground(_table=false,form_id,param){
+
+    var init_EducationalBackground = (function () {
+
+        var _handleEducationalBackground = function(){
+            let EducationalBackground;
+            let form = document.querySelector(`#form_add_education`);
+            let modal_id = form.getAttribute('modal-id');
+            let modalContent = document.querySelector(`${modal_id} .modal-content`);
+
+            let blockUI = new KTBlockUI(modalContent, {
+                message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+            });
+
+            if (!form.hasAttribute('data-fv-initialized')) {
+
+                const validationRules = {};
+                const fields = form.querySelectorAll('input, select, textarea');
+
+                fields.forEach(function (field) {
+                    const fieldName = field.name;
+
+                    validationRules[fieldName] = {
+                        validators: {}
+                    };
+
+                    if (field.hasAttribute('data-accepted') && field.getAttribute('data-accepted') === 'pdf') {
+                        validationRules[fieldName].validators ={
+                            file: {
+                                extension: 'pdf',
+                                type: 'application/pdf',
+                                message: 'Please upload a valid PDF file'
+                            },
+                            fileSize: {
+                                maxSize: 20480 * 1024,
+                                message: 'The file is too large. Maximum size allowed is 20 MB.'
+                            },
+                        };
+                    }
+
+                    if (field.hasAttribute('data-required') && field.getAttribute('data-required') === 'false') {
+                        return;
+                    }
+
+                    validationRules[fieldName].validators.notEmpty = {message: 'This field is required'};
+                });
+
+                EducationalBackground = FormValidation.formValidation(form, {
+                    fields: validationRules,
+                    plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: ".fv-row",
+                        eleInvalidClass: "",
+                        eleValidClass: "",
+                    }),
+                    },
+                })
+                form.setAttribute('data-fv-initialized', 'true');
+            }
+
+            $(modal_id).on('click','button.cancel',function(e){
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                Alert.confirm('question',"Close this form ?",{
+                    onConfirm: () => {
+                        modal_state(modal_id);
+                        EducationalBackground.resetForm();
+                        form.reset();
+                        $(modal_id).find('.submit').attr('data-id','');
+                    }
+                })
+            })
+
+            $(modal_id).on('click','button.submit',function(e){
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                let _this = $(this);
+                let url = form.getAttribute('action');
+
+                EducationalBackground && EducationalBackground.validate().then(function (v) {
+                    if(v == "Valid"){
+                        Alert.confirm("question","Submit this form?", {
+                            onConfirm: function() {
+                                blockUI.block();
+                                _this.attr("data-kt-indicator","on");
+                                _this.attr("disabled",true);
+                                let formData = new FormData(form);
+                                formData.append('tab',form_id);
+                                formData.append('emp_id',param);
+                                formData.append('id',_this.attr('data-id')??'');
+                                (new RequestHandler).post(url,formData,true).then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.status == 'success'){
+                                        if(_this.attr('data-id')){
+                                            _this.attr('data-id','');
+                                            modal_state(modal_id);
+                                        }
+                                        EducationalBackground.resetForm();
+                                        form.reset();
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error)
+                                    Alert.alert('error',"Something went wrong. Try again later", false);
+                                })
+                                .finally(() => {
+                                    _this.attr("data-kt-indicator","off");
+                                    _this.attr("disabled",false);
+                                    blockUI.release();
+                                });
+                            },
+                        });
+                    }
+                })
+            })
+
+            $(modal_id).on('click','button.edit',function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                const form = $(this).closest('.card').find('form');
+                form.find('input, select').prop('disabled', false);
+                $(this).addClass('d-none');
+                $(this).siblings('.cancel, .save').removeClass('d-none');
+            });
+        }
+
+        return {
+            init: function () {
+                _handleEducationalBackground();
+            },
+        };
+
+    })();
+
+    KTUtil.onDOMContentLoaded(function () {
+        init_EducationalBackground.init();
     });
 
 }

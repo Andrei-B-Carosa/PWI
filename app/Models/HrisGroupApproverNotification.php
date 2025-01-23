@@ -25,4 +25,9 @@ class HrisGroupApproverNotification extends Model
         'updated_at',
         'created_at',
     ];
+
+    public function employee()
+    {
+        return $this->BelongsTo(Employee::class,'emp_id')->withDefault();
+    }
 }

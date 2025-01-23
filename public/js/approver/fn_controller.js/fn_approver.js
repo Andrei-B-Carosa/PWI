@@ -34,7 +34,6 @@ export var ApproverController = function (page, param) {
                     view =window.atob(payload);
                 }
                 $(_div).empty().append(view);
-                console.log(view)
 
                 modal_state(_modal,'show');
                 ModalEvents();
@@ -88,19 +87,19 @@ export var ApproverController = function (page, param) {
                         if(res.status == 'success')
                         {
                             Alert.toast('success',res.message);
-                            Alert.confirm('question','Proceed to next '+_title+' ?', {
+                            Alert.confirm('question','Proceed to next request ?', {
                                 onConfirm: function() {
                                     ModalHandler('next-request');
                                 },
                                 onCancel: function() {
-                                    // ModalHandler();
-                                    Alert.loading('Redirecting you to login . . .',{
-                                        didOpen:function(){
-                                            setTimeout(function() {
-                                                window.location.replace('/hris/employee/login');
-                                            }, 3500);
-                                        }
-                                    });
+                                    ModalHandler();
+                                    // Alert.loading('Redirecting you to login . . .',{
+                                    //     didOpen:function(){
+                                    //         setTimeout(function() {
+                                    //             window.location.replace('/hris/employee/login');
+                                    //         }, 3500);
+                                    //     }
+                                    // });
                                 }
                             })
                         }else{
@@ -114,7 +113,6 @@ export var ApproverController = function (page, param) {
                         ModalHandler();
                     })
                     .finally((error) => {
-                        // modal_state(_modal,'show');
                     });
                 },
                 onCancel: function(approver_remarks) {

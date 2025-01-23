@@ -257,24 +257,30 @@ export var dtOfficialBusiness = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.input('question','Do you want to approve this request ?',{
-                    isRequired: false,
-                    inputPlaceholder: "Put your reason",
-                    onConfirm: function(approver_remarks='') {
-                        formData.append('id',id);
-                        formData.append('approver_remarks',approver_remarks);
-                        formData.append('is_approved',1);
-                        _request.post('/hris/employee/approvals/official_business/update',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            initTable();
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
+                _request.post('/hris/employee/approvals/official_business/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.input('question','Do you want to approve <br><b>'+payload.name+'</b> request ?',{
+                            isRequired: false,
+                            inputPlaceholder: "Put your reason",
+                            onConfirm: function(approver_remarks='') {
+                                formData.append('approver_remarks',approver_remarks);
+                                formData.append('is_approved',1);
+                                _request.post('/hris/employee/approvals/official_business/update',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    initTable();
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
 
+                                });
+                            }
                         });
                     }
                 });
@@ -287,29 +293,33 @@ export var dtOfficialBusiness = function (param=false) {
                 let _this = $(this);
                 let id    =_this.attr('data-id');
                 let formData = new FormData;
+                formData.append('id',id);
 
-                Alert.input('question','Do you want to disapprove this request ?',{
-                    isRequired: true,
-                    inputPlaceholder: "Put your reason",
-                    onConfirm: function(approver_remarks) {
-                        formData.append('id',id);
-                        formData.append('approver_remarks',approver_remarks);
-                        formData.append('is_approved',2);
-                        _request.post('/hris/employee/approvals/official_business/update',formData)
-                        .then((res) => {
-                            Alert.toast(res.status,res.message);
-                            initTable();
-                        })
-                        .catch((error) => {
-                            Alert.alert('error', "Something went wrong. Try again later", false);
-                        })
-                        .finally((error) => {
+                _request.post('/hris/employee/approvals/official_business/emp_details',formData)
+                .then((res) => {
+                    if(res.status =='success'){
+                        let payload = JSON.parse(window.atob(res.payload));
+                        Alert.input('question','Do you want to disapprove <br><b>'+payload.name+'</b> request ?',{
+                            isRequired: true,
+                            inputPlaceholder: "Put your reason",
+                            onConfirm: function(approver_remarks) {
+                                formData.append('approver_remarks',approver_remarks);
+                                formData.append('is_approved',2);
+                                _request.post('/hris/employee/approvals/official_business/update',formData)
+                                .then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    initTable();
+                                })
+                                .catch((error) => {
+                                    Alert.alert('error', "Something went wrong. Try again later", false);
+                                })
+                                .finally((error) => {
 
+                                });
+                            }
                         });
                     }
                 });
-
-
             })
 
             $(`#${_table}_table`).on('click','.history',function(e){

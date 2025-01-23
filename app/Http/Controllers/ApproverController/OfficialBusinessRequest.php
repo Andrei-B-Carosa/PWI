@@ -39,10 +39,10 @@ class OfficialBusinessRequest extends Controller
         }
 
         $now = Carbon::now();
-        if ( ($now->greaterThan($query->link_expired_at) || $query->link_status ==2) || ($query->link == 1 || $query->link == 2) ){
+        if ($now->greaterThan($query->link_expired_at)){
             return [
                 'status' => 'error',
-                'message' => 'The link has expired or you already approve/reject the request !',
+                'message' => 'The link has already expired !',
                 'payload'=>'expired',
             ];
         }
@@ -115,14 +115,28 @@ class OfficialBusinessRequest extends Controller
         }
     }
 
-    public function modal($data)
+    public function modal($notificationData)
     {
-        $isCurrentApprover = false;
-        if($data && $data->id){
-            $query = OBRequest::find($data->entity_id);
-            $isCurrentApprover = (new OfficialBusiness)->isApprovingOpen($data->emp_id,$query->id,$query->group_member->group_id);
+        $isCurrentApprover = false;  $data = [];
+        if($notificationData && $notificationData->id){
+            $query = OBRequest::find($notificationData->entity_id);
+            $isCurrentApprover = (new OfficialBusiness)->isApprovingOpen($notificationData->emp_id,$query->id,$query->group_member->group_id);
             $latestApproval = $query->latest_approval_histories;
+
             $data = [
+                'is_approved' => $query->is_approved,
+                'approver_remarks'=> $latestApproval? $latestApproval->approver_remarks : '--',
+                'is_required' => $notificationData->is_required,
+                'approver'=> $latestApproval?$latestApproval->employee->fullname() :false,
+                'link_status'=>$notificationData->link_status,
+            ];
+            if($notificationData && $notificationData->link_status == 2){
+                $data['is_approved'] = $notificationData->is_approved;
+                $data['approver_remarks'] =$notificationData->approver_remarks;
+                $data['approver'] = $notificationData->employee->fullname();
+                $isCurrentApprover = false;
+            }
+            $data = array_merge($data,[
                 'encrypted_id' =>Crypt::encrypt($query->id),
                 'requestor' =>$query->employee->fullname(),
                 'ob_filing_date' =>Carbon::parse($query->ob_filing_date)->format('F j, Y'),
@@ -131,12 +145,7 @@ class OfficialBusinessRequest extends Controller
                 'destination' =>$query->destination,
                 'purpose' =>$query->purpose,
                 'contact_person_id' =>optional($query->emp_contact_person)->fullname() ?? null,
-                'is_approved'=>$query->is_approved,
-                'approver_remarks'=> $latestApproval? $latestApproval->approver_remarks : '--',
-                'approver'=> $latestApproval?$latestApproval->employee->fullname() :false,
-                'ob_duration_hours' => Carbon::parse($query->ob_time_out)->diffInHours(Carbon::parse($query->ob_time_in)),
-                'is_required'=> $data->is_required,
-            ];
+            ]);
         }
         return view('approver.ob_request',compact('data','isCurrentApprover'))->render();
     }
@@ -150,10 +159,9 @@ class OfficialBusinessRequest extends Controller
             $obRequest = HrisEmployeeOfficialBusinessRequest::with('employee_position')->find($id);
             if(!$obRequest){
                 return response()->json(['status' => 'error','message'=>'OB Request Not Found']);
-            }elseif($obRequest->is_approved ==1) {
-                return response()->json(['status' => 'error','message'=>'Request is already approved']);
-            }elseif($obRequest->is_approved ==2) {
-                return response()->json(['status' => 'error','message'=>'Request is already rejected']);
+            }
+            if($obRequest->is_approved ==1 || $obRequest->is_approved ==2) {
+                return response()->json(['status' => 'error','message'=>'Request is already approved/rejected']);
             }
 
             $data = self::isUrlValid($rq);

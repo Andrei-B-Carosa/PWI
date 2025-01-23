@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EmployeeController\Approvals;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\HrisApprovalHistory;
 use App\Models\HrisApprovingOfficer;
 use App\Models\HrisEmployeeLeaveRequest;
@@ -134,7 +135,7 @@ class OfficialBusiness extends Controller
             $obRequest = HrisEmployeeOfficialBusinessRequest::with('employee_position')->find($id);
             if(!$obRequest)
             {
-                return response()->json(['status' => 'error','message'=>'Overtime Request Not Found']);
+                return response()->json(['status' => 'error','message'=>'OB Request Not Found']);
             }
 
             $approvingOfficer = HrisGroupApprover::where([
@@ -241,6 +242,45 @@ class OfficialBusiness extends Controller
 
             $payload =base64_encode(json_encode($history));
             return response()->json(['status' => 'success','message'=>'success', 'payload'=>$payload]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function emp_details(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $id =  Crypt::decrypt($rq->id);
+
+            $id = isset($rq->id) && $rq->id != "undefined" ? Crypt::decrypt($rq->id):false;
+            if(!$id)
+            {
+                return response()->json(['status' => 'error','message'=>'Missing ID in Request']);
+            }
+
+            $query = HrisEmployeeOfficialBusinessRequest::with('employee_position')->find($id);
+            if(!$query)
+            {
+                return response()->json(['status' => 'error','message'=>'OB Request Not Found']);
+            }
+
+            $employee = $query->employee;
+            $payload = [
+                'name'=>$employee->fullname(),
+                'position'=>$employee->emp_details->position->name,
+                'position'=>$employee->emp_details->department->name,
+            ];
+            return response()->json([
+                'status' => 'success',
+                'message'=>'success',
+                'payload' => base64_encode(json_encode($payload))
+            ]);
+
         }catch(Exception $e){
             DB::rollback();
             return response()->json([

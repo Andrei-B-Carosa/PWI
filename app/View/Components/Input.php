@@ -17,12 +17,14 @@ class Input extends Component
     public $class;
     public $name;
     public $disabled;
+    public $type;
 
-    public function __construct($id,$label,$class,$name,$disabled)
+    public function __construct($id,$label,$class,$name,$disabled,$type='text')
     {
         $this->id = $id;
 
         $this->label = $label;
+        $this->type = $type;
         $this->class = $class;
         $this->name = $name;
         $this->disabled = $disabled;

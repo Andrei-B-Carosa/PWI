@@ -35,10 +35,10 @@ class LeaveRequest extends Controller
         }
 
         $now = Carbon::now();
-        if ( ($now->greaterThan($query->link_expired_at) || $query->link_status ==2) || ($query->link == 1 || $query->link == 2) ){
+        if ( $now->greaterThan($query->link_expired_at) ){
             return [
                 'status' => 'error',
-                'message' => 'The link has expired or you already approve/reject the request !',
+                'message' => 'The link has already expired !',
                 'payload'=>'expired',
             ];
         }
@@ -111,13 +111,27 @@ class LeaveRequest extends Controller
         }
     }
 
-    public function modal($data)
+    public function modal($notificationData)
     {
         $isCurrentApprover = false;
-        if($data && $data->id){
-            $query = EmployeeLeaveRequest::find($data->entity_id);
-            $isCurrentApprover = (new ApplicationForLeave)->isApprovingOpen($data->emp_id,$query->id,$query->group_member->group_id);
+        if($notificationData && $notificationData->id){
+            $query = EmployeeLeaveRequest::find($notificationData->entity_id);
+            $isCurrentApprover = (new ApplicationForLeave)->isApprovingOpen($notificationData->emp_id,$query->id,$query->group_member->group_id);
             $latestApproval = $query->latest_approval_histories;
+
+            $data = [
+                'is_approved' => $query->is_approved,
+                'approver_remarks'=> $latestApproval? $latestApproval->approver_remarks : '--',
+                'is_required' => $notificationData->is_required,
+                'approver'=> $latestApproval?$latestApproval->employee->fullname() :false,
+                'link_status'=>$notificationData->link_status,
+            ];
+            if($notificationData && $notificationData->link_status == 2){
+                $data['is_approved'] = $notificationData->is_approved;
+                $data['approver_remarks'] =$notificationData->approver_remarks;
+                $data['approver'] = $notificationData->employee->fullname();
+                $isCurrentApprover = false;
+            }
             $data = [
                 'encrypted_id' =>Crypt::encrypt($query->id),
                 'requestor' =>$query->employee->fullname(),
@@ -125,10 +139,6 @@ class LeaveRequest extends Controller
                 'leave_date_from' =>Carbon::parse($query->leave_date_from)->format('F j, Y'),
                 'leave_date_to' =>Carbon::parse($query->leave_date_to)->format('F j, Y'),
                 'reason' =>$query->reason,
-                'is_approved'=>$query->is_approved,
-                'approver_remarks'=> $latestApproval? $latestApproval->approver_remarks : '--',
-                'approver'=> $latestApproval?$latestApproval->employee->fullname() :false,
-                'is_required'=> $data->is_required,
             ];
         }
         return view('approver.leave_request',compact('data','isCurrentApprover'))->render();
@@ -143,10 +153,9 @@ class LeaveRequest extends Controller
             $leaveRequest = EmployeeLeaveRequest::with('employee_position')->find($id);
             if(!$leaveRequest){
                 return response()->json(['status' => 'error','message'=>'Leave Request Not Found']);
-            }elseif($leaveRequest->is_approved ==1) {
+            }
+            if($leaveRequest->is_approved ==1 || $leaveRequest->is_approved ==2) {
                 return response()->json(['status' => 'error','message'=>'Request is already approved']);
-            }elseif($leaveRequest->is_approved ==2) {
-                return response()->json(['status' => 'error','message'=>'Request is already rejected']);
             }
 
             $data = self::isUrlValid($rq);

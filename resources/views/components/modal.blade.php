@@ -1,5 +1,4 @@
-
-<div class="modal fade" id="modal_{{ $id }}" tabindex="-1" aria-hidden="false" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modal_{{ $id }}" tabindex="-1" aria-hidden="false" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered mw-600px">
         <div class="modal-content">
             <div class="modal-header justify-content-center" id="kt_modal_add_user_header">
@@ -12,7 +11,7 @@
             </div>
             <div class="modal-body">
                 <form id="form_{{ $id }}" modal-id="#modal_{{ $id }}" class="form fv-plugins-bootstrap5 fv-plugins-framework"
-                        action="{{ $action }}">
+                        action="{{ $action }}" enctype="multipart/form-data">
                     {{ $slot }}
                 </form>
             </div>

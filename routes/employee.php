@@ -97,6 +97,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
 
+            Route::post('/emp_details', 'emp_details');
             Route::post('/view_history', 'view_history');
         });
 
@@ -107,6 +108,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
 
+            Route::post('/emp_details', 'emp_details');
             Route::post('/view_history', 'view_history');
         });
 
@@ -117,6 +119,7 @@ Route::group(['prefix'=>'hris/employee'], function() {
             Route::post('/info', 'info');
             Route::post('/validate_request', 'validate_request');
 
+            Route::post('/emp_details', 'emp_details');
             Route::post('/view_history', 'view_history');
         });
 
