@@ -237,34 +237,49 @@ Route::group(['prefix'=>'hris/admin'], function() {
                     Route::post('/tab', 'tab');
                 });
 
-                Route::controller(PersonalInformation::class)->group(function() {
+                // Route::controller(PersonalInformation::class)->prefix('personal_information')->group(function() {
+                //     Route::post('/update', 'update');
+                // });
 
-                });
+                // Route::controller(FamilyBackground::class)->group(function() {
 
-                Route::controller(FamilyBackground::class)->group(function() {
-
-                });
+                // });
+                Route::post('/personal_information/update', [PersonalInformation::class, 'update']);
+                Route::post('/family_background/update', [FamilyBackground::class, 'update']);
 
                 Route::controller(EducationalBackground::class)->prefix('educational_background')->group(function() {
                     Route::post('/dt', 'dt');
                     Route::post('/update', 'update');
-                    Route::post('/delete-education', 'delete-education');
-                    Route::post('/delete-document', 'delete-document');
+                    Route::post('/delete', 'delete');
+                    Route::post('/check_document', 'check_document');
 
 
                     Route::post('/info', 'info');
                 });
 
-                Route::controller(WorkExperience::class)->group(function() {
+                Route::controller(WorkExperience::class)->prefix('work_experience')->group(function() {
+                    Route::post('/dt', 'dt');
+                    Route::post('/update', 'update');
+                    Route::post('/delete', 'delete');
+                    Route::post('/check_document', 'check_document');
 
+                    Route::post('/info', 'info');
                 });
 
-                Route::controller(DocumentAttachments::class)->group(function() {
-
+                Route::controller(DocumentAttachments::class)->prefix('document_attachment')->group(function() {
+                    Route::post('/dt', 'dt');
+                    Route::post('/update', 'update');
+                    Route::post('/delete', 'delete');
+                    Route::post('/download_document', 'download_document');
+                    Route::post('/view_document', 'view_document');
                 });
 
-                Route::controller(References::class)->group(function() {
+                Route::controller(References::class)->prefix('references')->group(function() {
+                    Route::post('/dt', 'dt');
+                    Route::post('/update', 'update');
+                    Route::post('/delete', 'delete');
 
+                    Route::post('/info', 'info');
                 });
             });
 

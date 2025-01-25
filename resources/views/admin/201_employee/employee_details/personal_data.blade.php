@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <div class="card-body pt-5" id="card1">
-                        <form id="form1" card-id="#card1" action="/hris/admin/201_employee/employee_details/update"></form>
+                        <div class="" id="card1"></div>
                     </div>
                 </div>
             </div>
@@ -84,8 +84,14 @@
             <div class="tab-pane fade tab3" id="tab_content3" role="tabpanel">
                 <div class="" id="card3"></div>
             </div>
+            <div class="tab-pane fade tab4" id="tab_content4" role="tabpanel">
+                <div class="" id="card4"></div>
+            </div>
+            <div class="tab-pane fade tab5" id="tab_content5" role="tabpanel">
+                <div class="" id="card5"></div>
+            </div>
             <div class="tab-pane fade tab6" id="tab_content6" role="tabpanel">
-                <div class="card card-flush h-lg-100" id="card6">
+                {{-- <div class="card card-flush h-lg-100" id="card6">
                     <div class="card-header py-7">
                         <div class="card-title">
                             <h2 class="tab_title"></h2>
@@ -98,18 +104,11 @@
                     </div>
                     <div class="card-body pt-5">
                     </div>
-                </div>
+                </div> --}}
+                <div class="" id="card6"></div>
             </div>
-            <div class="tab-pane fade tab8" id="tab_content8" role="tabpanel">
-                <div class="card card-flush h-lg-100" id="card8">
-                    <div class="card-header py-7">
-                        <div class="card-title">
-                            <h2 class="tab_title"></h2>
-                        </div>
-                    </div>
-                    <div class="card-body pt-5">
-                    </div>
-                </div>
+            <div class="tab-pane fade tab7" id="tab_content7" role="tabpanel">
+                <div class="" id="card7"></div>
             </div>
         </div>
     </div>

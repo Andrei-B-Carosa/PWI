@@ -293,7 +293,7 @@
 
 
 <div class="w-100 mb-5">
-    <div class="card card-flush h-lg-100" id="card2">
+    <div class="card card-flush h-lg-100" id="">
         <div class="card-header py-7">
             <div class="card-title">
                 <h3 class="">Father's Information</h3>
@@ -321,7 +321,7 @@
             </div>
         </div>
         <div class="card-body pt-5">
-            <form id="form-father-details" action="">
+            <form id="form-father-details" class="form2" action="">
                 <div class="fv-row">
                     <div class="row">
                         <div class="col-xl-12 mb-7">
@@ -364,7 +364,7 @@
 </div>
 
 <div class="w-100 mb-5">
-    <div class="card card-flush h-lg-100" id="card2">
+    <div class="card card-flush h-lg-100" id="">
         <div class="card-header py-7">
             <div class="card-title">
                 <h3 class="">Mother's Information</h3>
@@ -392,7 +392,7 @@
             </div>
         </div>
         <div class="card-body pt-5">
-            <form id="form-mother-details" action="">
+            <form id="form-mother-details" class="form2" action="">
                 <div class="fv-row">
                     <div class="row">
                         <div class="col-xl-12 mb-7">
@@ -427,7 +427,7 @@
 </div>
 
 <div class="w-100 mb-5">
-    <div class="card card-flush h-lg-100" id="card2">
+    <div class="card card-flush h-lg-100" id="">
         <div class="card-header py-7">
             <div class="card-title">
                 <h3 class="">Spouse Information</h3>
@@ -455,31 +455,55 @@
             </div>
         </div>
         <div class="card-body pt-5">
-            <form id="form-spouse-details" action="">
+            <form id="form-spouse-details" class="form2" action="">
                 <div class="fv-row">
                     <div class="row">
                         <div class="col-xl-12 mb-7">
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="lname" placeholder="Last Name"
-                                    value="{{ isset($employee) ? $employee->spouse_lname : '' }}" name="lname"
+                                <input type="text" class="form-control" placeholder="Last Name"
+                                    value="{{ isset($employee) ? $employee->spouse_lname : '' }}" name="spouse_lname"
                                     @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif />
                                 <label for="lname">Last Name</label>
                             </div>
                         </div>
                         <div class="col-xl-12 mb-7">
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="fname"placeholder="First Name"
-                                    value="{{ isset($employee) ? $employee->spouse_fname : '' }}" name="fname"
+                                <input type="text" class="form-control" placeholder="First Name"
+                                    value="{{ isset($employee) ? $employee->spouse_fname : '' }}" name="spouse_fname"
                                     @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif />
                                 <label for="fname">First Name</label>
                             </div>
                         </div>
                         <div class="col-xl-12 mb-7">
                             <div class="form-floating">
-                                <input type="text" class="form-control" id="mname"placeholder="Midlle Name"
-                                    value="{{ isset($employee) ? $employee->spouse_mname : '' }}" name="mname"
+                                <input type="text" class="form-control" placeholder="Midlle Name"
+                                    value="{{ isset($employee) ? $employee->spouse_mname : '' }}" name="spouse_mname"
                                     @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif data-required="false"/>
-                                <label for="mname">Midlle Name</label>
+                                <label for="">Midlle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 mb-7">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" placeholder="Spouse Employer"
+                                    value="{{ isset($employee) ? $employee->spouse_employer : '' }}" name="spouse_employer"
+                                    @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif data-required="false"/>
+                                <label for="">Spouse Employer</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 mb-7">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" placeholder="Spouse Occupation"
+                                    value="{{ isset($employee) ? $employee->spouse_occupation : '' }}" name="spouse_occupation"
+                                    @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif data-required="false"/>
+                                <label for="">Spouse Occupation</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 mb-7">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" placeholder="Spouse Business Address"
+                                    value="{{ isset($employee) ? $employee->spouse_business_address : '' }}" name="spouse_business_address"
+                                    @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif data-required="false"/>
+                                <label for="">Spouse Business Address</label>
                             </div>
                         </div>
                     </div>

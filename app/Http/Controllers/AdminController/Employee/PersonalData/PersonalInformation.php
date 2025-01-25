@@ -3,17 +3,24 @@
 namespace App\Http\Controllers\AdminController\Employee\PersonalData;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class PersonalInformation extends Controller
 {
-    public function personal_information($rq,$components,$employee)
+    protected $isRegisterEmployee = false;
+
+    public function view($rq,$components,$employee)
     {
         $isRegisterEmployee = $this->isRegisterEmployee;
         return view($components.'personal-information', compact('employee','isRegisterEmployee'))->render();
     }
 
-    public function update_personal_info($rq)
+    public function update(Request $rq)
     {
         try {
             DB::beginTransaction();
@@ -51,6 +58,7 @@ class PersonalInformation extends Controller
             DB::commit();
             return [ 'status' => 'success','message'=>'Update is success', 'payload'=>'' ];
         } catch (\Exception $e) {
+            DB::rollback();
             return [ 'status' => 'error', 'message' => $e->getMessage() ];
         }
     }

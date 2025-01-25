@@ -16,10 +16,13 @@ return new class extends Migration
             $table->integer('emp_id');
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
+            $table->string('company')->nullable();
             $table->string('position')->nullable();
             $table->string('department')->nullable();
             $table->float('salary')->nullable();
-            $table->tinyInteger('work_type')->nullable();
+            // $table->tinyInteger('work_type')->nullable();
+            $table->tinyInteger('is_government')->nullable();
+            $table->text('supporting_document')->nullable();
 
             $table->tinyInteger('is_deleted')->nullable();
             $table->integer('deleted_by')->nullable();

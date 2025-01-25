@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\HrisEmployeeEducation;
 use App\Services\Reusable\DTServerSide;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -121,5 +122,96 @@ class EducationalBackground extends Controller
             return [ 'status' => 'error', 'message' => $e->getMessage() ];
         }
 
+    }
+
+    public function delete(Request $rq)
+    {
+        try{
+            DB::beginTransaction();
+            $user_id = Auth::user()->emp_id;
+            $id =  Crypt::decrypt($rq->id);
+
+            $query = HrisEmployeeEducation::find($id);
+
+            if(!$query){
+                return response()->json([
+                    'status' => 'error',
+                    'message'=>'Something went wrong, try again later',
+                    'payload' =>''
+                ]);
+            }
+
+            if($rq->action == 'delete-document'){
+                if(!$query->supporting_document){
+                    return response()->json([
+                        'status' => 'info',
+                        'message'=>'No document found',
+                        'payload' => ''
+                    ]);
+                }
+                $emp_no = preg_replace('/[^A-Za-z0-9]/','',$query->employee->emp_no);
+                $filePath = 'employee/'.$emp_no.'/documents/'.$query->supporting_document;
+                if (Storage::disk('public')->exists($filePath)) {
+                    if(Storage::disk('public')->delete($filePath)){
+                        $query->updated_by = $user_id;
+                        $query->supporting_document = null;
+                    }else{
+                        return response()->json([
+                            'status' => 'error',
+                            'message'=>'Something went wrong on deleting document',
+                            'payload' =>''
+                        ]);
+                    }
+
+                }
+            }elseif($rq->action == 'delete-education'){
+                $query->is_deleted = 1;
+                $query->deleted_by = $user_id;
+                $query->deleted_at = Carbon::now();
+            }
+
+            $query->save();
+            DB::commit();
+            return response()->json([
+                'status' => 'info',
+                'message'=>'Removed successfully',
+                'payload' => HrisEmployeeEducation::where([['is_deleted',null],['emp_id',$query->emp_id]])->count()
+            ]);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function check_document(Request $rq)
+    {
+        try{
+            $user_id = Auth::user()->emp_id;
+            $id =  Crypt::decrypt($rq->id);
+
+            $query = HrisEmployeeEducation::find($id);
+            if(!$query->supporting_document){
+                return response()->json([
+                    'status' => 'invalid',
+                    'message'=>'No document found',
+                    'payload' => ''
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'valid',
+                'message'=>'valid',
+                'payload' => ''
+            ]);
+
+        }catch(Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

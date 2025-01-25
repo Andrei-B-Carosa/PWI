@@ -17,12 +17,12 @@ class Tab extends Controller
             $employee = Employee::with('emp_details','documents','emp_account:id,emp_id,username,c_email')->find($emp_id);
 
             $view = match($rq->tab){
-                // '1',1=>self::personal_information($rq,$components,$employee),
-                // '2',2=>self::family_background($rq,$components,$employee),
+                '1',1=>(new PersonalInformation)->view($rq,$components,$employee),
+                '2',2=>(new FamilyBackground)->view($rq,$components,$employee),
                 '3',3=>(new EducationalBackground)->view($rq,$components,$employee),
-                // '4',4=>self::work_experience($rq,$components,$employee),
-                // '5',5=>self::document_attachments($rq,$components,$employee),
-                // '6',6=>self::employee_references($rq,$components,$employee),
+                '4',4=>(new WorkExperience)->view($rq,$components,$employee),
+                '5',5=>(new DocumentAttachments)->view($rq,$components,$employee),
+                '6',6=>(new References)->view($rq,$components,$employee),
                 // '2',2=>self::employment_details($rq,$components,$employee),
                 // '8',8=>self::account_security($rq,$components,$employee),
                 default=>false,

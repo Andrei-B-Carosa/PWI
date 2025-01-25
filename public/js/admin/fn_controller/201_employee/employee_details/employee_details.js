@@ -2,7 +2,6 @@
 import { data_bs_components } from "../../../../global.js";
 import { Alert } from "../../../../global/alert.js";
 import { RequestHandler } from "../../../../global/request.js";
-import { fvAccountSecurity, fvEmployeeDetails, fvUploadDocument } from "../../../fv_controller/201_employee/fv_employee_details.js";
 import { PersonalDataHandler } from "./personal_data.js";
 
 export var EmployeeDetailsController =  function (page,param) {

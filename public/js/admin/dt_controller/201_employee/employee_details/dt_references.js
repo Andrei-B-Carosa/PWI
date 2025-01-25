@@ -7,12 +7,12 @@ import {modal_state,createBlockUI,data_bs_components} from "../../../../global.j
 import {trigger_select} from "../../../../global/select.js"
 
 
-export var dtEducationalBackground = function (param) {
+export var dtReferences = function (param) {
 
     const _page = $('.page-file-maintenance-settings');
-    const _table = 'educational_background';
-    const _tab = $(`#tab_content3`);
-    const _url = 'hris/admin/201_employee/employee_details/personal_data/educational_background/';
+    const _table = 'references';
+    const _tab = $(`#tab_content6`);
+    const _url = 'hris/admin/201_employee/employee_details/personal_data/references/';
     const _request = new RequestHandler;
     const dataTableHelper = new DataTableHelper(`${_table}_table`,`${_table}_wrapper`);
 
@@ -32,25 +32,38 @@ export var dtEducationalBackground = function (param) {
                 //     responsivePriority: -3,
                 //     searchable:false,
                 // },
-
                 {
-                    data: "level", name: "level", title: "Level",
-                    sortable:false,
-                    visible:false,
-                    searchable:false,
-                },
-                {
-                    data: "school", name: "school", title: "School",
+                    data: "name", name: "name", title: "Name",
                     sortable:false,
                     render(data,type,row){
-
-                        let level = {
-                            1: 'Elementary',
-                            2: 'Secondary',
-                            3: 'Vocational/Trade Course',
-                            4: 'College',
-                            5: 'Graduate Studies',
-                        };
+                        return `
+                            <div class="d-flex flex-column">
+                                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">
+                                    ${data}
+                                </a>
+                                <span class="text-muted">
+                                    ${row.position}
+                                </span>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    data: "position", name: "position", title: "Name",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
+                    data: "address", name: "address", title: "Address",
+                    sortable:false,
+                    searchable:false,
+                    visible:false,
+                },
+                {
+                    data: "company", name: "company", title: "Company",
+                    sortable:false,
+                    render(data,type,row){
 
                         return `
                             <div class="d-flex flex-column">
@@ -58,81 +71,46 @@ export var dtEducationalBackground = function (param) {
                                     ${data}
                                 </a>
                                 <span class="text-muted">
-                                    ${level[row.level]} (${row.year_graduate})
+                                    ${row.address}
                                 </span>
                             </div>
                         `;
                     }
                 },
                 {
-                    data: "degree", name: "degree", title: "Degree",
+                    data: "mobile_number", name: "mobile_number", title: "Contact Details",
                     sortable:false,
                     searchable:false,
                     render: function (data, type, row) {
-                        if(!data){
-                            return '--';
+                        if(data){
+                            return data
                         }
-                        return data;
-                    },
-                },
 
-                // {
-                //     data: "date_from",
-                //     name: "date_from",
-                //     title: "Date From",
-                //     searchable:false,
-                //     visible:false,
-                // },
-
-                // {
-                //     data: "date_to",
-                //     name: "date_to",
-                //     title: "From - To",
-                //     searchable:false,
-                //     render: function (data, type, row) {
-                //         return row.date_from+' - '+data;
-                //     }
-                // },
-                {
-                    data: "year_graduate",
-                    name: "year_graduate",
-                    title: "Year",
-                    searchable:false,
-                    className:'text-muted',
-                    visible:false,
-                },
-
-
-                {
-                    data: "honors", name: "honors", title: "Academic Honors",
-                    sortable:false,
-                    searchable:false,
-                    render: function (data, type, row) {
-                        if(!data){
-                            return '--';
+                        if(row.email)
+                        {
+                            return row.email;
                         }
-                        return data;
+                        return '--';
                     },
                 },
 
                 {
-                    data: "supporting_document",
-                    name: "supporting_document",
-                    title: "Supporting Document",
-                    searchable:false,
+                    data: "email", name: "email", title: "Email",
                     sortable:false,
-                    render(data,type,row){
-                        if(!data){
-                            return '--';
+                    searchable:false,
+                    visible:false
+                },
+
+                {
+                    data: "relation", name: "relation", title: "Relation",
+                    sortable:false,
+                    searchable:false,
+                    render: function (data, type, row) {
+                        if(data){
+                            return data
                         }
-                        return `
-                            <div class="d-flex flex-column">
-                                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">
-                                    ${data}
-                                </a>
-                            </div>
-                        `;
-                    }
+                        return '--';
+                    },
                 },
                 {
                     data: "encrypted_id",
@@ -163,15 +141,10 @@ export var dtEducationalBackground = function (param) {
                                         View Details
                                     </a>
                                 </div>
-                                <div class="menu-item px-3">
-                                    <a href="javascript:;" data-id="${data}" class="menu-link px-3 delete text-danger" data-title="Delete supporting document" data-action="delete-document">
-                                        Remove Document
-                                    </a>
-                                </div>
                             </div>
 
                             <a href="javascript:;" class="btn btn-icon btn-icon btn-light-danger btn-sm me-1 hover-elevate-up delete" data-id="${data}"
-                             data-bs-toggle="tooltip" title="Delete employee education" data-title="Delete employee education" data-action="delete-education">
+                             data-bs-toggle="tooltip" title="Delete this reference" data-title="Delete this reference" data-action="delete">
                                 <i class="ki-duotone ki-trash fs-2x">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -219,8 +192,8 @@ export var dtEducationalBackground = function (param) {
                 let _this = $(this);
                 let url   =_this.attr('rq-url');
                 let id    =_this.attr('data-id');
-                let modal_id = '#modal_add_education';
-                let form = $('#form_add_education');
+                let modal_id = '#modal_add_references';
+                let form = $('#form_add_references');
 
                 let formData = new FormData;
 
@@ -229,16 +202,13 @@ export var dtEducationalBackground = function (param) {
                 .then((res) => {
                     let payload = JSON.parse(window.atob(res.payload));
 
-                    form.find('input[name="school"]').val(payload.school);
-                    form.find('input[name="degree"]').val(payload.degree);
-                    form.find('input[name="year_graduate"]').val(payload.year_graduate);
-                    form.find('input[name="units"]').val(payload.units);
-                    form.find('input[name="honors"]').val(payload.honors);
-
-                    $('input[name="date_from"]')[0]._flatpickr.setDate(payload.date_from, true);
-                    $('input[name="date_to"]')[0]._flatpickr.setDate(payload.date_to, true);
-
-                    form.find('select[name="level"]').val(payload.level).trigger('change');
+                    form.find('input[name="name"]').val(payload.name);
+                    form.find('input[name="address"]').val(payload.address);
+                    form.find('input[name="email"]').val(payload.email);
+                    form.find('input[name="mobile_number"]').val(payload.mobile_number);
+                    form.find('input[name="company"]').val(payload.company);
+                    form.find('input[name="position"]').val(payload.position);
+                    form.find('input[name="relation_to_reference"]').val(payload.relation_to_reference);
 
                     $(modal_id).find('button.submit').attr('data-id',id);
                 })
@@ -261,19 +231,6 @@ export var dtEducationalBackground = function (param) {
                 let action = _this.attr('data-action');
                 let formData = new FormData;
                 formData.append('id',id);
-
-                if(action=='delete-document'){
-                    try {
-                        let res = await _request.post('/'+_url+'check_document', formData);
-                        if(res.status == 'invalid'){
-                            Alert.alert('info',res.message, false);
-                            return;
-                        }
-                    } catch (err) {
-                        console.error(error);
-                        Alert.alert('error','Something went wrong. Try again later', false);
-                    }
-                }
 
                 Alert.confirm('question',_this.attr('data-title')+' ?',{
                     onConfirm: function() {

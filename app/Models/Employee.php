@@ -42,6 +42,19 @@ class Employee extends Model
         'is_deleted',
         'deleted_by',
         'deleted_at',
+        'spouse_fname',
+        'spouse_lname',
+        'spouse_mname',
+        'spouse_occupation',
+        'spouse_employer',
+        'spouse_business_address',
+        'father_fname',
+        'father_lname',
+        'father_mname',
+        'father_ext',
+        'mother_fname',
+        'mother_lname',
+        'mother_mname',
     ];
 
     protected static function boot()
