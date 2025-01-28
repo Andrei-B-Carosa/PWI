@@ -183,11 +183,12 @@
                     <div class="card-body pt-9 pb-0">
                         <div class="d-flex flex-wrap flex-sm-nowrap">
                             <div class="me-7 mb-4">
-                                <div
-                                    class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-                                    <img src="{{ asset('assets/media/avatars/300-1.jpg') }}" alt="image" />
-                                    <div
-                                        class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px">
+                                <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+                                    <div class="symbol-label fs-5x bg-light-primary text-primary">
+                                        {{ $data['fullname'][0] }}
+                                    </div>
+                                    <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-{{ $data['work_status']==1 ?'success':'danger' }}
+                                                rounded-circle border border-4 border-body h-20px w-20px">
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +197,7 @@
                                     <div class="d-flex flex-column">
                                         <div class="d-flex align-items-center mb-2">
                                             <a href="#" class="text-gray-900 text-hover-primary fs-2 fw-bold me-1">
-                                                Andrei Carosa
+                                                {{ $data['fullname'] }}
                                             </a>
                                         </div>
                                         <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
@@ -209,19 +210,20 @@
                                             </a>
                                             <a href="#"
                                                 class="d-flex align-items-center text-gray-400 text-hover-primary me-5 mb-2">
-                                                <i class="ki-duotone ki-geolocation fs-4 me-1"><span
-                                                        class="path1"></span><span
-                                                        class="path2"></span></i> MIS (IT Staff)
+                                                <i class="ki-duotone ki-geolocation fs-4 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span></i>
+                                                    {{ $data['dept_code'] }} ({{ $data['position'] }})
                                             </a>
                                             <a href="#"
                                                 class="d-flex align-items-center text-gray-400 text-hover-primary mb-2">
                                                 <i class="ki-duotone ki-sms fs-4"><span
                                                         class="path1"></span><span
-                                                        class="path2"></span></i> andrei.carosa@rvlmovers.com
+                                                        class="path2"></span></i>  {{ $data['c_email'] }}
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="d-flex my-4">
+                                    {{-- <div class="d-flex my-4">
                                         <div class="me-0">
                                             <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                                                 data-kt-menu-trigger="click"
@@ -243,7 +245,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="d-flex flex-wrap flex-stack">
                                     <div class="d-flex flex-column flex-grow-1 pe-8">
@@ -251,7 +253,7 @@
                                             <div
                                                 class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="fs-2 fw-bold">1/20/2025</div>
+                                                    <div class="fs-2 fw-bold">{{ $data['date_employed'] }}</div>
                                                 </div>
                                                 <div class="fw-semibold fs-6 text-gray-400">Date Hired
                                                 </div>
@@ -259,17 +261,17 @@
                                             <div
                                                 class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="fs-2 fw-bold">10 years</div>
+                                                    <div class="fs-2 fw-bold">{{ $data['tenure'] }}</div>
                                                 </div>
-                                                <div class="fw-semibold fs-6 text-gray-400">In Service
+                                                <div class="fw-semibold fs-6 text-gray-400">Tenure
                                                 </div>
                                             </div>
                                             <div
                                                 class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="fs-3 fw-bold" >Regular</div>
+                                                    <div class="fs-3 fw-bold" >{{ $data['employment_type'] }}</div>
                                                 </div>
-                                                <div class="fw-semibold fs-6 text-gray-400">Employment Type
+                                                <div class="fw-semibold fs-6 text-gray-400">Employment
                                                 </div>
                                             </div>
                                         </div>
@@ -296,17 +298,17 @@
                                     Account Security
                                 </a>
                             </li>
-                            <li class="nav-item mt-2">
+                            {{-- <li class="nav-item mt-2">
                                 <a class="nav-link text-active-primary ms-0 me-10 py-5 main-tab" data-tab="activity_logs"
                                     href="javascript:;">
                                     Activity Logs
                                 </a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </div>
                 </div>
 
-                <div class="d-flex flex-column flex-lg-row main-content">
+                <div class="main-content">
 
                 </div>
             </div>

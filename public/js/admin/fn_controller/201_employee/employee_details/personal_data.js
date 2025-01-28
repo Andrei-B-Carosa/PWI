@@ -89,9 +89,9 @@ export var PersonalDataHandler =  function (page,param) {
 
     function employeeDetailsHandler(tab,param)
     {
-    $(_page).find(`#form${tab}`).attr('action','/hris/admin/201_employee/employee_details/update');
-    $(`#form${tab}`).find('select[data-control="select2"]').select2();
-    fvEmployeeDetails(false,tab,param);
+        $(_page).find(`#form${tab}`).attr('action','/hris/admin/201_employee/employee_details/update');
+        $(`#form${tab}`).find('select[data-control="select2"]').select2();
+        fvEmployeeDetails(false,tab,param);
     }
 
     function DocumentAttachmentsHandler(tab,param)

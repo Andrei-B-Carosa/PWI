@@ -2,19 +2,19 @@
 import { data_bs_components } from "../../../../global.js";
 import { Alert } from "../../../../global/alert.js";
 import { RequestHandler } from "../../../../global/request.js";
+import { AccountSecurityController } from "./account_security.js";
+import { EmploymentDetailsDataHandler } from "./employment_details.js";
 import { PersonalDataHandler } from "./personal_data.js";
 
 export var EmployeeDetailsController =  function (page,param) {
 
     const _page = $('.page-employee-details');
     const _request = new RequestHandler;
-    let tabLoaded = [];
 
     const _handlers = {
         'personal_data':(tab,param) => PersonalDataHandler(tab,param),
-        // 'employment_details':(tab,param) => employeDetailsHandler(tab,param),
-        // 6: (tab,param) => DocumentAttachmentsHandler(tab,param),
-        // 8 : (tab,param) =>AccountSecurityHandler(tab,param),
+        'employment_details':(tab,param) => EmploymentDetailsDataHandler(tab,param),
+        'account_security': (tab,param)=> AccountSecurityController(tab,param),
     };
 
     async function loadActiveMainTab(tab=false)
@@ -88,9 +88,6 @@ export var EmployeeDetailsController =  function (page,param) {
     return {
         init: async function () {
             await loadActiveMainTab().then((tab) => {
-                if(tab != false){
-                    tabLoaded.push(tab);
-                }
             })
 
         }

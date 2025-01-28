@@ -36,7 +36,13 @@ class EmployeeDetails extends Controller
             $components = 'components.employee-details.';
             $employee = Employee::with('emp_details','documents','emp_account:id,emp_id,username,c_email')->find($emp_id);
 
-            $view = view('admin.201_employee.employee_details.'.$rq->tab)->render();
+            $view = match($rq->tab){
+                'personal_data'=>self::view_personal_data($rq,$components,$employee),
+                'employment_details'=>self::view_employment_details($rq,$components,$employee),
+                'account_security'=>self::view_account_security($rq,$components,$employee),
+                default=>false,
+            };
+
             if($view === false) { throw new \Exception("Form not found!"); }
 
             return response()->json([
@@ -51,6 +57,70 @@ class EmployeeDetails extends Controller
             ],400);
         }
     }
+
+    public function view_personal_data($rq)
+    {
+        return view('admin.201_employee.employee_details.'.$rq->tab)->render();
+    }
+
+    public function view_employment_details($rq,$components,$employee)
+    {
+        $isRegisterEmployee = $this->isRegisterEmployee;
+        $emp_details = $employee->emp_details?$employee->emp_details:null;
+
+        $classification_id  = $emp_details? Crypt::encrypt($emp_details->classification_id):null;
+        $request = $rq->merge(['id' => $classification_id, 'type'=>'options']);
+        $classification = (new ClassificationOptions)->list($request);
+
+        $employment_id  = $emp_details? Crypt::encrypt($emp_details->employment_id):null;
+        $request = $rq->merge(['id' => $employment_id, 'type'=>'options']);
+        $employment_type = (new EmploymentTypeOptions)->list($request);
+
+        $department_id  = $emp_details? Crypt::encrypt($emp_details->department_id):null;
+        $request = $rq->merge(['id' => $department_id, 'type'=>'options']);
+        $department = (new DepartmentOptions)->list($request);
+
+        $section_id  = $emp_details && $emp_details->section_id? Crypt::encrypt($emp_details->section_id):null;
+        $request = $rq->merge(['id' => $section_id, 'type'=>'options']);
+        $section = (new SectionOptions)->list($request);
+
+        $position_id  = $emp_details? Crypt::encrypt($emp_details->position_id):null;
+        $request = $rq->merge(['id' => $position_id, 'type'=>'options']);
+        $position = (new PositionOptions)->list($request);
+
+        $company_id  = $emp_details? Crypt::encrypt($emp_details->company_id):null;
+        $request = $rq->merge(['id' => $company_id, 'type'=>'options']);
+        $company = (new CompanyOptions)->list($request);
+
+        $company_location_id  = $emp_details? Crypt::encrypt($emp_details->company_location_id):null;
+        $request = $rq->merge(['id' => $company_location_id, 'type'=>'options']);
+        $company_location = (new CompanyLocationOptions)->list($request);
+
+        $options = [
+            'classification'=>$classification,
+            'employment_type'=>$employment_type,
+            'department'=>$department,
+            'section'=>$section,
+            'section'=>$section,
+            'position'=>$position,
+            'company'=>$company,
+            'company_location'=>$company_location,
+        ];
+
+        return view('admin.201_employee.employee_details.employment_details', compact('employee','isRegisterEmployee','options'))->render();
+
+    }
+
+    public function view_account_security($rq,$components,$employee)
+    {
+        $isRegisterEmployee = $this->isRegisterEmployee;
+        $isSystemAdmin = true;
+        $emp_account = $employee->emp_account;
+        return view('admin.201_employee.employee_details.'.$rq->tab,compact('employee','isRegisterEmployee','emp_account','isSystemAdmin'))->render();
+        // return view($components.'employee-account', compact('employee','isRegisterEmployee','emp_account','isSystemAdmin'))->render();
+    }
+
+
 
 
     // ###
@@ -238,35 +308,35 @@ class EmployeeDetails extends Controller
 
 
 
-    public function update_account_security($rq)
-    {
-        try {
-            DB::beginTransaction();
+    // public function update_account_security($rq)
+    // {
+    //     try {
+    //         DB::beginTransaction();
 
-            $user_id = Auth::user()->emp_id;
-            $id = Crypt::decrypt($rq->id);
-            $query = EmployeeAccount::where([['emp_id',$id],['is_active',1]])->first();
+    //         $user_id = Auth::user()->emp_id;
+    //         $id = Crypt::decrypt($rq->id);
+    //         $query = EmployeeAccount::where([['emp_id',$id],['is_active',1]])->first();
 
-            if($rq->column == 'password'){
-                if($rq->newpassword !== $rq->confirmpassword){
-                    return [ 'status' => 'error','message'=>'Passwords do not match', 'payload' => ''];
-                }
-                $values = Hash::make($rq->newpassword);
-            }elseif ($rq->column == 'c_email') {
-                $values = $rq->emailaddress;
-            } else {
-                return [ 'status' => 'error', 'message' => 'Invalid column' ];
-            }
+    //         if($rq->column == 'password'){
+    //             if($rq->newpassword !== $rq->confirmpassword){
+    //                 return [ 'status' => 'error','message'=>'Passwords do not match', 'payload' => ''];
+    //             }
+    //             $values = Hash::make($rq->newpassword);
+    //         }elseif ($rq->column == 'c_email') {
+    //             $values = $rq->emailaddress;
+    //         } else {
+    //             return [ 'status' => 'error', 'message' => 'Invalid column' ];
+    //         }
 
-            $query->{$rq->column} = $values;
-            $query->updated_by = $user_id;
-            $query->save();
+    //         $query->{$rq->column} = $values;
+    //         $query->updated_by = $user_id;
+    //         $query->save();
 
-            DB::commit();
-            return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];
-        } catch (\Exception $e) {
-            DB::rollback();
-            return [ 'status' => 'error', 'message' => $e->getMessage() ];
-        }
-    }
+    //         DB::commit();
+    //         return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];
+    //     } catch (\Exception $e) {
+    //         DB::rollback();
+    //         return [ 'status' => 'error', 'message' => $e->getMessage() ];
+    //     }
+    // }
 }

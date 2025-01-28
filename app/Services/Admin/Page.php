@@ -10,6 +10,7 @@ use App\Services\Reusable\Select\EmploymentTypeOptions;
 use App\Services\Reusable\Select\FilterYearOptions;
 use App\Services\Reusable\Select\LeaveFiscalYearOptions;
 use App\Services\Reusable\Select\MonthsDayOptions;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Crypt;
 
@@ -92,8 +93,22 @@ class Page
     {
         try{
             $id = Crypt::decrypt($rq->id);
-            $data = Employee::find($id);
+            $query = Employee::find($id);
             $isRegisterEmployee = false;
+
+            $emp_details = $query->emp_details;
+            $tenure = Carbon::parse($emp_details->date_employed)->diffInYears(Carbon::now());
+            $data = [
+                'fullname'=>$query->fullname(),
+                'department'=> $emp_details->department->name,
+                'dept_code'=> $emp_details->department->code,
+                'position'=> $emp_details->position->name,
+                'date_employed'=> Carbon::parse($emp_details->date_employed)->format('m/d/Y'),
+                'tenure'=> $tenure > 0 ? $tenure : '--',
+                'employment_type' =>$emp_details->employment->name,
+                'c_email'=> $query->emp_account->c_email,
+                'work_status' => $emp_details->work_status,
+            ];
             return view('admin.201_employee.employee_details.employee_details', ['data'=>$data,'isRegisterEmployee'=>$isRegisterEmployee])->render();
         } catch(Exception $e) {
             return response()->json([

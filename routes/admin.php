@@ -3,9 +3,11 @@
 use App\Http\Controllers\AdminController\Approvals\ApplicationForLeave;
 use App\Http\Controllers\AdminController\Approvals\OfficialBusiness;
 use App\Http\Controllers\AdminController\Approvals\OvertimeRequisition;
+use App\Http\Controllers\AdminController\Employee\AccountSecurity\Tab as AccountSecurityTab;
 use App\Http\Controllers\AdminController\Employee\EmployeeDetails;
 use App\Http\Controllers\AdminController\Employee\EmployeeMasterlist;
 use App\Http\Controllers\AdminController\Employee\EmployeeRegistration;
+use App\Http\Controllers\AdminController\Employee\EmploymentDetails\EmploymentDetails;
 use App\Http\Controllers\AdminController\Employee\PersonalData\DocumentAttachments;
 use App\Http\Controllers\AdminController\Employee\PersonalData\EducationalBackground;
 use App\Http\Controllers\AdminController\Employee\PersonalData\FamilyBackground;
@@ -230,20 +232,10 @@ Route::group(['prefix'=>'hris/admin'], function() {
                 Route::post('/delete', 'delete');
             });
 
-
             Route::group(['prefix'=>'personal_data'], function() {
 
-                Route::controller(PersonalDataTab::class)->group(function() {
-                    Route::post('/tab', 'tab');
-                });
+                Route::post('/tab', [PersonalDataTab::class, 'tab']);
 
-                // Route::controller(PersonalInformation::class)->prefix('personal_information')->group(function() {
-                //     Route::post('/update', 'update');
-                // });
-
-                // Route::controller(FamilyBackground::class)->group(function() {
-
-                // });
                 Route::post('/personal_information/update', [PersonalInformation::class, 'update']);
                 Route::post('/family_background/update', [FamilyBackground::class, 'update']);
 
@@ -252,7 +244,6 @@ Route::group(['prefix'=>'hris/admin'], function() {
                     Route::post('/update', 'update');
                     Route::post('/delete', 'delete');
                     Route::post('/check_document', 'check_document');
-
 
                     Route::post('/info', 'info');
                 });
@@ -281,6 +272,18 @@ Route::group(['prefix'=>'hris/admin'], function() {
 
                     Route::post('/info', 'info');
                 });
+            });
+
+            Route::post('/employment_details/update', [EmploymentDetails::class, 'update']);
+
+            // Route::group(['prefix'=>'account_security'], function() {
+
+            //     Route::post('/tab', [PersonalDataTab::class, 'tab']);
+
+            // });
+
+            Route::group(['prefix'=>'account_security'], function() {
+                Route::post('/tab', [AccountSecurityTab::class, 'tab']);
             });
 
         });
