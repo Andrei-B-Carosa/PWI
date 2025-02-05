@@ -126,7 +126,7 @@ var stepper = (function () {
 
     var _handleStepperForm = async function (emp_id,form) {
 
-        let element = $(`#form${form}`);
+        let element = $(`.form${form}`);
         if (element.children().length > 0) {
             return;
         }
@@ -137,8 +137,7 @@ var stepper = (function () {
         _request.post('/hris/admin/201_employee/employee_registration/form',_formData).then((res) => {
             if(res.status == 'success'){
                 let view = window.atob(res.payload);
-                $(_page).find(`#form${form}`).html(view);
-                console.log(`#form${form}`)
+                $(_page).find(`.form${form}`).html(view);
                 element.find('select[data-control="select2"]').select2();
             }
         })
@@ -154,7 +153,7 @@ var stepper = (function () {
 
     var _handleStepperFormValidation = function(emp_id,form_id){
         let fvStepper;
-        let form = document.querySelector('#form'+form_id+' form');
+        let form = document.querySelector('.form'+form_id+' form');
         if ( form && !form.hasAttribute('data-fv-initialized')) {
             const validationRules = {};
             const fields = form.querySelectorAll('input, select');

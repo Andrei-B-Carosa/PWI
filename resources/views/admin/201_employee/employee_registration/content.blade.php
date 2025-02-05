@@ -191,7 +191,7 @@
                                 <a href="#" class="link-primary fw-bold">Help Page</a>.
                             </div>
                         </div>
-                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid" id="form2">
+                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid form2">
                         </div>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
                                 <a href="#" class="link-primary fw-bold">Help Page</a>.
                             </div>
                         </div>
-                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid" id="form3">
+                        <div class="mb-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-valid form3">
                         </div>
                     </div>
                 </div>
@@ -352,8 +352,6 @@
                 </form>
                 <!--end::Form-->
             </div>
-            <!--end::Content-->
         </div>
-        <!--end::Stepper-->
     </div>
 </div>
