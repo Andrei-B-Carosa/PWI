@@ -24,7 +24,7 @@ class AccountDetails extends Controller
 
 
 
-    public function update($rq)
+    public function update(Request $rq)
     {
         try {
             DB::beginTransaction();
