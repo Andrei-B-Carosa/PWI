@@ -12,7 +12,7 @@
             </div>
             <div class="card-toolbar">
                 <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                    <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                     <i class="ki-duotone ki-filter fs-2">
                         <span class="path1"></span>
                         <span class="path2"></span>

@@ -89,7 +89,7 @@ class PageController extends Controller
         $view = $rq->session()->get($role . '_page', 'home');
 
         $pages = [
-            // 'automatic_credit' => fn() => $page->automatic_credit($rq),
+            'profile' => fn() => $page->employee_details($rq),
         ];
 
         if (array_key_exists($view, $pages)) {
