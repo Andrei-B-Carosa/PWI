@@ -17,7 +17,7 @@ export var AccountSecurityController =  function (page,param) {
     };
 
     function loadActiveTab(tab=false){
-        tab = (tab == false ? (localStorage.getItem("employee_details_tab") || '1') : tab);
+        tab = (tab == false ? (localStorage.getItem("account_security_tab") || '1') : tab);
 
         return new Promise(async (resolve, reject) => {
             if (tab) {
