@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController\Approvals\ApplicationForLeave;
 use App\Http\Controllers\AdminController\Approvals\OfficialBusiness;
 use App\Http\Controllers\AdminController\Approvals\OvertimeRequisition;
+use App\Http\Controllers\AdminController\Employee\AccountSecurity\AccountDetails;
 use App\Http\Controllers\AdminController\Employee\AccountSecurity\Tab as AccountSecurityTab;
 use App\Http\Controllers\AdminController\Employee\EmployeeDetails;
 use App\Http\Controllers\AdminController\Employee\EmployeeMasterlist;
@@ -276,14 +277,9 @@ Route::group(['prefix'=>'hris/admin'], function() {
 
             Route::post('/employment_details/update', [EmploymentDetails::class, 'update']);
 
-            // Route::group(['prefix'=>'account_security'], function() {
-
-            //     Route::post('/tab', [PersonalDataTab::class, 'tab']);
-
-            // });
-
             Route::group(['prefix'=>'account_security'], function() {
                 Route::post('/tab', [AccountSecurityTab::class, 'tab']);
+                Route::post('/update', [AccountDetails::class, 'update']);
             });
 
         });

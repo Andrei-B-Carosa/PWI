@@ -308,35 +308,4 @@ class EmployeeDetails extends Controller
 
 
 
-    // public function update_account_security($rq)
-    // {
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $user_id = Auth::user()->emp_id;
-    //         $id = Crypt::decrypt($rq->id);
-    //         $query = EmployeeAccount::where([['emp_id',$id],['is_active',1]])->first();
-
-    //         if($rq->column == 'password'){
-    //             if($rq->newpassword !== $rq->confirmpassword){
-    //                 return [ 'status' => 'error','message'=>'Passwords do not match', 'payload' => ''];
-    //             }
-    //             $values = Hash::make($rq->newpassword);
-    //         }elseif ($rq->column == 'c_email') {
-    //             $values = $rq->emailaddress;
-    //         } else {
-    //             return [ 'status' => 'error', 'message' => 'Invalid column' ];
-    //         }
-
-    //         $query->{$rq->column} = $values;
-    //         $query->updated_by = $user_id;
-    //         $query->save();
-
-    //         DB::commit();
-    //         return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];
-    //     } catch (\Exception $e) {
-    //         DB::rollback();
-    //         return [ 'status' => 'error', 'message' => $e->getMessage() ];
-    //     }
-    // }
 }

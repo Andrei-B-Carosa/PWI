@@ -57,18 +57,9 @@
                     <div class="form-floating">
                         <select class="form-select" id="sex" name="sex"
                             @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif>
-                            <option value="" selected disabled>Open this select menu</option>
-                            @if ($employee)
-                                <option value="0"
-                                    @if ($employee->sex == 2) @selected(true) @endif>Female
-                                </option>
-                                <option value="1"
-                                    @if ($employee->sex == 1) @selected(true) @endif>Male
-                                </option>
-                            @else
-                                <option value="0">Female</option>
-                                <option value="1">Male</option>
-                            @endif
+                            <option selected disabled>Open this select menu</option>
+                            <option value="2" @if (isset($employee) && $employee->sex == 2) @selected(true) @endif>Female</option>
+                            <option value="1" @if (isset($employee) && $employee->sex == 1) @selected(true) @endif>Male</option>
                         </select>
                         <label for="sex">Sex</label>
                     </div>
