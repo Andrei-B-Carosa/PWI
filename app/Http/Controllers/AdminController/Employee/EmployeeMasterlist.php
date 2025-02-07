@@ -19,6 +19,7 @@ class EmployeeMasterlist extends Controller
         // $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
         $data = Employee::with(['emp_details'])
         ->where([['is_active',$rq->filter_status],['is_deleted',null]])
+        ->whereHas('emp_account')
         ->get();
 
         $data->transform(function ($item, $key) {
