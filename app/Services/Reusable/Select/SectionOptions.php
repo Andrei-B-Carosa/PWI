@@ -17,7 +17,7 @@ class SectionOptions
 
     public function list(Request $rq)
     {
-        $query = HrisSection::where([['is_deleted',null]]);
+        $query = HrisSection::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

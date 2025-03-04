@@ -38,9 +38,16 @@
                         <select name="file_type" data-control="select2" data-placeholder="Select an option"
                                 class="form-select form-select-solid fw-bold" data-required="true" remote-validation="false">
                                 {!! $options['document_type'] !!}
+                                <option value="others">Others</option>
                         </select>
                         <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                     </div>
+                </div>
+            </div>
+            <div class="form-group fv-row row mb-8 others d-none">
+                <label class="col-lg-3 col-form-label text-lg-right required">Others:</label>
+                <div class="col-lg-8">
+                    <input class="form-control form-control-solid" type="text" name="others" disabled>
                 </div>
             </div>
             <div class="form-group fv-row row">

@@ -23,7 +23,7 @@ class EmploymentDetails extends Controller
             $company_id = Crypt::decrypt($rq->company_id);
             $location_id = Crypt::decrypt($rq->location_id);
             $department_id = Crypt::decrypt($rq->department_id);
-            $section_id = Crypt::decrypt($rq->section_id);
+            $section_id = isset($rq->section_id) ? Crypt::decrypt($rq->section_id):null;
             $employment_id = Crypt::decrypt($rq->employment_id);
             $position_id = Crypt::decrypt($rq->position_id);
             $classification_id = Crypt::decrypt($rq->classification_id);

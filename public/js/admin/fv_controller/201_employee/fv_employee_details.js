@@ -28,10 +28,23 @@ export function fvEmployeeDetails(_table=false,form_id,param){
 
                 fields.forEach(function (field) {
                     const fieldName = field.name;
+                    validationRules[fieldName] = {  validators: {} };
 
-                    validationRules[fieldName] = {
-                        validators: {}
-                    };
+                    // Telephone Validation
+                    if (field.hasAttribute('fv-telephone') && field.getAttribute('fv-telephone') === 'true') {
+                        validationRules[fieldName].validators.regexp = {
+                            regexp: /^\(0\d{2}\)\d{3,4}-\d{4}$/,
+                            message: 'Enter a valid telephone number (e.g., (02)123-4567 or (032)123-4567)',
+                        };
+                    }
+
+                    // Mobile Validation
+                    if (field.hasAttribute('fv-mobile') && field.getAttribute('fv-mobile') === 'true') {
+                        validationRules[fieldName].validators.regexp = {
+                            regexp: /^[0-9]{11}$/,
+                            message: 'Mobile number must be exactly 11 digits',
+                        };
+                    }
 
                     if (field.hasAttribute('data-required') && field.getAttribute('data-required') === 'false') {
                         return;
@@ -556,6 +569,27 @@ export function fvDocumentAttachments(_table=false,form_id,param){
                     }
                 })
             })
+
+            $(modal_id).on('change','select[name="file_type"]',function(e){
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                let _this = $(this);
+                let value = _this.val();
+
+                if(value == 'others'){
+                    fvDocumentAttachments.addField('others', fv_validator());
+                    $('input[name="others"]').attr('disabled',false);
+                    $('.others').removeClass('d-none');
+                }else{
+                    if(fvDocumentAttachments.getElements('others')){
+                        $('.others').addClass('d-none');
+                        $('input[name="others"]').attr('disabled',true);
+                        fvDocumentAttachments.removeField('others');
+                    }
+                }
+            })
+
         }
 
         return {

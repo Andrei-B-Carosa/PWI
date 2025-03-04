@@ -26,7 +26,6 @@ export var PersonalDataHandler =  function (page,param) {
 
     function loadActiveTab(tab=false){
         tab = (tab == false ? (localStorage.getItem("employee_details_tab") || '1') : tab);
-
         return new Promise(async (resolve, reject) => {
             if (tab) {
                 let _formData = new FormData();

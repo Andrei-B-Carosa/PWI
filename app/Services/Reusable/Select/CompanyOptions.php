@@ -15,7 +15,7 @@ class CompanyOptions
 
     public function list(Request $rq)
     {
-        $query = HrisCompany::where([['is_deleted',null]]);
+        $query = HrisCompany::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };
@@ -32,7 +32,10 @@ class CompanyOptions
             foreach ($data as $row) {
                 $selected = $search === $row->id ? 'selected' : '';
                 $id = Crypt::encrypt($row->id);
-                $html .= '<option value="'.e($id).'"'.e($selected).'>'.e($row->name).'</option>';
+                $html .='<option value="'.e($id).'"'.e($selected).'>'
+                            .e($row->name).
+                            // e($row->is_active==2 ? ' (this company is inactive)':'').
+                        '</option>';
             }
             return $html;
         } else {

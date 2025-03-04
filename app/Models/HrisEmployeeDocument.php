@@ -11,6 +11,7 @@ class HrisEmployeeDocument extends Model
     protected $fillable = [
         'emp_id' ,
         'file_id' ,
+        'others',
         'filename' ,
         'created_by',
         'updated_by',

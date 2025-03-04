@@ -53,6 +53,7 @@ export var dtDocumentAttachments = function (param) {
                     data: "file_type", name: "file_type", title: "File Type",
                     sortable:false,
                     searchable:false,
+                    className:'text-uppercase text-muted',
                 },
                 {
                     data: "last_updated_at", name: "last_updated_at", title: "Last Updated At",

@@ -39,7 +39,7 @@ class DocumentAttachments extends Controller
             $item->count = $key + 1;
             $item->last_updated_by = $last_updated_by;
             $item->last_updated_at = $last_updated_at;
-            $item->file_type = config('document_values.document_type.'.$item->file_id);
+            $item->file_type = $item->file_id?config('document_values.document_type.'.$item->file_id) :$item->others;
             $item->encrypted_id = Crypt::encrypt($item->id);
             return $item;
 
@@ -96,31 +96,52 @@ class DocumentAttachments extends Controller
         try {
             DB::beginTransaction();
 
+            if (!$rq->hasFile('files')) {
+                return response()->json(['status' => 'error', 'message' => 'No file uploaded', 'payload' => '']);
+            }
+
             $user_id = Auth::user()->emp_id;
             $emp_id = Crypt::decrypt($rq->emp_id);
-            $file_type_id = $rq->file_type;
             $filePath = null;
 
-            $emp_no = preg_replace('/[^A-Za-z0-9]/', '',Employee::find($emp_id)->emp_no);
-            $document = preg_replace('/\s+/', '',config('document_values.document_type.'.$file_type_id));
+            $emp_no = Employee::where('id', $emp_id)->value('emp_no');
+            $parsed_emp_no = preg_replace('/[^A-Za-z0-9]/', '',$emp_no);
+
+            $others = $rq->others && strtolower($rq->file_type)=='others' ? $rq->others: null;
+            $file_type_id = strtolower($rq->file_type)!='others' && is_null($others) ? $rq->file_type: null;
+
+            if(is_null($others) || is_null($file_type_id)){
+                return response()->json(['status' => 'error', 'message' => 'Something went wrong, try again later', 'payload' => '']);
+            }
+
+            $document = $file_type_id ? config('document_values.document_type.'.$file_type_id) : ($others ? $others:null);
+            $column = $file_type_id?['file_id' => $file_type_id] : ($others ? ['others' => strtolower($others)]:null);
+
+            if (is_null($document) || is_null($column)) {
+                return response()->json(['status' => 'error', 'message' => 'Something went wrong, try again later', 'payload' => '']);
+            }
+
+            $parsed_document = preg_replace('/\s+/', '' ,$document);
+            $directory = "employee/{$parsed_emp_no}/documents";
+            $timestamp = now()->format('YmdHis');
 
             // example : EMP00010_TranscriptofRecord_pdf
-            $filename = $emp_no.'_'.$document.'.'.$rq->file('files')->getClientOriginalExtension();
-            $filePath = $rq->file('files')->storeAs('employee/'.$emp_no.'/documents',$filename,'public');
+            $filename = "{$parsed_document}_{$parsed_emp_no}_{$timestamp}.{$rq->file('files')->getClientOriginalExtension()}";
+            $filePath = $rq->file('files')->storeAs($directory, $filename, 'public');
 
-            if (Storage::disk('public')->exists($filePath)) {
-                HrisEmployeeDocument::create([
-                    'emp_id' => $emp_id,
-                    'file_id' => $file_type_id,
-                    'filename' => $filename,
-                    'created_by'=>$user_id
-                ]);
+            if ($filePath && Storage::disk('public')->exists($filePath) && is_array($column)) {
+                $column['emp_id'] = $emp_id;
+                $column['filename'] = $filename;
+                $column['created_by'] = $user_id;
+                HrisEmployeeDocument::create($column);
             }
             DB::commit();
             return [ 'status' => 'success','message'=>'Update is success', 'payload' => ''];
         } catch (\Exception $e) {
             DB::rollback();
-            Storage::disk('public')->delete($filePath);
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
             return [ 'status' => 'error', 'message' => $e->getMessage(), 'payload'=>'' ];
         }
 

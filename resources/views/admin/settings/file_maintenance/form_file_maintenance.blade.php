@@ -24,9 +24,9 @@
                         <x-input
                         name="code"
                         id=""
-                        label="Code"
+                        label="Acronym"
                         value=""
-                        placeholder="Code"
+                        placeholder="Acronym"
                         class="form-control form-control-solid mb-3 mb-lg-0"
                         disabled="false"
                     />

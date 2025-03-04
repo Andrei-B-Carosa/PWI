@@ -19,6 +19,11 @@ var stepper = (function () {
     });
 
     var _handleStepper = async function () {
+
+        const previousButton = $('button[data-kt-stepper-action="previous"]');
+        const nextButton = $('button[data-kt-stepper-action="next"]');
+        const registerAgain = $('button.reset-registration');
+
         $(_page).on("change","input[name='data_privacy_act']", function () {
             if ($(this).is(":checked")) {
                 $('[data-kt-stepper-action="next"]').prop("disabled", false);
@@ -36,9 +41,6 @@ var stepper = (function () {
             const currentStepIndex = stepper.getCurrentStepIndex();
             localStorage.setItem("current_step", currentStepIndex);
 
-            const previousButton = $('button[data-kt-stepper-action="previous"]');
-            const nextButton = $('button[data-kt-stepper-action="next"]');
-
             if (currentStepIndex >= 2) {
                 previousButton.removeClass('d-none');
             } else {
@@ -49,6 +51,7 @@ var stepper = (function () {
                 _handleReset();
                 previousButton.addClass('d-none');
                 nextButton.addClass('d-none');
+                registerAgain.removeClass('d-none');
             } else {
                 nextButton.removeClass('d-none');
             }
@@ -122,6 +125,16 @@ var stepper = (function () {
             }
             stepper.goPrevious();
         });
+
+        registerAgain.click(function(e){
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            const currentStepIndex = stepper.getCurrentStepIndex();
+            if (currentStepIndex === 4) {
+                stepper.reset();
+            }
+        })
     };
 
     var _handleStepperForm = async function (emp_id,form) {
@@ -160,10 +173,23 @@ var stepper = (function () {
 
             fields.forEach(function (field) {
                 const fieldName = field.name;
+                validationRules[fieldName] = {   validators: {} };
 
-                validationRules[fieldName] = {
-                    validators: {}
-                };
+                // Telephone Validation
+                if (field.hasAttribute('fv-telephone') && field.getAttribute('fv-telephone') === 'true') {
+                    validationRules[fieldName].validators.regexp = {
+                        regexp: /^\(0\d{2}\)\d{3,4}-\d{4}$/,
+                        message: 'Enter a valid telephone number (e.g., (02)123-4567 or (032)123-4567)',
+                    };
+                }
+
+                // Mobile Validation
+                if (field.hasAttribute('fv-mobile') && field.getAttribute('fv-mobile') === 'true') {
+                    validationRules[fieldName].validators.regexp = {
+                        regexp: /^[0-9]{11}$/,
+                        message: 'Mobile number must be exactly 11 digits',
+                    };
+                }
 
                 if (field.hasAttribute('data-required') && field.getAttribute('data-required') === 'false') {
                     return;

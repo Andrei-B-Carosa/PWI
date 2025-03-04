@@ -10,7 +10,7 @@ class EmploymentTypeOptions
 {
     public function list(Request $rq)
     {
-        $query = HrisEmploymentType::where([['is_deleted',null]]);
+        $query = HrisEmploymentType::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

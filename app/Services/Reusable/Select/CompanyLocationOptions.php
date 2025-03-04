@@ -11,7 +11,7 @@ class CompanyLocationOptions
 
     public function list(Request $rq)
     {
-        $query = HrisCompanyLocation::where('is_deleted',null);
+        $query = HrisCompanyLocation::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

@@ -100,7 +100,7 @@
                     <div class="form-floating">
                         <input type="text" class="form-control" id="telephone" placeholder="Telephone No."
                             name="telephone" value="{{ isset($employee) ? $employee->telephone_number : '' }}"
-                            @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif  data-required="false"/>
+                            @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif data-required="false" fv-telephone="true"/>
                         <label for="telephone">Telephone No.</label>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                     <div class="form-floating ">
                         <input type="text" class="form-control" id="mobile" placeholder="Mobile No." name="mobile"
                             value="{{ isset($employee) ? $employee->mobile_number : '' }}"
-                            @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif />
+                            @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif fv-mobile="true"/>
                         <label for="mobile">Mobile No.</label>
                     </div>
                 </div>

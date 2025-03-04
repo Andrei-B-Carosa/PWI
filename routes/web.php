@@ -13,7 +13,7 @@ Route::get('/', function(){
 });
 
 // Route::get('/test-mail', function(){
-//     return view('email.approver_notification');
+//     return view('admin.201_employee.employee_registration.content');
 // });
 
 //EMPLOYEE LOGIN & LOGOUT

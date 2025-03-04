@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->integer('emp_id');
-            $table->integer('file_id');
+            $table->integer('file_id')->nullable();
+            $table->string('others')->nullable();
             $table->string('filename');
 
             $table->unsignedBigInteger('created_by')->nullable();

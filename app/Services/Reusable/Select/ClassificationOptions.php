@@ -10,7 +10,7 @@ class ClassificationOptions
 {
     public function list(Request $rq)
     {
-        $query = HrisClassification::where([['is_deleted',null]]);
+        $query = HrisClassification::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

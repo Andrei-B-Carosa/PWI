@@ -1,31 +1,24 @@
 <div class="d-flex flex-wrap align-items-center">
-    <!--begin::Label-->
     <div id="">
         <div class="fs-6 fw-bold mb-1">Username</div>
         <div class="fw-semibold text-gray-600">{{ $emp_account->username }}</div>
     </div>
 </div>
 <div class="separator separator-dashed my-6"></div>
-<!--begin::Email Address-->
 <div class="d-flex flex-wrap align-items-center">
-    <!--begin::Label-->
     <div id="kt_signin_email">
         <div class="fs-6 fw-bold mb-1">Corporate Email</div>
         <div class="fw-semibold text-gray-600">{{ $emp_account->c_email }}</div>
     </div>
-    <!--end::Label-->
 
-    <!--begin::Edit-->
     <div id="kt_signin_email_edit" class="flex-row-fluid d-none">
-        <!--begin::Form-->
         <form id="kt_signin_change_email" class="form" action="" novalidate="novalidate">
             <div class="row mb-6">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="fv-row mb-0">
-                        <label for="emailaddress" class="form-label fs-6 fw-bold mb-3">New Email
-                            Address</label>
+                        <label for="emailaddress" class="form-label fs-6 fw-bold mb-3">New Email Address</label>
                         <input type="email" class="form-control form-control-lg form-control-solid" id="emailaddress"
-                            placeholder="Email Address" name="emailaddress" value="{{ $emp_account->c_email }}" />
+                            placeholder="Email Address" name="emailaddress" value="" />
                     </div>
                 </div>
                 @if($isSystemAdmin == false)
@@ -44,34 +37,19 @@
                 <button id="kt_signin_cancel" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6 cancel">Cancel</button>
             </div>
         </form>
-        <!--end::Form-->
     </div>
-    <!--end::Edit-->
-
-    <!--begin::Action-->
     <div id="kt_signin_email_button" class="ms-auto">
         <button class="btn btn-light btn-active-light-primary">Change Email</button>
     </div>
-    <!--end::Action-->
 </div>
-<!--end::Email Address-->
-
-<!--begin::Separator-->
 <div class="separator separator-dashed my-6"></div>
-<!--end::Separator-->
 
-<!--begin::Password-->
 <div class="d-flex flex-wrap align-items-center mb-10">
-    <!--begin::Label-->
     <div id="kt_signin_password">
         <div class="fs-6 fw-bold mb-1">Password</div>
         <div class="fw-semibold text-gray-600">************</div>
     </div>
-    <!--end::Label-->
-
-    <!--begin::Edit-->
     <div id="kt_signin_password_edit" class="flex-row-fluid d-none">
-        <!--begin::Form-->
         <form id="kt_signin_change_password" class="form" action="" novalidate="novalidate">
             <div class="row mb-1">
                 @if($isSystemAdmin == false)
@@ -86,10 +64,19 @@
                 @endif
 
                 <div class="col-lg-4">
-                    <div class="fv-row mb-0">
-                        <label for="newpassword" class="form-label fs-6 fw-bold mb-3">New Password</label>
+                    <label for="newpassword" class="form-label fs-6 fw-bold mb-3">New Password</label>
+                    <div class="input-group mb-0 fv-row">
                         <input type="password" class="form-control form-control-lg form-control-solid "
                             name="newpassword" id="newpassword" />
+                        <button class="border border-secondary btn btn-icon btn-flex btn-light-primary" id="reveal-newpassword" type="button">
+                            <i class="ki-duotone ki-eye fs-5">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                        </button>
                     </div>
                 </div>
 
@@ -112,18 +99,12 @@
                     class="btn btn-color-gray-400 btn-active-light-primary px-6">Cancel</button>
             </div>
         </form>
-        <!--end::Form-->
     </div>
-    <!--end::Edit-->
 
-    <!--begin::Action-->
     <div id="kt_signin_password_button" class="ms-auto">
         <button class="btn btn-light btn-active-light-primary">Reset Password</button>
     </div>
-    <!--end::Action-->
 </div>
-<!--end::Password-->
-
 <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed  p-6">
     <i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4"><span class="path1"></span><span
             class="path2"></span></i>

@@ -16,7 +16,7 @@ class DepartmentOptions
 
     public function list(Request $rq)
     {
-        $query = HrisDepartment::where([['is_deleted',null]]);
+        $query = HrisDepartment::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };

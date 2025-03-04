@@ -1,3 +1,35 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HRIS | Employee Registration</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- <link rel="shortcut icon" href="{{ asset('images/pnc-logo.png') }}" /> --}}
+    <link href="{{ asset('assets/admin/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/employee_registration/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* Make the parent div non-scrollable */
+        .parent-div {
+            height: 100vh;
+            /* Adjust the height as needed */
+            overflow: hidden;
+            /* Hide overflow content */
+            /* background-image: url("{{ asset('images/hris-bg-1.jpg') }}"); */
+        }
+
+        /* Make the child div scrollable */
+        .child-div {
+            height: 100%;
+            overflow-y: auto;
+            /* Enable vertical scrollbar if content exceeds height */
+        }
+
+        .child-div::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
 <div id="kt_app_content_container" class="app-container  container-fluid page-employee-registration">
     <!--begin::Stepper-->
     <div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid gap-10 between"
@@ -170,7 +202,7 @@
             <div class="card-body py-20 w-100 mw-xl-700px px-9 fv-plugins-bootstrap5 fv-plugins-framework">
 
                 <!--begin::Step 1-->
-                <div data-kt-stepper-element="content" class="current">
+                <div data-kt-stepper-element="content" class="pending">
                     <!--begin::Wrapper-->
                     <div class="w-100">
                         <x-employee-details.data-privacy-act>
@@ -214,7 +246,7 @@
                 <!--end::Step 3-->
 
                 <!--begin::Step 4-->
-                <div data-kt-stepper-element="content" class="pending">
+                <div data-kt-stepper-element="content" class="current">
                     <!--begin::Wrapper-->
                     <div class="w-100">
                         <!--begin::Heading-->
@@ -225,11 +257,11 @@
 
                             <!--begin::Notice-->
                             <div class="text-muted fw-semibold fs-6">
-                                If you need more info, please
-                                <a href="#" class="link-primary fw-bold">
-                                    Sign In
+                                Registration is
+                                <a href="javascript:;" class="link-success fw-bold">
+                                    complete
                                 </a>
-                                .
+
                             </div>
                             <!--end::Notice-->
                         </div>
@@ -256,19 +288,17 @@
 
                                 <!--begin::Wrapper-->
                                 <div class="d-flex flex-column pe-0 pe-sm-10">
-                                    <!--begin::Title-->
-                                    <h5 class="mb-1">Complete</h5>
-                                    <!--end::Title-->
 
                                     <!--begin::Content-->
                                     <span>
-                                        Your employee ID is: <span class="text-primary fw-bold"
-                                            id="employeeID"></span><br><br>
-                                        Thank you for entering your details into the onboarding system! To proceed,
-                                        kindly consult with our HR personnel for the next steps.
+                                        Your employee ID is: <span class="text-primary fw-bold" id="employeeID"></span>
+                                        <br><br>
+                                        Thank you for entering your details into the onboarding system!
+                                        For questions, kindly consult with our HR personnel for inquiries.
                                         <br><br>
 
-                                        <div id="timer"></div>
+                                        <div class="mb-5">View the corporate email of the employee for their account credentials.</div>
+
                                     </span>
                                     <!--end::Content-->
                                 </div>
@@ -310,9 +340,6 @@
                             </span> Back
                         </button>
                     </div>
-                    <!--end::Wrapper-->
-
-                    <!--begin::Wrapper-->
                     <div>
                         <button type="button" class="btn btn-lg btn-primary me-3 d-none" data-kt-stepper-action="submit">
                             <span class="indicator-label">
@@ -345,12 +372,14 @@
                                         fill="currentColor" />
                                 </svg>
                             </span>
+                        </button>
+
+                        <button type="button" class="btn btn-lg btn-success reset-registration d-none">
+                            Register Another
+                        </button>
                     </div>
-                    <!--end::Wrapper-->
                 </div>
-                <!--end::Actions-->
                 </form>
-                <!--end::Form-->
             </div>
         </div>
     </div>

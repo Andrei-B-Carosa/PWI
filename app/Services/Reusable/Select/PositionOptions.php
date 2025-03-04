@@ -12,7 +12,7 @@ class PositionOptions
 
     public function list(Request $rq)
     {
-        $query = HrisPosition::where([['is_deleted',null]]);
+        $query = HrisPosition::where([['is_deleted',null],['is_active',1]]);
         return match($rq->type){
             'options' => $this->options($rq,$query),
         };
