@@ -152,7 +152,8 @@
                         <div class="symbol-label fs-5x bg-light-primary text-primary">
                             {{ $data['fullname'][0] }}
                         </div>
-                        <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-{{ $data['work_status']==1 ?'success':'danger' }}
+                        {{-- {{ dd($data['work_status']); }} --}}
+                        <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-{{ $data['is_active']==1 ?'success':'danger' }}
                                     rounded-circle border border-4 border-body h-20px w-20px">
                         </div>
                     </div>
@@ -188,29 +189,6 @@
                                 </a>
                             </div>
                         </div>
-                        {{-- <div class="d-flex my-4">
-                            <div class="me-0">
-                                <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-                                    data-kt-menu-trigger="click"
-                                    data-kt-menu-placement="bottom-end">
-                                    <i class="ki-solid ki-dots-horizontal fs-2x"></i>
-                                </button>
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                                    data-kt-menu="true">
-                                    <div class="menu-item px-3">
-                                        <div
-                                            class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
-                                            Payments
-                                        </div>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link px-3">
-                                            Create Invoice
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                     <div class="d-flex flex-wrap flex-stack">
                         <div class="d-flex flex-column flex-grow-1 pe-8">

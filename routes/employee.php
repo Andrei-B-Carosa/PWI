@@ -8,7 +8,15 @@ use App\Http\Controllers\EmployeeController\Home as HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController\PageController as Page;
 use App\Http\Controllers\EmployeeController\PersonnelMonitoring\OfficialBusinessForm as OBForm;
+use App\Http\Controllers\EmployeeController\Profile\AccountSecurity\AccountDetails;
+use App\Http\Controllers\EmployeeController\Profile\AccountSecurity\Tab as AccountSecurityTab;
 use App\Http\Controllers\EmployeeController\Profile\Action as ProfileAction;
+use App\Http\Controllers\EmployeeController\Profile\EmploymentDetails;
+use App\Http\Controllers\EmployeeController\Profile\PersonalData\DocumentAttachments;
+use App\Http\Controllers\EmployeeController\Profile\PersonalData\EducationalBackground;
+use App\Http\Controllers\EmployeeController\Profile\PersonalData\References;
+use App\Http\Controllers\EmployeeController\Profile\PersonalData\Tab as PersonalDataTab;
+use App\Http\Controllers\EmployeeController\Profile\PersonalData\WorkExperience;
 use App\Http\Controllers\EmployeeController\Profile\Tab as ProfileTab;
 use App\Http\Controllers\EmployeeController\Request\Leave;
 use App\Http\Controllers\EmployeeController\Request\OfficialBusiness;
@@ -128,6 +136,54 @@ Route::group(['prefix'=>'hris/employee'], function() {
     Route::group(['prefix'=>'profile'], function() {
         Route::post('/form', [ProfileTab::class, 'form']);
         Route::post('/update', [ProfileAction::class, 'update']);
+
+        Route::controller(PersonalDataTab::class)->prefix('personal_data')->group(function() {
+            Route::post('/tab', 'tab');
+            Route::post('/update', 'update');
+
+            Route::controller(EducationalBackground::class)->prefix('educational_background')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
+                Route::post('/check_document', 'check_document');
+
+                Route::post('/info', 'info');
+            });
+
+            Route::controller(WorkExperience::class)->prefix('work_experience')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
+                Route::post('/check_document', 'check_document');
+
+                Route::post('/info', 'info');
+            });
+
+            Route::controller(DocumentAttachments::class)->prefix('document_attachment')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
+                Route::post('/download_document', 'download_document');
+                Route::post('/view_document', 'view_document');
+            });
+
+            Route::controller(References::class)->prefix('references')->group(function() {
+                Route::post('/dt', 'dt');
+                Route::post('/update', 'update');
+                Route::post('/delete', 'delete');
+
+                Route::post('/info', 'info');
+            });
+
+        });
+
+        Route::post('/employment_details/update', [EmploymentDetails::class, 'update']);
+
+        Route::group(['prefix'=>'account_security'], function() {
+            Route::post('/tab', [AccountSecurityTab::class, 'tab']);
+            Route::post('/update', [AccountDetails::class, 'update']);
+        });
+
     });
 
     Route::group(['prefix'=>'personnel_monitoring'], function() {

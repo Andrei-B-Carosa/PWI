@@ -16,6 +16,7 @@ class Page
 
             $emp_details = $query->emp_details;
             $tenure = Carbon::parse($emp_details->date_employed)->diffInYears(Carbon::now());
+
             $data = [
                 'fullname'=>$query->fullname(),
                 'department'=> $emp_details->department->name,
@@ -25,7 +26,7 @@ class Page
                 'tenure'=> $tenure > 0 ? $tenure : '--',
                 'employment_type' =>$emp_details->employment->name,
                 'c_email'=> $query->emp_account->c_email,
-                'work_status' => $emp_details->work_status,
+                'is_active' => $emp_details->is_active,
             ];
             return view('employee.profile.profile', ['data'=>$data,'isRegisterEmployee'=>$isRegisterEmployee])->render();
         } catch(Exception $e) {

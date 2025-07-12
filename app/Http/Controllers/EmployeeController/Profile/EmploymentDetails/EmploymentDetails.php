@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\EmployeeController\Profile;
+namespace App\Http\Controllers\AdminController\Employee\EmploymentDetails;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
@@ -13,13 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class EmploymentDetails extends Controller
 {
+
     public function update(Request $rq)
     {
         try {
             DB::beginTransaction();
             $user_id = Auth::user()->emp_id;
             $emp_id = Auth::user()->emp_id;
-
+            
             $company_id = Crypt::decrypt($rq->company_id);
             $location_id = Crypt::decrypt($rq->location_id);
             $department_id = Crypt::decrypt($rq->department_id);
@@ -55,4 +56,5 @@ class EmploymentDetails extends Controller
             return [ 'status' => 'error', 'message' => $e->getMessage() ];
         }
     }
+
 }
