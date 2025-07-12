@@ -288,7 +288,6 @@ Route::group(['prefix'=>'hris/admin'], function() {
             Route::post('/form', 'form');
             Route::post('/update', 'update');
         });
-
     });
 
     Route::group(['prefix'=>'approvals'], function() {

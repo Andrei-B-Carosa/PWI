@@ -187,7 +187,7 @@
                                     <div class="symbol-label fs-5x bg-light-primary text-primary">
                                         {{ $data['fullname'][0] }}
                                     </div>
-                                    <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-{{ $data['work_status']==1 ?'success':'danger' }}
+                                    <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-{{ $data['is_active']==1 ?'success':'danger' }}
                                                 rounded-circle border border-4 border-body h-20px w-20px">
                                     </div>
                                 </div>

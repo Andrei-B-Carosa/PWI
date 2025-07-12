@@ -40,7 +40,10 @@ class AccountDetails extends Controller
                 $values = Hash::make($rq->newpassword);
             }elseif ($rq->column == 'c_email') {
                 $values = $rq->emailaddress;
-            } else {
+            }elseif ($rq->column == 'username') {
+                $values = $rq->username;
+            }
+             else {
                 return [ 'status' => 'error', 'message' => 'Invalid column' ];
             }
 

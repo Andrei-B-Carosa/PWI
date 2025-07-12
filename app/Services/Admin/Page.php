@@ -108,6 +108,7 @@ class Page
                 'employment_type' =>$emp_details->employment->name,
                 'c_email'=> $query->emp_account->c_email,
                 'work_status' => $emp_details->work_status,
+                'is_active' => $emp_details->is_active,
             ];
             return view('admin.201_employee.employee_details.employee_details', ['data'=>$data,'isRegisterEmployee'=>$isRegisterEmployee])->render();
         } catch(Exception $e) {

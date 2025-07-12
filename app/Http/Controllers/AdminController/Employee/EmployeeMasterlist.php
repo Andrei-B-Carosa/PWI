@@ -16,12 +16,16 @@ class EmployeeMasterlist extends Controller
 {
     public function dt(Request $rq)
     {
-        // $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
+        $filter_status = $rq->filter_status != 'all' ? $rq->filter_status : false;
         $data = Employee::with(['emp_details'])
-        ->where([['is_active',$rq->filter_status],['is_deleted',null]])
+        ->when($filter_status,function($q) use($filter_status){
+            $q->where('is_active',$filter_status);
+        })
         ->whereHas('emp_account')
+        ->whereHas('emp_details')
+        ->where('is_deleted',null)
         ->get();
-
+        
         $data->transform(function ($item, $key) {
 
             $last_updated_by = null;

@@ -747,7 +747,82 @@ export function fvReferences(_table=false,form_id,param){
 
 export function fvAccountSecurity(_table=false,form_id,param){
 
-    var init_fvEmailAddress = (function () {
+    var init_AccountSecurity = (function () {
+
+        var _handlefvUsername = function(){
+            let fvUsername;
+            let form = document.querySelector('#kt_signin_change_username');
+
+            let card_id = '#card8';
+            let cardContent = document.querySelector(`${card_id}`);
+
+            let blockUI = KTBlockUI.getInstance(cardContent) ??new KTBlockUI(cardContent, {
+                message: '<div class="blockui-message"><span class="spinner-border text-primary"></span> Loading...</div>',
+            });
+
+            if (!form.hasAttribute('data-fv-initialized')) {
+
+                fvUsername = FormValidation.formValidation(form, {
+                    fields: {
+                        username: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Username is required'
+                                },
+                            }
+                        },
+                    },
+                    plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: ".fv-row",
+                        eleInvalidClass: "",
+                        eleValidClass: "",
+                    }),
+                    },
+                })
+                form.setAttribute('data-fv-initialized', 'true');
+            }
+
+            $(form).on('click','button.submit',function(e){
+                e.preventDefault()
+                e.stopImmediatePropagation()
+
+                let _this = $(this);
+                let url = form.getAttribute('action');
+                fvUsername && fvUsername.validate().then(function (v) {
+                    if(v == "Valid"){
+                        Alert.confirm("warning","Are you sure you want to update the username?", {
+                            onConfirm: function() {
+                                blockUI.block();
+                                _this.attr("data-kt-indicator","on");
+                                _this.attr("disabled",true);
+                                let formData = new FormData(form);
+                                formData.append('id',param);
+                                formData.append('tab',form_id);
+                                formData.append('column','username');
+                                (new RequestHandler).post(url,formData,true).then((res) => {
+                                    Alert.toast(res.status,res.message);
+                                    if(res.status == 'success'){
+                                        fvUsername.resetForm();
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error)
+                                    Alert.alert('error',"Something went wrong. Try again later", false);
+                                })
+                                .finally(() => {
+                                    _this.attr("data-kt-indicator","off");
+                                    _this.attr("disabled",false);
+                                    blockUI.release();
+                                    $('#kt_signin_cancel').click();
+                                });
+                            },
+                        });
+                    }
+                })
+            })
+        }
 
         var _handlefvEmailAddress = function(){
             let fvEmailAddress;
@@ -774,21 +849,6 @@ export function fvAccountSecurity(_table=false,form_id,param){
                                 }
                             }
                         },
-                        // confirmemailpassword: {
-                        //     validators: {
-                        //         notEmpty: {
-                        //             message: 'The password is required'
-                        //         },
-                        //         stringLength: {
-                        //             min: 8,
-                        //             message: 'The password must be at least 8 characters long'
-                        //         },
-                        //         regexp: {
-                        //              regexp: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
-                        //             message: 'The password must contain uppercase, lowercase, a number, and a special character'
-                        //         }
-                        //     }
-                        // }
                     },
                     plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -940,6 +1000,7 @@ export function fvAccountSecurity(_table=false,form_id,param){
 
         return {
             init: function () {
+                _handlefvUsername();
                 _handlefvEmailAddress();
                 _handlefvPassword();
             },
@@ -948,7 +1009,7 @@ export function fvAccountSecurity(_table=false,form_id,param){
     })();
 
     KTUtil.onDOMContentLoaded(function () {
-        init_fvEmailAddress.init();
+        init_AccountSecurity.init();
     });
 
 }

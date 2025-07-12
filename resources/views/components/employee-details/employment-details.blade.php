@@ -111,9 +111,9 @@
                         <select class="form-select-sm form-select" name="is_active" @if (isset($employee) && !$isRegisterEmployee) @disabled(true) @endif
                                 data-minimum-results-for-search="Infinity" data-control="select2" data-placeholder="Select an option">
                             <option value="" selected disabled>Select a status</option>
-                            <option value="1" @if(isset($employee->is_active) && $employee->is_active == 1) selected @endif>Hired</option>
-                            <option value="2" @if(isset($employee->is_active) && $employee->is_active == 2) selected @endif>Resigned</option>
-                            <option value="3" @if(isset($employee->is_active) && $employee->is_active == 3) selected @endif>Terminated</option>
+                            <option value="1" @if(isset($employee->emp_details->is_active) && $employee->emp_details->is_active == 1) selected @endif>Hired</option>
+                            <option value="2" @if(isset($employee->emp_details->is_active) && $employee->emp_details->is_active == 2) selected @endif>Resigned</option>
+                            <option value="3" @if(isset($employee->emp_details->is_active) && $employee->emp_details->is_active == 3) selected @endif>Terminated</option>
                         </select>
                     </div>
                 </div>

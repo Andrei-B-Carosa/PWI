@@ -22,7 +22,7 @@ export var dtEmployeeMasterlist = function (param=false) {
         dataTableHelper.initTable(
             _link+'dt',
             {
-                filter_status:1,
+                filter_status:$('input[name="filter_status"]:checked').val(),
             },
             [
                 {
@@ -41,6 +41,9 @@ export var dtEmployeeMasterlist = function (param=false) {
                         let status = {
                             1: ["success", "Active"],
                             2: ["danger", "Inactive"],
+                            null: ["danger", "Inactive"],
+                            0: ["danger", "Inactive"],
+
                         };
                         return `<div class="position-relative ps-6 pe-3 py-2" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" title="Date Hired : ${row.date_employed}">
                                     <div class="position-absolute start-0 top-0 w-4px h-100 rounded-2 bg-${status[row.is_active][0]}"></div>
@@ -91,6 +94,9 @@ export var dtEmployeeMasterlist = function (param=false) {
                         let status = {
                             1: ["success", "Active"],
                             2: ["danger", "Inactive"],
+                            null: ["danger", "Inactive"],
+                            0: ["danger", "Inactive"],
+
                         };
                         return `<span class="badge badge-${status[data][0]}">${status[data][1]}</span>`;
                     },
@@ -261,6 +267,12 @@ export var dtEmployeeMasterlist = function (param=false) {
                     //code here
                 });
             })
+
+            _card.on('click','button.filter_status', function(e) {
+                e.preventDefault()
+                e.stopImmediatePropagation()
+                initTable();
+            });
         })
     }
     return {

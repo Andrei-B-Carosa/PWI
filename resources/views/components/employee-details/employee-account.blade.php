@@ -1,7 +1,37 @@
 <div class="d-flex flex-wrap align-items-center">
-    <div id="">
+    <div id="kt_signin_username">
         <div class="fs-6 fw-bold mb-1">Username</div>
         <div class="fw-semibold text-gray-600">{{ $emp_account->username }}</div>
+    </div>
+    <div id="kt_signin_username_edit" class="flex-row-fluid d-none">
+        <form id="kt_signin_change_username" class="form" action="" novalidate="novalidate">
+            <div class="row mb-6">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="fv-row mb-0">
+                        <label for="username" class="form-label fs-6 fw-bold mb-3">New Username</label>
+                        <input type="text" class="form-control form-control-lg form-control-solid" id="username"
+                            placeholder="Username" name="username" value="" />
+                    </div>
+                </div>
+                @if($isSystemAdmin == false)
+                    <div class="col-lg-6">
+                        <div class="fv-row mb-0">
+                            <label for="confirmemailpassword" class="form-label fs-6 fw-bold mb-3">Confirm
+                                Password</label>
+                            <input type="password" class="form-control form-control-lg form-control-solid"
+                                name="confirmemailpassword" id="confirmemailpassword" />
+                        </div>
+                    </div>
+                @endif
+            </div>
+            <div class="d-flex">
+                <button id="kt_username_submit" type="button" class="btn btn-primary me-2 px-6 submit">Update Username</button>
+                <button id="kt_username_cancel" type="button" class="btn btn-color-gray-400 btn-active-light-primary px-6 cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+      <div id="kt_signin_username_button" class="ms-auto">
+        <button class="btn btn-light btn-active-light-primary">Change Username</button>
     </div>
 </div>
 <div class="separator separator-dashed my-6"></div>
@@ -55,8 +85,7 @@
                 @if($isSystemAdmin == false)
                     <div class="col-lg-4">
                         <div class="fv-row mb-0">
-                            <label for="currentpassword" class="form-label fs-6 fw-bold mb-3">Current
-                                Password</label>
+                            <label for="currentpassword" class="form-label fs-6 fw-bold mb-3">Current Password</label>
                             <input type="password" class="form-control form-control-lg form-control-solid "
                                 name="currentpassword" id="currentpassword" />
                         </div>
@@ -80,12 +109,27 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4">
+                {{-- <div class="col-lg-4">
                     <div class="fv-row mb-0">
-                        <label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirm New
-                            Password</label>
+                        <label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirm New Password</label>
                         <input type="password" class="form-control form-control-lg form-control-solid "
                             name="confirmpassword" id="confirmpassword" />
+                    </div>
+                </div> --}}
+                <div class="col-lg-4">
+                    <label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirm New Password</label>
+                    <div class="input-group mb-0 fv-row">
+                        <input type="password" class="form-control form-control-lg form-control-solid "
+                            name="confirmpassword" id="confirmpassword" />
+                        <button class="border border-secondary btn btn-icon btn-flex btn-light-primary" id="reveal-confirmnewpassword" type="button">
+                            <i class="ki-duotone ki-eye fs-5">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                        </button>
                     </div>
                 </div>
             </div>

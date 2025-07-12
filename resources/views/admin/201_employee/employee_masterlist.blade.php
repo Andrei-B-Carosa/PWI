@@ -17,6 +17,59 @@
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-light-primary me-2" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                    <i class="ki-duotone ki-filter fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Filter
+                                </button>
+
+                                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                                    <div class="px-7 py-5">
+                                        <div class="fs-4 text-dark fw-bold">Filter Options</div>
+                                    </div>
+                                    <div class="separator border-gray-200"></div>
+                                    <div class="px-7 py-5">
+                                        <div class="mb-7">
+                                            <label class="form-label fs-5 fw-semibold mb-3">Status:</label>
+                                            <div class="d-flex flex-column flex-wrap fw-semibold">
+                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                                    <input class="form-check-input" type="radio" name="filter_status" value="all" checked="checked" />
+                                                    <span class="form-check-label text-gray-600">
+                                                        View All
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                                    <input class="form-check-input" type="radio" name="filter_status" value="1" />
+                                                    <span class="form-check-label text-gray-600">
+                                                        Hired
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
+                                                    <input class="form-check-input" type="radio" name="filter_status" value="2" />
+                                                    <span class="form-check-label text-gray-600">
+                                                        Resigned
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                                    <input class="form-check-input" type="radio" name="filter_status" value="3" />
+                                                    <span class="form-check-label text-gray-600">
+                                                        Terminated
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            {{-- <button type="button" class="btn btn-light btn-active-light-primary me-2 reset" data-kt-menu-dismiss="true" >Reset</button> --}}
+
+                                            <button type="button" class="btn btn-primary filter_status" data-kt-menu-dismiss="true">Apply</button>
+                                        </div>
+                                        <!--end::Actions-->
+                                    </div>
+                                    <!--end::Content-->
+                                </div>
                                 <button type="button" class="btn btn-info btn-flex me-2 view-archive">
                                     <i class="ki-duotone ki-save-2 fs-3">
                                         <span class="path1"></span>

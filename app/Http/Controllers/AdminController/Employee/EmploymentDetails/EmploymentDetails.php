@@ -42,7 +42,7 @@ class EmploymentDetails extends Controller
                 'employment_id'=>$employment_id,
                 'position_id'=>$position_id,
                 'classification_id'=>$classification_id,
-                'is_active'=>$rq->is_active,
+                'is_active'=>$rq->is_active,                                                            //employment_status
                 'date_employed'=>Carbon::createFromFormat('m-d-Y',$rq->date_employed)->format('Y-m-d'),
                 'work_status'=>$rq->work_status,
                 'updated_by' => $user_id,

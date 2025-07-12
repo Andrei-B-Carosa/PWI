@@ -39,7 +39,7 @@ var fvLogin = (function () {
             fvLogin && fvLogin.validate().then((i) => {
                 if (i == "Valid") {
 
-                    // submit.attr("data-kt-indicator", "on").attr('disabled', true);
+                    submit.attr("data-kt-indicator", "on").attr('disabled', true);
                     _form.append("username",form.querySelector('[name="username"]').value);
                     _form.append("password",form.querySelector('[name="password"]').value);
 

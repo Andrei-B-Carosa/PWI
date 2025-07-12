@@ -8,9 +8,10 @@ import { PersonalDataHandler } from "./personal_data.js";
 
 export var AccountSecurityController =  function (page,param) {
 
-    const _page = $('.page-employee-details');
-    const _request = new RequestHandler;
+
     let tabLoaded = [];
+    const _request = new RequestHandler;
+    const _page = $('.page-employee-details');
 
     const _handlers = {
         1:(tab,param) => AccountSecurityHandler(tab,param),
@@ -52,11 +53,17 @@ export var AccountSecurityController =  function (page,param) {
             s.classList.toggle("d-none"),
             n.classList.toggle("d-none");
         },
+        sf = function(){
+            su.classList.toggle("d-none"),
+            sub.classList.toggle("d-none"),
+            sue.classList.toggle("d-none");
+        },
         c = function () {
             o.classList.toggle("d-none"),
             a.classList.toggle("d-none"),
             i.classList.toggle("d-none");
         };
+
         let s = document.getElementById("kt_signin_email_button");
         let e = document.getElementById("kt_signin_email");
         let n = document.getElementById("kt_signin_email_edit") ;
@@ -65,10 +72,25 @@ export var AccountSecurityController =  function (page,param) {
         let a = document.getElementById("kt_signin_password_button");
         let r = document.getElementById("kt_signin_cancel");
         let l = document.getElementById("kt_password_cancel");
+
         let z = document.getElementById('reveal-newpassword');
+        let w = document.getElementById('reveal-confirmnewpassword');
+
         let x = document.getElementById('newpassword');
         let y = document.getElementById('confirmpassword');
 
+        let sub = document.getElementById("kt_signin_username_button");
+        let su = document.getElementById("kt_signin_username");
+        let sue = document.getElementById("kt_signin_username_edit");
+        let subc = document.getElementById("kt_username_cancel");
+
+        sub.querySelector("button").addEventListener("click", function () {
+            sf();
+        });
+
+        subc.addEventListener("click", function () {
+            sf();
+        });
 
         s.querySelector("button").addEventListener("click", function () {
             d();
@@ -95,6 +117,15 @@ export var AccountSecurityController =  function (page,param) {
             }
         })
 
+        w.addEventListener('click',function(){
+            if(y.getAttribute('type') == 'password' && y.value.length > 0){
+                y.setAttribute('type', 'text');
+                y.blur();
+            }else if(y.getAttribute('type')=='text' && y.value.length > 0){
+                y.setAttribute('type', 'password');
+            }
+        })
+
         x.addEventListener('mousedown',function(){
             if(x.getAttribute('type') == 'text' && x.value.length > 0){
                 let value = this.value; // Store current value
@@ -105,6 +136,17 @@ export var AccountSecurityController =  function (page,param) {
                     this.value = value; // Restore value to reset caret position
                     this.setSelectionRange(value.length, value.length); // Move cursor to end
                     this.focus(); // Ensure focus stays on input
+                }, 1); // Delay to let the browser update the input type
+            }
+            if(y.getAttribute('type') == 'text'){
+                let value = y.value; // Store current value
+
+                y.setAttribute('type', 'password'); // Change type to password
+                setTimeout(() => {
+                    y.value = ''; // Temporarily clear the value
+                    y.value = value; // Restore value to reset caret position
+                    y.setSelectionRange(value.length, value.length); // Move cursor to end
+                    y.focus(); // Ensure focus stays on input
                 }, 1); // Delay to let the browser update the input type
             }
         })
@@ -121,10 +163,25 @@ export var AccountSecurityController =  function (page,param) {
                     x.focus(); // Ensure focus stays on input
                 }, 1); // Delay to let the browser update the input type
             }
+            if(y.getAttribute('type') == 'text'){
+                let value = y.value; // Store current value
+
+                y.setAttribute('type', 'password'); // Change type to password
+                setTimeout(() => {
+                    y.value = ''; // Temporarily clear the value
+                    y.value = value; // Restore value to reset caret position
+                    y.setSelectionRange(value.length, value.length); // Move cursor to end
+                    y.focus(); // Ensure focus stays on input
+                }, 1); // Delay to let the browser update the input type
+            }
         })
 
 
-        $(_page).find('#kt_signin_change_password, #kt_signin_change_email').attr('action','/hris/admin/201_employee/employee_details/account_security/update');
+        $(_page).find(
+            '#kt_signin_change_password, #kt_signin_change_email, #kt_signin_change_username').attr(
+            'action',
+            '/hris/admin/201_employee/employee_details/account_security/update'
+        );
         fvAccountSecurity(false,3,param);
     }
 

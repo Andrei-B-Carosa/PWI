@@ -202,7 +202,7 @@
             <div class="card-body py-20 w-100 mw-xl-700px px-9 fv-plugins-bootstrap5 fv-plugins-framework">
 
                 <!--begin::Step 1-->
-                <div data-kt-stepper-element="content" class="pending">
+                <div data-kt-stepper-element="content" class="current">
                     <!--begin::Wrapper-->
                     <div class="w-100">
                         <x-employee-details.data-privacy-act>
@@ -246,7 +246,7 @@
                 <!--end::Step 3-->
 
                 <!--begin::Step 4-->
-                <div data-kt-stepper-element="content" class="current">
+                <div data-kt-stepper-element="content" class="pending">
                     <!--begin::Wrapper-->
                     <div class="w-100">
                         <!--begin::Heading-->
